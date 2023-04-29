@@ -1,0 +1,302 @@
+\documentclass[12pt]{article}
+\usepackage[a4paper, left = 1cm, right = 1cm, top = 1cm, bottom = 1cm]{geometry}
+\usepackage{dsfont}
+\usepackage[fleqn]{amsmath}
+\usepackage{amssymb,amstext}
+\usepackage{hyperref}
+\usepackage{multirow}
+\begin{document}
+\setcounter{secnumdepth}{0}
+\newcommand{\ts}[1]{@{\hspace{#1cm}}}
+
+
+\section{Distribuições discretas:}
+
+\begin{tabular}{| c | c | c | c | c | c | c |}
+
+	                               \hline \rule{0pt}{0pt} & & & & & & \\
+	Distribuição &
+	$P(X = x)$ &
+	$P(X \leq x)$ &
+	Suporte &
+	$\text{E}(X)$ &
+	$\text{Var}(X)$ &
+	$M_X(t)$ \\
+
+	\rule{0pt}{0pt} & & & & & & \\ \hline \rule{0pt}{0pt} & & & & & & \\
+
+ 	Bernoulli &
+ 	$p^x (1-p)^{1-x}$ &
+ 	$\begin{cases}
+ 		0   & \quad\;\;\; x < 0 \\
+ 		1-p &      0 \leq x < 1 \\
+ 		1   &      1 \leq x \\
+ 	\end{cases}$ &
+ 	$\begin{matrix}
+ 		x \in \{0,1\} \\
+ 		p \in [0,1] \\
+ 	\end{matrix}$ &
+    $p$ &
+    $p (1-p)$ &
+    $pe^t - p + 1$ \\
+
+    \rule{0pt}{0pt} & & & & & & \\ \hline \rule{0pt}{0pt} & & & & & & \\
+
+    Binomial &
+    $\dbinom{n}{x} p^x (1-p)^{n-x}$ &
+    &
+    $\begin{matrix}
+    	x,n \in \mathds N \\
+    	x \leq n \\
+    	p \in [0,1] \\
+    \end{matrix}$ &
+    $np$ &
+    $np (1-p)$ &
+    $(pe^t - p + 1)^n$ \\
+
+    \rule{0pt}{0pt} & & & & & & \\ \hline \rule{0pt}{0pt} & & & & & & \\
+
+    Geométrica &
+    $p (1-p)^{x-1}$ &
+    $\begin{cases}
+    	0           & x < 0 \\
+    	1 - (1-p)^{\lfloor x \rfloor} & x \geq 0 \\
+    \end{cases}$ &
+    $\begin{matrix}
+    	x \in \mathds N \\
+    	p \in [0,1] \\
+    \end{matrix}$ &
+    $\dfrac{1}{p}$ &
+    $\dfrac{1-p}{p^2}$ &
+    $\dfrac{pe^t}{pe^t - p + 1}$ \\
+
+    \rule{0pt}{0pt} & & & & & & \\ \hline \rule{0pt}{0pt} & & & & & & \\
+
+    Poisson &
+    $\dfrac{e^{-\lambda} \lambda^x}{x!}$ &
+    &
+    $\begin{matrix}
+    	x \in \mathds N \\
+    	\lambda > 0 \\
+    \end{matrix}$ &
+    $\lambda$ &
+    $\lambda$ &
+    $e^{\lambda (e^t -1)}$ \\
+
+ 	\rule{0pt}{0pt} & & & & & & \\ \hline
+
+\end{tabular}
+
+\section{Distribuições contínuas:}
+
+\begin{tabular}{| c | c | c | c | c | c | c |}
+
+	                               \hline \rule{0pt}{0pt} & & & & & & \\
+	Distribuição &
+	$f(x)$ &
+	$F(x)$ &
+	Suporte &
+	$\text{E}(X)$ &
+	$\text{Var}(X)$ &
+	$M_X(t)$ \\
+
+	\rule{0pt}{0pt} & & & & & & \\ \hline \rule{0pt}{0pt} & & & & & & \\
+
+	Uniforme &
+	$\dfrac{1}{b - a}$ &
+	$\begin{cases}
+		0                    & \quad\;\;\; x < a \\
+		\dfrac{x - a}{b - a} &      a \leq x < b \\
+		1                    &      b \leq x \\
+	\end{cases}$ &
+	$\begin{matrix}
+		x \in [a,b] \\
+		a,b \in \mathds R \\
+		a \leq b \\
+	\end{matrix}$ &
+	$\dfrac{a + b}{2}$ &
+	$\dfrac{(a - b)^2}{12}$ &
+	$\dfrac{e^{bt} - e^{at}}{t(b - a)}$ \\
+
+	\rule{0pt}{0pt} & & & & & & \\ \hline \rule{0pt}{0pt} & & & & & & \\
+
+	Normal &
+	$\dfrac{1}{\sqrt{2 \pi \sigma^2}} \; e^{-\dfrac{(x - \mu)^2}{2 \sigma^2}}$ &
+	&
+	$\begin{matrix}
+		x,\mu \in \mathds R \\
+		\sigma > 0 \\
+	\end{matrix}$ &
+	$\mu$ &
+	$\sigma^2$ &
+	$e^{\mu t + \frac{1}{2} \sigma^2 t^2}$ \\
+
+	\rule{0pt}{0pt} & & & & & & \\ \hline \rule{0pt}{0pt} & & & & & & \\
+
+	Exponencial &
+	$\lambda e^{-\lambda x}$ &
+	$1 - e^{-\lambda x}$ &
+	$\begin{matrix}
+		x       > 0 \\
+		\lambda > 0 \\
+	\end{matrix}$ &
+	$\dfrac{1}{\lambda}$ &
+	$\dfrac{1}{\lambda^2}$ &
+	$\dfrac{\lambda}{\lambda - t}$ \\
+
+	\rule{0pt}{0pt} & & & & & & \\ \hline \rule{0pt}{0pt} & & & & & & \\
+
+	Gama &
+	$\dfrac{\beta ^ \alpha}{\Gamma(\alpha)} x^{\alpha - 1} e^{-\beta x}$ &
+	&
+	$\begin{matrix}
+		x             > 0 \\
+		\alpha,\beta  > 0 \\
+	\end{matrix}$ &
+	$\dfrac{\alpha}{\beta}$ &
+	$\dfrac{\alpha}{\beta^2}$ &
+	$\left( \dfrac{\beta}{\beta - t} \right)^\alpha$ \\
+
+	\rule{0pt}{0pt} & & & & & & \\ \hline \rule{0pt}{0pt} & & & & & & \\
+
+	Beta &
+	$\frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} x^{\alpha - 1} (1-x)^{\beta - 1}$ &
+	&
+	$\begin{matrix}
+		x \in [0,1] \\
+		\alpha,\beta  > 0 \\
+	\end{matrix}$ &
+	$\dfrac{\alpha}{\alpha + \beta}$ &
+	$\frac{\alpha \beta}{(\alpha + \beta)^2 (\alpha +  \beta + 1)}$ &
+	\\
+
+	\rule{0pt}{0pt} & & & & & & \\ \hline
+
+\end{tabular}
+
+\section{Relações amostrais:}
+
+\begin{tabular}{| c | c | c |}
+
+	\hline \rule{0pt}{0pt} & & \\
+	Distribuição &
+	Suposições &
+	Relação \\
+
+	\rule{0pt}{0pt} & & \\ \hline \rule{0pt}{0pt} & & \\
+
+	Média &
+	$X \sim N(\mu, \sigma^2)$ &
+	$\bar{X}_n \sim N \left( \mu, \dfrac{\sigma^2}{n} \right)$  \\
+
+	\rule{0pt}{0pt} & & \\ \hline \rule{0pt}{0pt} & & \\
+
+	Chi-quadrado &
+	$X \sim N(\mu, \sigma^2)$ &
+	$\displaystyle \sum_{i=1}^{n} \left( \dfrac{X_i - \mu_i}{\sigma_i} \right)^2 \sim \chi^2_{(n)}$ \\
+
+	\rule{0pt}{0pt} & & \\ \hline \rule{0pt}{0pt} & & \\
+
+	Chi-quadrado &
+	$X \sim N(\mu, \sigma^2)$ &
+	$\displaystyle \sum_{i=1}^{n} \left( \dfrac{X_i - \bar{X}_i}{\sigma} \right)^2 \sim \chi^2_{(n-1)}$ \\
+
+	\rule{0pt}{0pt} & & \\ \hline \rule{0pt}{0pt} & & \\
+
+	t-Student &
+	$\begin{matrix}
+		Z \sim N(0, 1) \\
+		\\
+		U \sim \chi^2_{(n)} \\
+	\end{matrix}$ &
+	$\dfrac{Z}{\sqrt{U/n}} \sim t_{(n)}$ \\
+
+	\rule{0pt}{0pt} & & \\ \hline \rule{0pt}{0pt} & & \\
+
+	t-Student &
+	$\begin{matrix}
+		X \sim N(\mu, \sigma^2) \\
+		\\
+		S = \dfrac{\displaystyle \sum_{i=1}^{n} \left( \dfrac{X_i - \bar{X}_i}{\sigma} \right)^2}{n-1} \\
+	\end{matrix}$ &
+	$\dfrac{\sqrt{n} (\bar{X} - \mu)}{S} \sim t_{(n-1)}$ \\
+
+	\rule{0pt}{0pt} & & \\ \hline \rule{0pt}{0pt} & & \\
+
+	F-Snedecor &
+	$\begin{matrix}
+		U \sim \chi^2_{(m)} \\
+		\\
+		V \sim \chi^2_{(n)} \\
+	\end{matrix}$ &
+	$\dfrac{U/m}{V/n} \sim F(m,n)$ \\
+
+	\rule{0pt}{0pt} & & \\ \hline
+
+\end{tabular}
+
+%\section{Inferência:}
+%
+%\begin{minipage}[c]{0.5\textwidth}
+%	\begin{tabular}{| c | c | c |}
+%
+%		\hline \rule{0pt}{0pt} & & \\
+%		Distribuição &
+%		Estimador &
+%		\begin{tabular}{c}
+%			Informação \\
+%			de Fisher \\
+%		\end{tabular} \\
+%
+%		\rule{0pt}{0pt} & & \\ \hline \rule{0pt}{0pt} & & \\
+%
+%		Bernoulli &
+%		$\hat{p} = \bar{X}$ &
+%		$\dfrac{n}{p (1-p)}$ \\
+%
+%		\rule{0pt}{0pt} & & \\ \hline \rule{0pt}{0pt} & & \\
+%
+%		Poisson &
+%		$\hat{\lambda} = \bar{X}$ &
+%		$\dfrac{n}{\lambda}$ \\
+%
+%		\rule{0pt}{0pt} & & \\ \hline \rule{0pt}{0pt} & & \\
+%
+%		Exponencial &
+%		$\hat{\lambda} = \dfrac{1}{\bar{X}}$ &
+%		$\dfrac{n}{\lambda^2}$ \\
+%
+%		\rule{0pt}{0pt} & & \\ \hline
+%
+%	\end{tabular}
+%\end{minipage}
+%\begin{minipage}[c]{0.5\textwidth}
+%	\begin{tabular}{| c | c | c |}
+%
+%		\hline \rule{0pt}{0pt} & & \\
+%		Distribuição &
+%		Estimador &
+%		\begin{tabular}{c}
+%			Informação \\
+%			de Fisher \\
+%		\end{tabular} \\
+%
+%		\rule{0pt}{0pt} & & \\ \hline \rule{0pt}{0pt} & & \\
+%
+%		Normal &
+%		$\hat{\mu} = \bar{X}$ &
+%		$\dfrac{n}{\sigma^2}$ \\
+%
+%		\rule{0pt}{0pt} & & \\ \hline \rule{0pt}{0pt} & & \\
+%
+%		Normal &
+%		$\hat{\sigma}^2 = \displaystyle \sum_{i=1}^{n} \dfrac{(X_i - \mu)^2}{n-1}$ &
+%		 \\
+%
+%		\rule{0pt}{0pt} & & \\ \hline
+%
+%	\end{tabular}
+%\end{minipage}
+
+
+\end{document}
