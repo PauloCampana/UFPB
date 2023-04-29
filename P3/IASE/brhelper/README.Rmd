@@ -1,0 +1,74 @@
+---
+output: github_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# brhelper
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+O pacote brhelper foi criado com objetivo de facilitar a entrada, conversão e relação de dados geográficos Brasileiros.
+
+## Instalação
+Você pode instalar o pacote brhelper do [GitHub](https://github.com/PauloCampana/brhelper) através de:
+
+```{r, eval=FALSE}
+# install.packages("remotes")
+remotes::install_github("PauloCampana/brhelper")
+# ou
+# install.packages("devtools")
+devtools::install_github("PauloCampana/brhelper")
+```
+
+## Exemplo
+Como fazer um mapa usando os dados inbutidos do brhelper e o pacote [ggplot2](https://ggplot2.tidyverse.org/):
+
+```{r example, message=FALSE}
+library(brhelper)
+library(tidyverse)
+
+mapa_estado |> 
+    ggplot(aes(x = long, y = lat, group = group, fill = id)) +
+    geom_polygon() +
+    scale_fill_viridis_c() +
+    coord_map() +
+    theme_void() +
+    theme(legend.position = "none")
+```
+
+Como converter uma variável que caracteriza o Estado para ID: 
+
+```{r}
+tribble(
+    ~estado,       ~area,
+    "Amazonas",     1570.7,
+    "Pará",         1247.6,
+    "Mato Grosso",  903.3,
+    "Minas Gerais", 587.5,
+    "Bahia",        564.6
+) |> 
+  mutate(estado = estado |> converter_estado(de = "nome", para = "id"))
+```
+
+Como unir uma variável em ID com os dados do mapa:
+
+```{r}
+tribble(
+    ~estado, ~area,
+    3,        1570.7,
+    5,        1247.6,
+    25,       903.3,
+    17,       587.5,
+    16,       564.6
+) |> 
+    right_join(mapa_estado, by = c("estado" = "id")) 
+```

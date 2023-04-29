@@ -1,0 +1,19 @@
+Package: brhelper
+Title: Helper Functions for Dealing with Brazillian Data
+Version: 0.1.0
+Authors@R: 
+    person(
+        "Paulo R.", "S. Campana", ,
+        "paulo.campana@academico.ufpb.br",
+        role = c("aut", "cre")
+    )
+Description: Helper functions for dealing with Brazillian data.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.2
+Depends: 
+    R (>= 2.10)
+LazyData: true
+URL: https://github.com/PauloCampana/brhelper
+BugReports: https://github.com/PauloCampana/brhelper/issues
