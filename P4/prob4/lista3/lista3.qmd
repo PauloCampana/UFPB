@@ -1,0 +1,358 @@
+---
+format: pdf
+lang: pt
+title: Atividade 3
+subtitle: Sequências de eventos e o lema de Borel-Cantelli.
+author: Paulo Ricardo Seganfredo Campana
+date: 2023-04-19
+date-format: long
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+\def \limseq #1{{ \displaystyle \lim_{n \to \infty} #1 }}
+\def \p #1{{ \text{P} \kern-2pt \left( #1 \right) }}
+:::
+
+# 1.
+Sejam $(A_n)$ e $(B_n)$ sequências de eventos no mesmo espaço de probabilidade. Prove que:
+
+$$
+\limseq{\p{A_n}} = 1, \quad \limseq{\p{B_n}} = p 
+$$
+$$
+\implies \limseq{\p{A_n \cap B_n}} = p
+$$
+
+Note que $\p{A_n \cap B_n}$ está limitado entre $\p{A_n} + \p{B_n} - 1$ e $\p{B_n}$ pois:
+
+::: {layout-ncol=2}
+\begin{align*}
+    \p{A_n \cap B_n} &= \p{( A_n^c \cup B_n^c )^c}      \\
+                     &= 1 - \p{A_n^c \cup B_n^c}        \\
+                     &\geq 1 - (\p{A_n^c} + \p{B_n^c})  \\
+                     &= 1 - (1 - \p{A_n} + 1 - \p{B_n}) \\
+                     &= \p{A_n} + \p{B_n} - 1
+\end{align*}
+
+\begin{align*}
+    \\  A_n \cap B_n &\subset B_n  \\
+    \p{A_n \cap B_n} &\leq \p{B_n}
+\end{align*}
+:::
+
+Pelas leis de Morgan e subaditividade, portanto:
+\begin{align*}
+    \limseq{\p{A_n} + \p{B_n} - 1} \leq \limseq{\p{A_n \cap B_n}} &\leq \limseq{\p{B_n}} \\
+                         1 + p - 1 \leq \limseq{\p{A_n \cap B_n}} &\leq p                \\   
+                                 p \leq \limseq{\p{A_n \cap B_n}} &\leq p
+\end{align*}
+
+$\limseq{\p{A_n \cap B_n}} = p$ Pelo teorema do sandwiche
+
+{{< pagebreak >}}
+
+# 2.
+Sejam $(A_n)$ e $(B_n)$ sequências de eventos no mesmo espaço de probabilidade. Mostre que:
+
+## a)
+$(\lim \sup A_n)^c = \lim \inf A_n^c$
+
+$$
+(\lim \sup A_n)^c = \left( \bigcap_{n=1}^\infty \bigcup_{k=n}^\infty A_k \right)^c = \bigcup_{n=1}^\infty \left( \bigcup_{k=n}^\infty A_k \right)^c = \bigcup_{n=1}^\infty \bigcap_{k=n}^\infty A_k^c = \lim \inf A_n^c 
+$$
+
+## b)
+$(\lim \inf A_n)^c = \lim \sup A_n^c$
+
+$$
+(\lim \inf A_n)^c = \left( \bigcup_{n=1}^\infty \bigcap_{k=n}^\infty A_k \right)^c = \bigcap_{n=1}^\infty \left( \bigcap_{k=n}^\infty A_k \right)^c = \bigcap_{n=1}^\infty \bigcup_{k=n}^\infty A_k^c = \lim \sup A_n^c 
+$$
+
+## c) 
+$\lim \sup (A_n \cap B_n) \subset (\lim \sup A_n) \cap (\lim \sup B_n)$
+\begin{align*}
+    \omega &\in \lim \sup (A_n \cap B_n)                                     \\
+    \omega &\in A_k \cap B_k \text{ para índices infinitos}                  \\   
+    \omega &\in A_k \text{ e } \omega \in B_k \text{ para índices infinitos} \\
+    \omega &\in (\lim \sup A_n) \cap (\lim \sup B_n)                         \\
+\end{align*}
+Porém, seja:
+
+::: {layout-ncol=3}
+$$
+A_n = \left \lbrace \begin{array}{ll}
+    \lbrace 0 \rbrace, \; n \text{ impar} \\
+    \lbrace 1 \rbrace, \; n \text{ par}
+\end{array} \right. 
+$$
+
+$$
+B_n = \left \lbrace \begin{array}{ll}
+    \lbrace 1 \rbrace, \; n \text{ impar} \\
+    \lbrace 0 \rbrace, \; n \text{ par}
+\end{array} \right. 
+$$
+
+$$
+A_n \cap B_n = \varnothing, \; \forall n
+$$
+:::
+
+$$
+\lim \sup (A_n \cap B_n) = \lim \sup \varnothing = \varnothing
+$$
+$$
+\lim \sup A_n = \lim \sup B_n = \lbrace 0,1 \rbrace
+$$
+$$
+\lim \sup (A_n \cup B_n) \nsupseteq (\lim \sup A_n) \cup (\sup \inf B_n)
+$$
+
+{{< pagebreak >}}
+
+## d)
+$\lim \sup (A_n \cup B_n) = (\lim \sup A_n) \cup (\lim \sup B_n)$
+\begin{align*}
+                        \omega &\in (\lim \sup A_n) \cup (\lim \sup B_n)                          \\
+    \Longleftrightarrow \omega &\in A_k \text{ ou } \omega \in B_k \text{ para índices infinitos} \\
+    \Longleftrightarrow \omega &\in A_k \cup B_k \text{ para índices infinitos}                   \\
+    \Longleftrightarrow \omega &\in \lim \sup (A_n \cup B_n)
+\end{align*}
+
+## e)
+$\lim \inf (A_n \cap B_n) = (\lim \inf A_n) \cap (\lim \inf B_n)$
+\begin{align*}
+                        \omega &\in    (\lim \inf A_n) \cap (\lim \inf B_n)                          \\
+    \Longleftrightarrow \omega &\notin A_k \text{ e } \omega \notin B_k \text{ para índices finitos} \\ 
+    \Longleftrightarrow \omega &\in    A_k, \; \forall k > N_A \text{ e } \omega \in B_k, \; \forall k > N_B  \\
+    \Longleftrightarrow \omega &\in    A_k \cap B_k, \; \forall k > \max \lbrace N_A, N_B \rbrace    \\ 
+    \Longleftrightarrow \omega &\notin A_k \cap B_k, \text{ para índicies finitos}                   \\ 
+    \Longleftrightarrow \omega &\in    \lim \inf (A_n \cap B_n) 
+\end{align*}
+
+## f)
+$\lim \inf (A_n \cup B_n) \supset (\lim \inf A_n) \cup (\lim \inf B_n)$
+\begin{align*}
+    \omega &\in    (\lim \inf A_n) \cup (\lim \inf B_n)                                   \\
+    \omega &\notin A_k \text{ ou } \omega \notin B_k \text{ para índices finitos}         \\ 
+    \omega &\in    A_k, \; \forall k > N_A \text{ ou } \omega \in B_k, \; \forall k > N_B \\
+    \omega &\in    A_k \cup B_k, \; \forall k > \max \lbrace N_A, N_B \rbrace             \\ 
+    \omega &\notin A_k \cup B_k, \text{ para índicies finitos}                            \\ 
+    \omega &\in    \lim \inf (A_n \cup B_n) 
+\end{align*}
+Porém, seja:
+
+::: {layout-ncol=3}
+$$
+A_n = \left \lbrace \begin{array}{ll}
+    \lbrace 0 \rbrace, \; n \text{ impar} \\
+    \lbrace 1 \rbrace, \; n \text{ par}
+\end{array} \right. 
+$$
+
+$$
+B_n = \left \lbrace \begin{array}{ll}
+    \lbrace 1 \rbrace, \; n \text{ impar} \\
+    \lbrace 0 \rbrace, \; n \text{ par}
+\end{array} \right. 
+$$
+
+$$
+A_n \cup B_n = \lbrace 0,1 \rbrace, \; \forall n
+$$
+:::
+
+$$
+\lim \inf (A_n \cup B_n) = \lim \inf \lbrace 0,1 \rbrace = \lbrace 0,1 \rbrace
+$$
+$$
+\lim \inf A_n = \lim \inf B_n = \varnothing
+$$
+$$
+\lim \inf (A_n \cup B_n) \nsubseteq (\lim \inf A_n) \cup (\lim \inf B_n)
+$$
+
+{{< pagebreak >}}
+
+# 3.
+$\limseq{A_n} = A, \; \limseq{B_n} = B$, mostre que:
+
+Note que para qualquer sequência $X_n$ convergente: $\limseq{X_n} = \lim \sup X_n = \lim \inf X_n$
+
+## a)
+$\limseq{A_n^c} = A^c$
+\begin{align*}
+    \lim \sup A_n^c = (\lim \inf A_n)^c &= A^c = (\lim \sup A_n)^c = \lim \inf A_n^c \\
+                        \lim \sup A_n^c &= A^c = \lim \inf A_n^c \\
+                           \limseq{A_n} &= A^c
+\end{align*}
+
+## b)
+$\limseq{A_n \cup B_n} = A \cup B$
+\begin{align*}
+                   \lim \sup (A_n \cup B_n) &=       (\lim \sup A_n) \cup (\lim \sup B_n) = A \cup B \\
+                   \lim \inf (A_n \cup B_n) &\supset (\lim \inf A_n) \cup (\lim \inf B_n) = A \cup B \\
+                   \lim \inf (A_n \cup B_n) &\supset \lim \sup (A_n \cup B_n)                        \\
+     \text{porém } \lim \inf (A_n \cup B_n) &\subset \lim \sup (A_n \cup B_n)                        \\
+                   \lim \inf (A_n \cup B_n) &=       \lim \sup (A_n \cup B_n)
+\end{align*}
+
+## c)
+$\limseq{A_n \cap B_n} = A \cap B$
+\begin{align*}
+                   \lim \inf (A_n \cap B_n) &=       (\lim \inf A_n) \cap (\lim \inf B_n) = A \cap B \\
+                   \lim \sup (A_n \cap B_n) &\subset (\lim \sup A_n) \cap (\lim \sup B_n) = A \cap B \\
+                   \lim \inf (A_n \cap B_n) &\supset \lim \sup (A_n \cap B_n)                        \\
+     \text{porém } \lim \inf (A_n \cap B_n) &\subset \lim \sup (A_n \cap B_n)                        \\
+                   \lim \inf (A_n \cap B_n) &=       \lim \sup (A_n \cap B_n)
+\end{align*}
+
+{{< pagebreak >}}
+
+# 4.
+Seja ($A_n$) sequência de eventos no mesmo espaço de probabilidade tal que $\p{A_n} \geq c > 0, \; \forall n$. Mostre que $\p{\lim \sup A_n} \geq c$. 
+
+\begin{align*}
+              \p{A_n} &\geq c \\
+    \lim \sup \p{A_n} &\geq \lim \sup c \\
+    \lim \sup \p{A_n} &\geq c
+\end{align*}
+
+Porém, $\p{\lim \inf A_n} \leq \lim \inf \p{A_n} \leq \lim \sup \p{A_n} \leq \p{\lim \sup A_n}$
+
+\begin{align*}
+    \p{\lim \sup A_n} &\geq \lim \sup \p{A_n} \geq c \\
+    \p{\lim \sup A_n} &\geq c
+\end{align*}
+
+{{< pagebreak >}}
+
+# 5.
+Achar o limite das seguintes sequências de eventos:
+
+## a)
+$A_n = \left[ -\dfrac{1}{n}, \; \dfrac{n+1}{n} \right), \; \forall n$
+
+::: {layout-ncol=2}
+$$
+\limseq{-\dfrac{1}{n}}  = 0, \; -\dfrac{1}{n} \uparrow 0
+$$
+
+$$
+\limseq{\dfrac{n+1}{n}} = 1, \; \dfrac{n+1}{n} \downarrow 1
+$$
+:::
+
+$$
+\limseq{A_n} = \left[ 0,1 \right]
+$$
+
+## b)
+$A_n = \left( 0, \; \dfrac{1}{n} \right), \; \forall n$
+
+$$
+\limseq{\dfrac{1}{n}}  = 0, \; \dfrac{1}{n} \downarrow 0
+$$
+
+$$
+\limseq{A_n} = \left( 0,0 \right) = \varnothing
+$$
+
+## c)
+$A_n = \left( -\dfrac{n}{2}, \; \dfrac{n^2}{n+1} \right), \; \forall n$
+
+::: {layout-ncol=2}
+$$
+\limseq{-\dfrac{n}{2}}  = -\infty, \; -\dfrac{n}{2} \downarrow -\infty
+$$
+
+$$
+\limseq{\dfrac{n^2}{n+1}} = \limseq{\dfrac{n}{1 + \frac{1}{n}}} = +\infty, \; \dfrac{n^2}{n+1} \uparrow +\infty
+$$
+:::
+
+$$
+\limseq{A_n} = \left( -\infty,+\infty \right)
+$$
+
+{{< pagebreak >}}
+
+# 6.
+Calcule $\p{\lim \sup A_n}$ nos seguintes casos:
+
+## a) 
+$\p{A_n} = \dfrac{1}{n^2}, \; \forall n$
+
+$$
+\sum_{n=1}^\infty \p{A_n} = \sum_{n=1}^\infty \dfrac{1}{n^2} = \dfrac{\pi^2}{6} < \infty
+$$
+
+Então pelo lema de Borel-Cantelli, $\p{\lim \sup A_n} = 0$
+
+## b) 
+$\p{A_n} = \dfrac{1}{n}, \; \forall n, \; A_n$ mutualmente independentes
+
+$$
+\sum_{n=1}^\infty \p{A_n} = \sum_{n=1}^\infty \dfrac{1}{n} \to \infty
+$$
+
+E os eventos $A_n$ são mutualmente independentes, então pelo lema de Borel-Cantelli, $\p{\lim \sup A_n} = 1$
+
+# 7.
+Suponha que uma moeda honesta é lançada de forma independente repetidas vezes. Qual a probabilidade de se obter cara de forma sucessiva infinitamente?
+
+Defina $A_n$ como o evento de se obter cara nos primeiros $n$ lançamentos: $\p{A_n} = \left( \dfrac{1}{2} \right)^n$
+
+$$
+\sum_{n=1}^\infty \p{A_n} = \sum_{n=1}^\infty \left( \dfrac{1}{2} \right)^n = \dfrac{\frac{1}{2}}{1 - \frac{1}{2}} = 1 < \infty
+$$
+
+Então $\p{\lim \sup A_n}$, ou a probabilidade de se obter cara de forma sucessiva infinitamente é zero pelo lema de Borel-Cantelli.
+
+{{< pagebreak >}}
+
+# 8.
+Considere o espaço amostral ($\Omega, \mathcal F, \text{P}$) com $\Omega = \mathbb N$, $\mathcal F = \p{\Omega}$ (partes de $\Omega$) e $\p{\lbrace n \rbrace} = \dfrac{1}{n(n+1)}, \; \forall n$.
+Para cada $n$, considere o evento $A_n = \lbrace n, n + 1, n + 2, \dots \rbrace$. Mostre que:
+
+## a) 
+$\displaystyle \sum_{n=1}^\infty \p{A_n}$ diverge
+
+Note que $A_n$ pode ser representado como uma união disjunta: $A_n = \displaystyle \bigcup_{k=n}^\infty \lbrace k \rbrace$.
+
+$$
+\p{A_n} = 
+\p{\bigcup_{k=n}^\infty \lbrace k \rbrace} =
+\sum_{k=n}^\infty \p{\lbrace k \rbrace} = 
+\sum_{k=n}^\infty \dfrac{1}{k(k+1)} = 
+\sum_{k=n}^\infty \dfrac{1}{k} - \dfrac{1}{k+1} = 
+$$
+\begin{align*}
+    \lim_{N \to \infty}
+    \dfrac{1}{n} &+ \dfrac{1}{n+1} + \cdots + \dfrac{1}{n+N} + \\ 
+                 &- \dfrac{1}{n+1} - \cdots - \dfrac{1}{n+N} - \dfrac{1}{n+N+1} = 
+    \lim_{N \to \infty} \dfrac{1}{n} - \dfrac{1}{n+N+1} = \dfrac{1}{n}
+\end{align*}
+$$
+\sum_{n=1}^\infty \p{A_n} = \sum_{n=1}^\infty \dfrac{1}{n} \to \infty
+$$
+
+## b) 
+$\p{A_n \text{ infinitas vezes}} = 0$
+
+Note que $A_n$ é monótona decrescente: $A_1 \supset A_2 \supset A_3 \supset \cdots$ e toda sequência de eventos monótona converge.
+$$
+\p{A_n \text{ infinitas vezes}} = \p{\lim \sup A_n} = \p{\limseq{a_n}} = \limseq{\p{A_n}} = \limseq{\dfrac{1}{n}} = 0
+$$
+\vspace{-24pt}
+
+## c) 
+Isso contradiz o lema de Borel-Cantelli?
+
+Não, a série das probabilidades ser divergente só implica que $\p{A_n \text{ infinitas vezes}} = 0$ pelo lema de Borel-Cantelli quando os eventos $A_n$ são mutualmente independentes.
+
+$$
+\p{A_3 | A_2} = \dfrac{\p{A_3 \cap A_2}}{\p{A_2}} = \dfrac{\p{A_3}}{\p{A_2}} \neq \p{A_3}, \; \text{não são independentes.}
+$$
