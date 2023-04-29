@@ -1,0 +1,248 @@
+---
+title: "Prova 3 - Análise exploratória de dados"
+author: "Paulo Ricardo Seganfredo Campana e Rafhael Aurélio da Silva"
+date: "1 de Dezembro de 2021"
+output:
+  html_document:
+    fig_width: 10
+    fig_height: 5
+---
+
+***
+
+# Questão 1
+
+### Letra A:
+
+|       Média de idade de cada indivíduo de uma amostra ao falecer
+
+### Letra B:
+
+|       Não. O estudo tem como objetivo o cálculo de uma média, por definição de média de uma distribuição, a maioria dos indivíduos estarão ao redor desta média, alguns exatamente na média e outros longe da mesma.
+
+# Questão 2
+
+### Item 1. Criação do banco de dados, escolha das variáveis e finalidade
+
+```{r echo=FALSE}
+banco <- readr::read_delim("banco.txt", delim = ";", 
+                           escape_double = FALSE, locale = readr::locale(decimal_mark = ",", 
+                           grouping_mark = "."), trim_ws = TRUE, show_col_types = FALSE)
+       
+knitr::kable(banco, caption = "Banco de Dados:")
+```
+
+***
+
+|       Através da fonte do [DATASUS](https://datasus.saude.gov.br/informacoes-de-saude-tabnet/) foi selecionado o banco de dados em referência ao Produto Interno Bruto per capita segundo Estado e Região Brasileira entre os anos de 2010 a 2013, o banco de dados foi baixado em formato .csv, foram removidos as linhas e colunas referentes aos totais, convertido para .txt e lido no software RStudio pelo pacote [readr](https://cran.r-project.org/package=readr).
+|
+|       A escolha de tais variáveis se deve a necessidade de entender a influência do tempo sobre o Produto Interno Bruto per capita das demais regiões do Brasil. Isto é, o crescimento ao longo do tempo segundo o Estado. Com intuito de buscar evidências do comportamento do PIB e apresentar suas transformações a partir de análises das quais indicam a evolução do mesmo.
+|
+
+### Item 2. Análise descritiva das variáveis
+
+#### Em relação ao ano
+
+```{r echo=FALSE}
+cv <- function(x) { sd(x)/mean(x) }
+
+banco.medidas.ano <- data.frame(
+  "Média_anual" = sapply(banco[,3:6], mean),
+  "Coeficiente_de_variação" = sapply(banco[,3:6], cv),
+  "Valor_máximo" = sapply(banco[,3:6], max),
+  "Valor_mínimo" = sapply(banco[,3:6], min)) 
+
+knitr::kable(banco.medidas.ano, caption = "Medidas de posição e dispersão:")
+```
+
+***
+
+|       O resultado dos dados apresentados apontam um crescimento do PIB per capita de modo geral, devido tanto a média quanto os valores máximos e mínimos aumentando a cada ano. Que por consequência apontam melhor qualidade de vida para o país. Por outro lado, o coeficiente de variação exibe uma redução, evidenciando a diminuição da desigualdade entre os Estados.
+
+#### Análise gráfica do crescimento do PIB per capita por região
+
+```{r include=FALSE}
+library(ggplot2)
+library(quantreg)
+```
+
+```{r echo=FALSE}
+banco.sul <- data.frame(
+  "Estado" = rep(c("Paraná", "Santa Catarina", "Rio Grande do Sul"), each = 4),
+  "Ano" = rep(c("2010", "2011", "2012", "2013")),
+  "PIBpc" = c(banco[[21,3]], banco[[21,4]], banco[[21,5]], banco[[21,6]],
+              banco[[22,3]], banco[[22,4]], banco[[22,5]], banco[[22,6]],
+              banco[[23,3]], banco[[23,4]], banco[[23,5]], banco[[23,6]]))
+
+ggplot(banco.sul, aes(x = Ano, y = PIBpc, group = Estado, color = Estado)) +
+  geom_line(size = 1) +
+  labs(title = "Crescimento do PIB per capita da região Sul") +
+  ylab("PIB per capita")
+
+banco.sudeste <- data.frame(
+  "Estado" = rep(c("Minas Gerais", "Espírito Santo", "Rio de Janeiro", "São Paulo"), each = 4),
+  "Ano" = rep(c("2010", "2011", "2012", "2013")),
+  "PIBpc" = c(banco[[17,3]], banco[[17,4]], banco[[17,5]], banco[[17,6]],
+              banco[[18,3]], banco[[18,4]], banco[[18,5]], banco[[18,6]],
+              banco[[19,3]], banco[[19,4]], banco[[19,5]], banco[[19,6]],
+              banco[[20,3]], banco[[20,4]], banco[[20,5]], banco[[20,6]]))
+
+ggplot(banco.sudeste, aes(x = Ano, y = PIBpc, group = Estado, color = Estado)) +
+  geom_line(size = 1) +
+  labs(title = "Crescimento do PIB per capita da região Sudeste") +
+  ylab("PIB per capita")
+
+banco.centrooeste <- data.frame(
+  "Estado" = rep(c("Mato Grosso do Sul", "Mato Grosso", "Goiáis", "Distrito Federal"), each = 4),
+  "Ano" = rep(c("2010", "2011", "2012", "2013")),
+  "PIBpc" = c(banco[[24,3]], banco[[24,4]], banco[[24,5]], banco[[24,6]],
+              banco[[25,3]], banco[[25,4]], banco[[25,5]], banco[[25,6]],
+              banco[[26,3]], banco[[26,4]], banco[[26,5]], banco[[26,6]],
+              banco[[27,3]], banco[[27,4]], banco[[27,5]], banco[[27,6]]))
+
+ggplot(banco.centrooeste, aes(x = Ano, y = PIBpc, group = Estado, color = Estado)) +
+  geom_line(size = 1) +
+  labs(title = "Crescimento do PIB per capita da região Centro-Oeste") +
+  ylab("PIB per capita")
+
+banco.norte <- data.frame(
+  "Estado" = rep(c("Rondônia", "Acre", "Amazonas", "Roraima",
+                   "Para", "Amapa", "Tocantins"), each = 4),
+  "Ano" = rep(c("2010", "2011", "2012", "2013")),
+  "PIBpc" = c(banco[[1,3]], banco[[1,4]], banco[[1,5]], banco[[1,6]],
+              banco[[2,3]], banco[[2,4]], banco[[2,5]], banco[[2,6]],
+              banco[[3,3]], banco[[3,4]], banco[[3,5]], banco[[3,6]],
+              banco[[4,3]], banco[[4,4]], banco[[4,5]], banco[[4,6]],
+              banco[[5,3]], banco[[5,4]], banco[[5,5]], banco[[5,6]],
+              banco[[6,3]], banco[[6,4]], banco[[6,5]], banco[[6,6]],
+              banco[[7,3]], banco[[7,4]], banco[[7,5]], banco[[7,6]]))
+
+ggplot(banco.norte, aes(x = Ano, y = PIBpc, group = Estado, color = Estado)) +
+  geom_line(size = 1) +
+  labs(title = "Crescimento do PIB per capita da região Norte") +
+  ylab("PIB per capita")
+
+banco.nordeste <- data.frame(
+  "Estado" = rep(c("Maranhão", "Piauí", "Ceará", "Rio Grande do Norte", "Paraíba", 
+                   "Pernambuco", "Alagoas", "Sergipe", "Bahia"), each = 4),
+  "Ano" = rep(c("2010", "2011", "2012", "2013")),
+  "PIBpc" = c(banco[[8,3]], banco[[8,4]], banco[[8,5]], banco[[8,6]],
+              banco[[9,3]], banco[[9,4]], banco[[9,5]], banco[[9,6]],
+              banco[[10,3]], banco[[10,4]], banco[[10,5]], banco[[10,6]],
+              banco[[11,3]], banco[[11,4]], banco[[11,5]], banco[[11,6]],
+              banco[[12,3]], banco[[12,4]], banco[[12,5]], banco[[12,6]],
+              banco[[13,3]], banco[[13,4]], banco[[13,5]], banco[[13,6]],
+              banco[[14,3]], banco[[14,4]], banco[[14,5]], banco[[14,6]],
+              banco[[15,3]], banco[[15,4]], banco[[15,5]], banco[[15,6]],
+              banco[[16,3]], banco[[16,4]], banco[[16,5]], banco[[16,6]]))
+
+ggplot(banco.nordeste, aes(x = Ano, y = PIBpc, group = Estado, color = Estado)) +
+  geom_line(size = 1) +
+  labs(title = "Crescimento do PIB per capita da região Nordeste") +
+  ylab("PIB per capita")
+```
+
+***
+
+```{r echo=FALSE}
+banco.aumento <- data.frame(
+  "Estados" = banco$Estado,
+  "Aumento" = paste(round((banco$`2013`/banco$`2010` - 1) * 100, 2), "%", sep = ""))
+
+knitr::kable(banco.aumento, caption = "Aumento do PIB per capita entre os anos de 2010 a 2013:")
+```
+
+***
+
+|       Os gráficos acima junto com a tabela de aumento do PIB per capita levam às conclusões que: para todas as regiões do país, observa-se crescimento linear do PIB per capita no intervalo estudado, com exceção do Espírito Santo e Rondônia, que tiveram grandes aumentos no período de 2010 a 2012, porém queda no ano de 2013.
+|
+|       Em especial vale ressaltar os Estados do Mato Grosso com aumento de 50%, além do Paraná, Maranhão e Amapá, com crescimento acima de 40%, os Estados com menor crescimento foram Rondônia e o Distrito Federal, com aumentos de 17% e 11% respectivamente.
+
+#### Em relação as Regiões
+
+```{r echo=FALSE}
+banco.medidas.região <- data.frame(
+  "Média_da_Região" = tapply(banco$`2013`, banco$Regiao, mean),
+  "Coeficiente_de_variação" = tapply(banco$`2013`, banco$Regiao, cv),
+  "Valor_máximo" = tapply(banco$`2013`, banco$Regiao, max),
+  "Valor_mínimo" = tapply(banco$`2013`, banco$Regiao, min))
+  
+knitr::kable(banco.medidas.região, caption = "Medidas de posição e dispersão em 2013:")
+```
+
+***
+
+|       Pela tabela, constata-se que o  menor número de PIB per capita foi de R\$9 811,04 localizado no Piauí e o maior foi registrado no Distrito Federal, conquistando R\$ 62859,43. Uma informação interessante é o fato das regiões centro-oeste, sudeste e Sul possuírem as maiores médias, porém seus coeficientes de variação (CV) são bastante diferentes com o Sul apresentado a menor variação e o Centro-Oeste com o maior registro. 
+|
+|       Isso quer dizer que a distribuição do PIB per capita da região Sul é mais uniforme, enquanto a região Centro-Oeste possui valores baixos acompanhados do registro do Distrito Federal, o maior do Brasil.
+|
+|       Contudo, o restante do país, apesar de obter uma média baixa, possui uma distribuição mais homogênea do seu PIB per capita. Portanto, o Centro-oeste é o espaço com maior disparidade do PIB per capita e as regiões norte e nordeste respondem por uma divisão mais igual.
+
+
+```{r include=FALSE}
+library(ggrepel)
+library(gridExtra)
+```
+
+```{r echo=FALSE}
+ggplot(banco, aes(x = Regiao, y = `2013`, color = Regiao)) +
+  geom_point(size = 4) +
+  geom_text_repel(aes(label = banco$Estado), size = 3, max.overlaps = 20) +
+  labs(title = "PIB per capita em 2013 por Região") +
+  xlab("Região") +
+  ylab("PIB per capita 2013") +
+  ylim(0, 65000) +
+  guides(color = guide_legend("Legenda"))
+```
+
+***
+
+|       O gráfico mostra a distribuição do PIB per capita das regiões administrativas Brasileiras, percebe-se que a região Norte e Nordeste são as mais baixas do país, em seguida da região Centro-Oeste, com exceção do Distrito Federal - capital do país - que possui o valor mais alto do banco de dados. As regiões Sul e Sudeste apresentam valores mais altos, porém consideravelmente abaixo da capital.
+
+### Item 3. Modelo de Regressão
+
+|       Podemos criar um modelo de regressão linear simples entre o PIB per capita de 2013 a 2012, com intuito de obter conhecimento para projeção desta variável a futuros anos. 
+
+***
+
+```{r fig.height=5, fig.width=7}
+b2013 <- banco$`2013`
+b2012 <- banco$`2012`
+b2010 <- banco$`2010`
+
+plot(b2013, b2012)
+
+cor(b2013, b2012)
+
+modelo1 <- lm(b2013 ~ b2012)
+modelo2 <- lm(b2013 ~ b2012 - 1)
+modelo3 <- lm(b2013 ~ b2010)
+modelo4 <- lm(b2013 ~ b2010 - 1)
+
+tabela.modelos <- data.frame(
+  "Modelos" = c("2013 ~ 2012", "2013 ~ 2012 sem intercepto", 
+               "2013 ~ 2010", "2013 ~ 2010 sem intercepto"),
+  "R_quadrado" = c(summary(modelo1)$r.squared, summary(modelo2)$r.squared,
+                   summary(modelo3)$r.squared, summary(modelo4)$r.squared),
+  "Coeficiente_angular" = c(coefficients(modelo1)[2], coefficients(modelo2),
+                           coefficients(modelo3)[2], coefficients(modelo4)),
+  "Coeficiente_linear" = c(coefficients(modelo1)[1], 0, coefficients(modelo3)[1], 0))
+
+knitr::kable(tabela.modelos)
+```
+
+***
+
+|       Observamos que todos os modelos tem correlação quase perfeita, enquanto isso os modelos sem intercepto são mais úteis, pois batem com os dados do da tabela "Aumento do PIB per capita entre os anos de 2010 a 2013", podemos utilizar estes dados para formar uma projeção do PIB per capita para o ano de 2014 e os demais seguintes.
+
+*** 
+
+### Conclusões
+
+|       Por meio dos resultados registrados percebemos alguns pontos de vistas positivos e negativos desta interpretação.
+|
+|       Dessa forma, foram empregadas estatísticas descritivas com o objetivo de auxiliar um melhor entendimento do resultado final. Sendo assim, houveum crescimento linear e contínuo de modo geral, ponto positivo. Porém, evidenciou-se, que as Regiões como Sul, Sudeste e Centro-Oeste, em específico o Distrito Federal, possuem PIB per capita elevado, enquanto as Regiões Norte e Nordeste apresentam valores baixos. Por outro lado, estas Regiões demonstram distribuições homogêneas entre os Estados.
+|
+|       Ao longo da pesquisa nós procuramos demonstrar as disparidades na comparação entre o PIB per capita das Regiões e seus Estados durante o período de 2010 a 2013. Nossos dados, portanto, recomendam a mudança deste cenário e que as próximas políticas públicas do Governo Federal considerem os aspectos mencionados com o objetivo de diminuir as desigualdades de renda no Brasil.
+
+***

@@ -1,0 +1,104 @@
+1
+w
+w<-(69)
+x<-c(1.0,1.0,1.0)
+x
+library(TeachingSampling)
+S.SI(10,2)
+S.SI(10,8)
+x<-c(3,2,4)
+dados=c(1,5,10,25,7,42,27,8,55)
+m1=matrix(dados,3,3,byrow=TRUE)
+m1
+1+0+8+9
+soma1=1+0+8+9
+soma1
+a=5
+b=12
+soma=a+b
+soma
+diferença=a-b
+diferença
+multi=a*b
+multi
+quoc=a/b
+quoc
+1/log(2,exp(1))
+round(c(3.897,2.879,4.537,6.359,7.897),2)
+floor(c(3.897,2.879,4.537,6.359,7.897))
+8**2
+8**3
+9^3^2^3
+9^18
+2^2
+3^2^3
+9^6561
+2^3^4
+(2^3)^4
+factorial(5)
+exp(8)
+log(100,2)
+log(100,10)
+log(100,exp(1))
+log(100)
+?seq
+seq(5)
+seq(10,17)
+seq(10,18,2)
+seq(10,17,2)
+seq(10,17,pi)
+vseq=seq(-3,3,0.001)
+eseq=(exp(vseq))
+plot(vseq,eseq)
+e2seq=log(vseq)
+plot(vseq,e2seq)
+e3seq=sqrt(vseq)
+plot(vseq,e3seq)
+e4seq=abs(vseq)
+plot(vseq,e4seq)
+e5seq=vseq^2
+plot(vseq,e5seq)
+e6seq=(exp(vseq)-exp(-vseq))/2
+plot(vseq,e6seq)
+e7seq=sqrt(vseq^2-1)
+plot(vseq,e7seq)
+v<-c(1,8,7,5,4,3,11,9,12,8)
+length(v)
+mean(v)
+median(v)
+3*median(v)-2*mean(v)
+sum(abs(v-mean(v)))
+sum(abs(v-mean(v)))/length(v)
+mean(abs(v-mean(v)))
+var(v)
+sd(v)
+sd(v)/mean(v)
+?prod
+prod(v)
+harm=function(x){length(x)/(sum(1/x))}
+harm(v)              
+geom=function(x){prod(x^(1/length(x)))}
+geom(v)
+v<-c(1,8,7,5,4,3,11,9,12,8)
+u<-c(1,8,5,3,8,0,4,6,8,1)
+sumstudy=function(u,v)
+{study<-c(sum(u), sum(v), sum(u^2), sum(v^2), 
+          sum(u)^2, sum(v)^2, sum(u*v))
+ nome<-c("Soma de u","Soma de v","Soma de quadrados de u",
+         "Soma de quadrados de v","Quadrado da soma de u",
+         "Quadrado da soma de v","Soma dos produtos cruzados")
+ return(data.frame(nome,study))}
+sumstudy(u,v)
+
+varstudy=function(x)
+{vstudy<-c(mean(x),median(x),(3*median(x)-2*mean(x)),var(x),sd(x),
+          (sd(x)/mean(x)),((3*mean(x)-3*median(x))/sd(x)),
+          ((sqrt(length(x))/(length(x)-1))*(1/(length(x)-1))*
+          (1/(sd(x)^3))*(sum((x-mean(x))^3))),0,
+          (((length(x))/(length(x)-1)^2)*(1/(var(x)^2))*
+          (sum((x-mean(x))^4))))
+vnome<-c("Média","Mediana","Moda","Variância","Desvio Pardão",
+         "Coeficiente de variação","Assimetria 1","Assimetria 2",
+         "Curtose 1","Curtose 2")
+ return(data.frame(vnome,vstudy))}
+varstudy(v)
