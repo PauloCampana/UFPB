@@ -1,0 +1,249 @@
+\documentclass{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}	
+\usepackage[brazil]{babel}
+\usepackage[alf]{abntex2cite}
+
+\title[]{Probabilidade Condicional na Genética}
+\date[]{30/11}
+\author[Paulo Ricardo]{Paulo Ricardo Seganfredo Campana}
+
+\usetheme{metropolis}
+
+\begin{document}
+	
+\begin{frame}
+	\titlepage
+\end{frame}	
+	
+\begin{frame}{Primeiro problema}
+	\begin{itemize}
+		\item Suponha que exista uma doença hereditária dominante em que o gene ''A'' é dominante e o gene ''a'' é recessivo.
+		\item AA é homozigoto dominante, Aa e aA são heterozigotos e aa é homozigoto recessivo,
+		\item Apenas os indivíduos com genes homozigoto dominante (AA) exibem sintomas da doença,
+		\item Ambas as pessoas de um casal são heterozigotos (Aa).
+		\item Eles tem um filho, sabe-se que pelo menos um dos genes desse filho é dominante (A).
+		\item Qual a chance desse filho exibir sintomas da doença?
+	\end{itemize} 
+\end{frame}
+
+\begin{frame}{Solução?}
+	\begin{block}{Minha solução:}
+		Se sabe que um dos genes é dominante (A), basta calcular a chance do outro gene também ser dominante.
+	\end{block}
+	\begin{block}{Ou seja:}
+		Completar A\_ com as possibilidades e calcular suas chances.
+	\end{block}
+	\begin{block}{Elas são:}
+		\[	\begin{array}{c|cc}
+			X & AA & Aa\\
+			p(x) & 50\% & 50\%
+			\end{array}\]
+		Mas este resultado está errado.
+	\end{block}
+\end{frame}
+
+\begin{frame}{Solução Certa}
+	\begin{block}{Considere todas as possibilidades:}
+		\[	\begin{array}{|c|c|}
+			\hline
+			AA & Aa\\
+			\hline
+			aA & aa\\
+			\hline
+		\end{array}\]
+	\end{block}
+	\begin{block}{Não estamos interessados em aa}
+		\[  \begin{array}{|c|c|}
+			\hline
+			AA & Aa\\
+			\hline
+			aA &\\
+			\hline
+		\end{array}\]
+	\end{block}
+	Apenas uma das três possibilidades é homozigoto dominante (AA), ou seja a chance é $\frac{1}{3}$.
+\end{frame}
+
+\begin{frame}{Outro problema similar}
+	\begin{block}{Suponha agora que:}
+		\begin{itemize}
+			\item Todas as informações do primeiro problema ainda são validas.
+			\item Porem, agora cada gene possui 4 tipos diferentes (A1, A2, A3, A4, a1, a2, a3, a4).
+			\item O tipo do gene não interfere na dominância
+			\item Então existem 64 possíveis combinações de 2 genes.
+			\item O tipo dos genes dos pais não afetam o tipo dos genes do filho.
+			\item Qual é a chance do filho exibir sintomas da doença (AA), sabendo que esse filho tem um gene dominante do tipo 2? (A2)
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}{Solução?}
+	O problema pode parecer simples, afinal, o tipo do gene não interfere na dominância, então a chance seria $\frac{1}{3}$ ainda?
+	
+	Não, a chance na verdade é $\frac{7}{15}$, veremos:
+\end{frame}
+
+\begin{frame}{Combinações}
+	\begin{block}{Vejamos todas as possíveis combinações:}
+		\[  \begin{array}{|c|c|c|c|c|c|c|c|}
+			\hline
+			A1A1 & A1A2 & A1A3 & A1A4 & A1a1 & A1a2 & A1a3 & A1a4\\ 
+			\hline
+			A2A1 & A2A2 & A2A3 & A2A4 & A2a1 & A2a2 & A2a3 & A2a4\\ 
+			\hline
+			A3A1 & A3A2 & A3A3 & A3A4 & A3a1 & A3a2 & A3a3 & A3a4\\ 
+			\hline
+			A4A1 & A4A2 & A4A3 & A4A4 & A4a1 & A4a2 & A4a3 & A4a4\\ 
+			\hline
+			a1A1 & a1A2 & a1A3 & a1A4 & a1a1 & a1a2 & a1a3 & a1a4\\ 
+			\hline
+			a2A1 & a2A2 & a2A3 & a2A4 & a2a1 & a2a2 & a2a3 & a2a4\\ 
+			\hline
+			a3A1 & a3A2 & a3A3 & a3A4 & a3a1 & a3a2 & a3a3 & a3a4\\ 
+			\hline
+			a4A1 & a4A2 & a4A3 & a4A4 & a4a1 & a4a2 & a4a3 & a4a4\\ 
+			\hline
+		\end{array}\]
+	\end{block}
+\end{frame}
+
+\begin{frame}{Combinações}
+		Sabemos que o filho possui um gene dominante (A), não estamos interessados nas combinações que só aparecem recessivos (aa), então iremos tirá-los.
+		\[  \begin{array}{|c|c|c|c|c|c|c|c|}
+			\hline
+			A1A1 & A1A2 & A1A3 & A1A4 & A1a1 & A1a2 & A1a3 & A1a4\\ 
+			\hline
+			A2A1 & A2A2 & A2A3 & A2A4 & A2a1 & A2a2 & A2a3 & A2a4\\ 
+			\hline
+			A3A1 & A3A2 & A3A3 & A3A4 & A3a1 & A3a2 & A3a3 & A3a4\\ 
+			\hline
+			A4A1 & A4A2 & A4A3 & A4A4 & A4a1 & A4a2 & A4a3 & A4a4\\ 
+			\hline
+			a1A1 & a1A2 & a1A3 & a1A4 &&&&\\
+			\hline
+			a2A1 & a2A2 & a2A3 & a2A4 &&&&\\ 
+			\hline
+			a3A1 & a3A2 & a3A3 & a3A4 &&&&\\
+			\hline
+			a4A1 & a4A2 & a4A3 & a4A4 &&&&\\ 
+			\hline
+		\end{array}\]
+\end{frame}
+
+\begin{frame}{Combinações}
+		Sabemos que esse gene dominante é do tipo 2 (A2), iremos tirar todos os elementos que não possuem A2.
+		\[  \begin{array}{|c|c|c|c|c|c|c|c|}
+			\hline
+			& A1A2 &&&&&&\\ 
+			\hline
+			A2A1 & A2A2 & A2A3 & A2A4 & A2a1 & A2a2 & A2a3 & A2a4\\ 
+			\hline
+			& A3A2 &&&&&&\\ 
+			\hline
+			& A4A2 &&&&&&\\ 
+			\hline
+			& a1A2 &&&&&&\\ 
+			\hline
+			& a2A2 &&&&&&\\ 
+			\hline
+			& a3A2 &&&&&&\\ 
+			\hline
+			& a4A2 &&&&&&\\ 
+			\hline
+		\end{array}\]
+		São 15 genes possíveis.
+\end{frame}
+
+\begin{frame}{Combinações}
+		Porém só estamos interessados nos casos em que há sintomas da doença, ou seja, quando a doença é homozigoto dominante (AA), e com um gene A2.
+		\[  \begin{array}{|c|c|c|c|c|c|c|c|}
+			\hline
+			& A1A2 &&&&&&\\ 
+			\hline
+			A2A1 & A2A2 & A2A3 & A2A4 &&&&\\ 
+			\hline
+			& A3A2 &&&&&&\\ 
+			\hline
+			& A4A2 &&&&&&\\ 
+			\hline
+			&&&&&&&\\ 
+			\hline
+			&&&&&&&\\ 
+			\hline
+			&&&&&&&\\ 
+			\hline
+			&&&&&&&\\ 
+			\hline
+		\end{array}\]
+		São apenas 7 genes de interesse.
+\end{frame}
+
+\begin{frame}{Resultado}
+	Então por isso, o resultado da pergunta: ''Qual é a chance do filho exibir sintomas da doença, sabendo que esse filho tem um gene dominante do tipo 2?'' é:
+	\[ \dfrac{7}{15} \]
+	Que chega muito perto do resultado errado do primeiro problema ($46.6\%$ vs $50\%$), mas porque isso?
+\end{frame}
+
+\begin{frame}{Primeiro quadrante}
+	Esta observação se da pelo fato de que, no primeiro quadrante da tabela, em que todos os elementos são homozigotos dominante (AA), há quase duas vezes mais chance de ocorrer um gene dominante do tipo 2, pois há dois genes dominantes.
+	\[  \begin{array}{|c|c|c|c|}
+		\hline
+		& A1A2 &&\\ 
+		\hline
+		A2A1 & A2A2 & A2A3 & A2A4\\ 
+		\hline
+		& A3A2 &&\\ 
+		\hline
+		& A4A2 &&\\  
+		\hline
+	\end{array}\]
+	Essa chance só não é exatamente dois, pois os genes A2A2 são contados apenas uma vez.
+\end{frame}
+
+\begin{frame}{Outros quadrantes}
+		Já nos quadrantes 2 e 3, apenas um dos genes é dominante, e no ultimo quadrante, nenhum é dominante.
+		\[	\begin{array}{|c|c|c|c|}
+			\hline
+			&&&\\ 
+			\hline
+			A2a1 & A2a2 & A2a3 & A2a4\\ 
+			\hline
+			&&&\\ 
+			\hline
+			&&&\\ 
+			\hline
+		\end{array}\]
+		\[  \begin{array}{|c|c|c|c|}
+			\hline
+			& a1A2 &&\\ 
+			\hline
+			& a2A2 &&\\ 
+			\hline
+			& a3A2 &&\\ 
+			\hline
+			& a4A2 &&\\ 
+			\hline
+			\end{array}\]		
+\end{frame}
+
+\begin{frame}{Enfim}
+	É como se na tabela do problema 1, o elemento AA fosse grande o suficiente para quase equivaler aos elementos Aa e aA juntos. 
+	\[\begin{array}{|c|c|}
+		\hline
+		\Huge{AA} & Aa\\
+		\hline
+		aA &\\
+		\hline
+	\end{array}
+	\]
+\end{frame}
+
+\begin{frame}{Generalizando}
+	Podemos generalizar a chance de um indivíduo ser homozigoto dominante (AA) sabendo que um dos genes é do tipo $X$ para $n$ tipos diferentes através da fórmula:
+	\[\dfrac{2n - 1}{4n - 1}\]
+	Percebe-se que quanto maior o número de tipos da doença, mais a chance se aproxima a $50\%$.
+\end{frame}
+
+\end{document}
