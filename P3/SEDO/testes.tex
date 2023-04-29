@@ -1,0 +1,146 @@
+\documentclass[12pt]{article}
+\usepackage[a4paper, left=0.5cm, right=0.5cm, top=0.5cm, bottom=0.5cm]{geometry}
+\usepackage{dsfont}
+\usepackage[fleqn]{amsmath}
+\usepackage{amssymb,amstext}
+\usepackage{hyperref}
+\usepackage{multirow}
+\begin{document}
+\setcounter{secnumdepth}{0}
+
+\section{Para séries genéricas:}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline
+		&\multicolumn{2}{c|}{}&&&\\
+		Teste & \multicolumn{2}{c|}{Pré-requisitos} & Verificar que & Implica que & Melhor usada em \\
+		&\multicolumn{2}{c|}{}&&&\\
+		\hline
+		&\multicolumn{2}{c|}{}&&&\\
+		n-ésimo termo &
+		\multicolumn{2}{c|}{} &
+		$\displaystyle \lim_{n \rightarrow \infty} a_n \neq 0$ &
+		$\displaystyle \sum a_n \text{ diverge}$ &
+		Qualquer série \\
+		&\multicolumn{2}{c|}{}&&&\\
+		\hline
+		\multirow{7}{*}{Comparação} &&&&& \\
+		&
+		\multirow{5}{*}{$a_n,\, b_n \geq 0$} &
+		$a_n \leq b_n$ &
+		$\displaystyle \sum b_n \text{ converge}$ &
+		$\displaystyle \sum a_n \text{ converge}$ & \\
+		&&&&&\\
+		\cline{3-5}
+		&&&&&\\
+		&&
+		$a_n \geq b_n$ &
+		$\displaystyle \sum b_n \text{ diverge}$ &
+		$\displaystyle \sum a_n \text{ diverge}$ & \\
+		&&&&&\\
+		\cline{1-5}
+		& \multirow{9}{*}{$a_n,\, b_n \geq 0$} & \multirow{9}{*}{$\displaystyle \lim_{n \rightarrow \infty} \dfrac{a_n}{b_n} = L$} &&& Comparando com \\
+		&&& $L > 0$ & Ambas divergem & séries geométricas \\
+		&&&& ou convergem & ou p-séries\\
+		\cline{4-5}
+		Comparação &&&&&\\
+		(limite) &&& $L = 0 \text{ e } \displaystyle \sum b_n \text{ converge} $ & $\displaystyle \sum a_n \text{ converge}$ &\\
+		&&&&&\\
+		\cline{4-5}
+		&&&&&\\
+		&&& $L = \infty \text{ e } \displaystyle \sum b_n \text{ diverge}$ & $\displaystyle \sum a_n \text{ diverge}$ &\\
+		&&&&&\\
+		\hline
+		\multirow{8}{*}{Integral} & \multicolumn{2}{c|}{}&&&\\
+		&\multicolumn{2}{c|}{}& $ \displaystyle \int_{a}^{\infty} f(x) dx \;\text{ finito}$ & $\displaystyle \sum a_n \text{ converge}$ &\\
+		&\multicolumn{2}{c|}{$a_n = f(x): (1,\infty]\rightarrow \mathds{R}$}&&&\\
+		\cline{4-5}
+		&\multicolumn{2}{c|}{contínua, positiva}&&&\\
+		&\multicolumn{2}{c|}{e decrescente}& $ \displaystyle \int_{a}^{\infty} f(x) dx = \pm \infty$ & $\displaystyle \sum a_n \text{ diverge}$ &\\
+		&\multicolumn{2}{c|}{}&&&\\
+		\hline
+		\multirow{9}{*}{Razão} & \multicolumn{2}{c|}{\multirow{9}{*}{$ \displaystyle \lim_{n \rightarrow \infty} \left|\dfrac{a_{n+1}}{a_n}\right| = L$}} &&& \multirow{9}{*}{$n!, \; a^n$}\\
+		&\multicolumn{2}{c|}{}& $L < 1$ & $\displaystyle \sum a_n \text{ converge abs}$ &\\
+		&\multicolumn{2}{c|}{}&&&\\
+		\cline{4-5}
+		&\multicolumn{2}{c|}{}&&&\\
+		&\multicolumn{2}{c|}{}& $L > 1$ & $\displaystyle \sum a_n \text{ diverge}$ &\\
+		&\multicolumn{2}{c|}{}&&&\\
+		\cline{4-5}
+		&\multicolumn{2}{c|}{}&&&\\
+		&\multicolumn{2}{c|}{}& $L = 1$ & Nada se conclui &\\
+		&\multicolumn{2}{c|}{}&&&\\
+		\hline
+		\multirow{9}{*}{Raiz} & \multicolumn{2}{c|}{\multirow{9}{*}{$ \displaystyle \lim_{n \rightarrow \infty} \sqrt[n]{\left|a_n\right|} = L$}} &&& \multirow{9}{*}{$\; a^n$}\\
+		&\multicolumn{2}{c|}{}& $L < 1$ & $\displaystyle \sum a_n \text{ converge abs}$ &\\
+		&\multicolumn{2}{c|}{}&&&\\
+		\cline{4-5}
+		&\multicolumn{2}{c|}{}&&&\\
+		&\multicolumn{2}{c|}{}& $L > 1$ & $\displaystyle \sum a_n \text{ diverge}$ &\\
+		&\multicolumn{2}{c|}{}&&&\\
+		\cline{4-5}
+		&\multicolumn{2}{c|}{}&&&\\
+		&\multicolumn{2}{c|}{}& $L = 1$ & Nada se conclui &\\
+		&\multicolumn{2}{c|}{}&&&\\
+		\hline
+	\end{tabular}
+\end{table}
+
+\section{Para séries específicas:}
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline
+		&\multicolumn{2}{c|}{}&&&\\
+		Série & \multicolumn{2}{c|}{Pré-requisitos} & Verificar que & Implica que & Usada em \\
+		&\multicolumn{2}{c|}{}&&&\\
+		\hline
+		\multirow{6}{*}{Geométrica} & \multicolumn{2}{c|}{\multirow{6}{*}{$\displaystyle \sum_{n=0}^\infty r^n$}} &&& \multirow{6}{*}{$r^n$}\\
+		&\multicolumn{2}{c|}{}& $|r| < 1$ & Converge para $\dfrac{1}{1-r}$ &\\
+		&\multicolumn{2}{c|}{}&&&\\
+		\cline{4-5}
+		&\multicolumn{2}{c|}{}&&&\\
+		&\multicolumn{2}{c|}{}& $|r| \geq 1$ & Diverge & \\
+		&\multicolumn{2}{c|}{}&&&\\
+		\hline
+		\multirow{6}{*}{p-série} & \multicolumn{2}{c|}{\multirow{6}{*}{$\displaystyle \sum_{n=1}^\infty \dfrac{1}{n^p}$}} &&& \multirow{6}{*}{$\dfrac{1}{n^p}$}\\
+		&\multicolumn{2}{c|}{}& $p > 1$ & Converge &\\
+		&\multicolumn{2}{c|}{}&&&\\
+		\cline{4-5}
+		&\multicolumn{2}{c|}{}&&&\\
+		&\multicolumn{2}{c|}{}& $p \leq 1$ & Diverge & \\
+		&\multicolumn{2}{c|}{}&&&\\
+		\hline
+		&&&&&\\
+		Alternadas & $\displaystyle \sum (-1)^na_n$ & $a_n \geq 0$ decrescente & $\displaystyle \lim_{n \rightarrow \infty} a_n = 0$ & Converge & $(-1)^n, \; \cos(n\pi)$\\
+		\scriptsize"critério de Leibniz"&&&&& \\
+		\hline
+		&\multicolumn{2}{c|}{}&&&\\
+		Telescópica & \multicolumn{2}{c|}{$\displaystyle \sum_{n=1}^{\infty} a_n - a_{n+k} $} & $\displaystyle \lim_{n \rightarrow \infty} b_{n+k} \neq \pm \infty$& Converge & $a_n - a_{n+k} $\\
+		\scriptsize"termos encaixantes"&\multicolumn{2}{c|}{}&&&\\
+		\hline
+	\end{tabular}
+\end{table}
+
+\section{Convergência absoluta:}
+
+\[\text{Se } \sum |a_n| \text{ converge, isso implica que} \sum a_n \text{ converge, } \sum a_n \text{ é chamado de absolutamente convergente}\]
+\[\text{Se } \sum |a_n| \text{ diverge mas} \sum a_n \text{ converge, } \sum a_n \text{ é chamado de condicionalmente convergente}\]
+
+\section{Indeterminações:}
+
+\[\dfrac{\infty}{\infty}, \quad \dfrac{0}{0}, \quad 0^0, \quad \infty^0, \quad 1^\infty, \quad \infty-\infty, \quad 0 \cdot \infty\]
+
+\section{Limites fundamentais:}
+
+\[\lim_{\theta \rightarrow 0} \dfrac{\sin \theta}{\theta} = 1\]
+\[\lim_{n \rightarrow \infty} \left(1 + \dfrac{a}{n}\right)^{bn} = e^{ab}\]
+\[\lim_{n \rightarrow \infty} \sqrt[n]{n} = 1\]
+\[\lim_{n \rightarrow \infty} \dfrac{\ln n}{n^p} = \lim_{n \rightarrow \infty} \dfrac{n^p}{r^n} = \lim_{n \rightarrow \infty} \dfrac{r^n}{n!} = \lim_{n \rightarrow \infty} \dfrac{n!}{n^n} = 0\]
+\[\lim_{n \rightarrow \infty} \dfrac{n^p}{\ln n} = \lim_{n \rightarrow \infty} \dfrac{r^n}{n^p} = \lim_{n \rightarrow \infty} \dfrac{n!}{r^n} = \lim_{n \rightarrow \infty} \dfrac{n^n}{n!} = \infty\]\\
+\[\text{Com } p > 0 \text{ e } r > 1\]
+
+\end{document}
