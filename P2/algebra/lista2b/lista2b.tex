@@ -1,0 +1,203 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[
+a4paper,		% papel A4
+left=2cm,		% margem esquerda
+right=2cm,		% margem direita
+top=2cm,		% margem superior
+bottom=2cm		% margem inferior
+]{geometry}
+\usepackage[T1]{fontenc}	
+\usepackage{array,latexsym,amssymb}
+\usepackage{amsmath,amsfonts,amssymb,amsthm,mathabx,amstext}
+\usepackage{dsfont}	% Conjuntos: $\mathds{N, Z, Q, R, C}$
+\usepackage{graphicx}
+\begin{document}
+\begin{center}
+	UNIVERSIDADE FEDERAL DA PARAÍBA\\
+	Introdução à Álgebra Linear\\
+	Segunda Lista de Exercícios\\
+	Paulo Ricardo Seganfredo Campana\\
+\end{center}
+
+\noindent Questão 1.\\
+
+\noindent a) $T(x,y)=(2x+2x,x+3y)\qquad\qquad\qquad\text{\hspace{+14pt}}T(-2,1)=(-2,1)\qquad T(v)=\lambda v\quad(\lambda=1)\quad\checkmark$\\
+
+\noindent b) $T(x,y,z)=(x+y+z,2y+z,2y+3z)\qquad T(1,1,2)=(4,4,8)\qquad T(v)=\lambda v\quad(\lambda=4)\quad\checkmark$\\
+
+\noindent Questão 2.\\
+
+\noindent a)\quad$[T]_{\alpha}=\begin{bmatrix}1&2\\-1&4\end{bmatrix}$\\
+
+$det\begin{vmatrix}1-\lambda&2\\-1&4-\lambda\end{vmatrix}=0\qquad\qquad\lambda^{2}-5\lambda+6=0\qquad\qquad\lambda=\lbrace2,3\rbrace$\\
+
+$\lambda=2\quad\begin{vmatrix}-1&2\\-1&2\end{vmatrix}=\left\{\begin{array}{@{}l@{}}-x+2y=0\\-x+2y=0\end{array}\right.\qquad\qquad x=2y\qquad\qquad v=[(2,1)]$\\
+
+$\lambda=3\quad\begin{vmatrix}-2&2\\-1&1\end{vmatrix}=\left\{\begin{array}{@{}l@{}}-2x+2y=0\\-x+y=0\end{array}\right.\qquad\qquad x=y\qquad\qquad v=[(1,1)]$\\
+
+\noindent b)\quad$[T]_{\alpha}=\begin{bmatrix}0&1\\-1&0\end{bmatrix}$\\
+
+$det\begin{vmatrix}0-\lambda&1\\-1&0-\lambda\end{vmatrix}=0\qquad\qquad\lambda^{2}+1=0\qquad\qquad\lambda\notin\mathds{R}$\\
+
+\noindent c)\quad$[T]_{\alpha}=\begin{bmatrix}1&1&1\\0&2&1\\0&2&3\end{bmatrix}$\\
+
+$det\begin{vmatrix}1-\lambda&1&1\\0&2-\lambda&1\\0&2&3-\lambda\end{vmatrix}=0\qquad\qquad(1-\lambda)(2-\lambda)(3-\lambda)-2(1-\lambda)$\\
+
+$(1-\lambda)((2-\lambda)(3-\lambda)-2)\qquad\qquad(1-\lambda)(\lambda^{2}-5\lambda+4)\qquad\qquad\lambda=\lbrace1,4\rbrace$\\
+
+$\lambda=1\quad\begin{vmatrix}0&1&1\\0&1&1\\0&2&2\end{vmatrix}=\left\{\begin{array}{@{}l@{}}y+z=0\\y+z=0\\2y+2z=0\end{array}\right.\qquad\qquad z=-y\qquad\qquad v=[(1,0,0),(0,1,-1)]$\\
+
+$\lambda=4\quad\begin{vmatrix}-3&1&1\\0&-2&1\\0&2&-1\end{vmatrix}=\left\{\begin{array}{@{}l@{}}-3x+y+z=0\\-2y+z=0\\2y-z=0\end{array}\right.\qquad\qquad 2y=z, y=x\qquad\qquad v=[(1,1,2)]$\\
+
+\noindent Questão 3.\\
+
+\noindent a)\\
+
+$T(v)=\lambda v\qquad\qquad T(v)=0\qquad\qquad v\in N(T)\qquad\qquad N(T)\neq0$\\
+
+Se $N(T)\neq0$, T não é injetora, portanto não é bijetora e não é invertível.\\
+
+\noindent b)\quad$detA=detA^{t}\longrightarrow det(A-I\lambda)=det(A^{t}-I\lambda)=0$\quad terão as mesmas soluções.\\
+
+\noindent c)\quad O determinante para matrizes triangulares e diagonais é o produto da diagonal principal.\\
+
+$det\begin{vmatrix}a_{11}-\lambda&a_{12}&\dots&a_{1n}\\0&a_{22}-\lambda&\dots&a_{2n}\\\vdots&\vdots&\ddots&\vdots\\0&0&\dots&a_{nn}-\lambda\end{vmatrix}=(a_{11}-\lambda)(a_{22}-\lambda)\dots(a_{nn}-\lambda)=0\qquad\lambda=\lbrace a_{11},a_{22},\dots,a_{nn}\rbrace$\\
+
+\noindent Questão 4.\\
+
+\noindent a)\\
+
+$det\begin{vmatrix}1-\lambda&0&\dots&0\\0&1-\lambda&\dots&0\\\vdots&\vdots&\ddots&\vdots\\0&0&\dots&1-\lambda\end{vmatrix}=(1-\lambda)(1-\lambda)\dots(1-\lambda)=0\qquad\qquad\lambda=1$\\
+
+$\lambda=1\quad\begin{vmatrix}0&0&\dots&0\\0&0&\dots&0\\\vdots&\vdots&\ddots&\vdots\\0&0&\dots&0\end{vmatrix}=\left\{\begin{array}{@{}l@{}}0a+0b+\dots+0z=0\\0a+0b+\dots+0z=0\\\vdots\\0a+0b+\dots+0z=0\end{array}\right.$\\
+
+$v=[(1,0,\dots,0),(0,1,\dots,0),\dots,(0,0,\dots,1)]=\mathds{R}^{n}$\\
+
+\noindent b)\\
+
+$T(\alpha u-\beta v)=\alpha T(u)-\beta T(v)=\alpha(\lambda u)-\beta(\lambda v)$\\
+
+$T(\alpha u-\beta v)=\lambda(\alpha u-\beta v)$\\
+
+\noindent{\Huge Boldrini - Capítulo 6}\\
+
+\noindent Questão 9.\\
+
+$det\begin{vmatrix}1-\lambda&2\\0&-1-\lambda\end{vmatrix}=\lambda^{2}-1=0\qquad\qquad\lambda=\lbrace-1,1\rbrace$\\
+
+$\lambda=-1\quad\begin{vmatrix}2&2\\0&0\end{vmatrix}=\left\{\begin{array}{@{}l@{}}2x+2y=0\\0x+0y=0\end{array}\right.\qquad\qquad y=-x\qquad\qquad v=[(1,-1)]$\\
+
+$\lambda=1\quad\begin{vmatrix}0&2\\0&-2\end{vmatrix}=\left\{\begin{array}{@{}l@{}}2y=0\\-2y=0\end{array}\right.\qquad\qquad y=0\qquad\qquad v=[(1,0)]$\\
+
+\noindent Questão 11.\\
+
+$det\begin{vmatrix}1-\lambda&2&3\\0&1-\lambda&2\\0&0&1-\lambda\end{vmatrix}=(1-\lambda)^{3}=0\qquad\qquad\lambda=1$\\
+
+$\lambda=1\quad\begin{vmatrix}0&2&3\\0&0&2\\0&0&0\end{vmatrix}=\left\{\begin{array}{@{}l@{}}2y+3z=0\\2z=0\\0=0\end{array}\right.\qquad\qquad z=0,y=0\qquad\qquad v=[(1,0,0)]$\\
+
+\noindent Questão 14.\\
+
+$det\begin{vmatrix}1-\lambda&1&2\\1&2-\lambda&1\\2&1&1-\lambda\end{vmatrix}=(1-\lambda)^{2}(2-\lambda)+2+2-(8-4\lambda+1-\lambda+1-\lambda)$\\
+
+$(1-\lambda)^{2}(2-\lambda)-6(1-\lambda)=(1-\lambda)((1-\lambda)(2-\lambda)-6)=(1-\lambda)(\lambda^{2}-3\lambda-4)$\\
+
+$(1-\lambda)(-1-\lambda)(4-\lambda)=0\qquad\qquad\lambda=\lbrace-1,1,4\rbrace$\\
+
+$\lambda=-1\quad\begin{vmatrix}2&1&2\\1&3&1\\2&1&2\end{vmatrix}=\left\{\begin{array}{@{}l@{}}2x+y+2z=0\\x+3y+z=0\\2x+y+2z=0\end{array}\right.\qquad\qquad y=0,z=-x\qquad\qquad v=[(1,0,-1)]$\\
+
+$\lambda=1\quad\begin{vmatrix}0&1&2\\1&1&1\\2&1&0\end{vmatrix}=\left\{\begin{array}{@{}l@{}}y+2z=0\\x+y+z=0\\2x+y=0\end{array}\right.\qquad\qquad y=-2x,z=x \qquad\qquad v=[(1,-2,1)]$\\
+
+$\lambda=4\quad\begin{vmatrix}-3&1&2\\1&-2&1\\2&1&-3\end{vmatrix}=\left\{\begin{array}{@{}l@{}}-3x+y+2z=0\\x-2y+z=0\\2x+y-3z=0\end{array}\right.\qquad\qquad y=z,x=y \qquad\qquad v=[(1,1,1)]$\\
+
+\noindent Questão 18.\\
+
+$det\begin{vmatrix}2-\lambda&0&1&0\\0&2-\lambda&0&1\\12&0&3-\lambda&0\\0&-1&0&0-\lambda\end{vmatrix}=\dots=(\lambda-1)^2(\lambda+1)(\lambda-6)=0\qquad\qquad\lambda=\lbrace-1,1,6\rbrace$\\
+
+$\lambda=-1\quad\begin{vmatrix}3&0&1&0\\0&3&0&1\\12&0&4&0\\0&-1&0&1\end{vmatrix}=\left\{\begin{array}{@{}l@{}}3x+z=0\\3y+t=0\\12x+4z=0\\-y+t=0\end{array}\right.\qquad y=t=0,z=-3x\qquad v=[(1,0,-3,0)]$\\
+
+$\lambda=1\quad\begin{vmatrix}1&0&1&0\\0&1&0&1\\12&0&2&0\\0&-1&0&-1\end{vmatrix}=\left\{\begin{array}{@{}l@{}}x+z=0\\y+t=0\\12x+2z=0\\-y-t=0\end{array}\right.\qquad z=-x=0,t=-y\qquad v=[(0,1,0,-1)]$\\
+
+$\lambda=6\quad\begin{vmatrix}-4&0&1&0\\0&-4&0&1\\12&0&-3&0\\0&-1&0&-6\end{vmatrix}=\left\{\begin{array}{@{}l@{}}-4x+z=0\\-4y+t=0\\12x-3z=0\\-y-6t=0\end{array}\right.\qquad t=4y=0,z=4x\qquad v=[(1,0,4,0)]$\\
+
+\noindent Questão 20.\\
+
+\noindent a)\quad$T(\alpha v)=\alpha T(v)=\alpha(\lambda v)=\lambda(\alpha v)$\\
+
+\noindent b)\\
+
+$v=\lbrace v\in V;T(v)=\lambda v\rbrace\cup\lbrace0\rbrace,x,y\in v$\\
+
+$T(x+\alpha y)=T(x)+\alpha T(y)=\lambda x+\alpha \lambda y=\lambda(x+\alpha y)\qquad\qquad x+\alpha y \in v,\forall v,\forall \alpha \in \mathds{R}$\\
+
+\noindent Questão 25.\\
+
+\noindent a)\quad$T(v)=\lambda v\qquad\qquad T(v)=0\qquad\qquad v\in N(T)\qquad\qquad N(T)\neq0\longrightarrow$ T não é injetora.\\
+
+\noindent b)\quad Sim, se T não é injetora, $\exists v\in V\neq0;v\in N(T)\longrightarrow T(v)=0\longrightarrow0=0v\longrightarrow\lambda=0$\\
+
+\noindent{\Huge Boldrini - Capítulo 7}\\
+
+\noindent Questão 3.\\
+
+\noindent a)\\
+
+$det\begin{vmatrix}2-\lambda&1&0&0\\0&2-\lambda&0&0\\0&0&2-\lambda&0\\0&0&0&3-\lambda\end{vmatrix}=0\qquad\qquad(2-\lambda)^{3}(3-\lambda)=0\qquad\qquad\lambda=\lbrace2,3\rbrace$\\
+
+$\lambda=2\quad\begin{vmatrix}0&1&0&0\\0&0&0&0\\0&0&0&0\\0&0&0&1\end{vmatrix}=\left\{\begin{array}{@{}l@{}}y=0\\t=0\end{array}\right.\qquad\qquad v=[(1,0,0,0),(0,0,1,0)]$\\
+
+$\lambda=3\quad\begin{vmatrix}-1&1&0&0\\0&-1&0&0\\0&0&-1&0\\0&0&0&0\end{vmatrix}=\left\{\begin{array}{@{}l@{}}-x+y=0\\-y=0\\-z=0\end{array}\right.\qquad\qquad v=(0,0,0,1)$\\
+
+$v=[(1,0,0,0),(0,0,1,0),(0,0,0,1)]\quad$ não é base do $\mathds{R}^{4}$ portanto não é diagonalizável.
+
+\noindent b)\\
+
+$m(x)=(2-x)^{2}(3-x)=0$ pois $m(A)=\begin{bmatrix}0&0&0&0\\0&0&0&0\\0&0&0&0\\0&0&0&0\end{bmatrix}$\\
+
+\noindent Questão 5.\\
+
+\noindent a)\\
+
+$(1-\lambda)(a-\lambda)\qquad\qquad\lambda=\lbrace1,a\rbrace\qquad\qquad a\neq1$ pois $\begin{bmatrix}1&1\\0&1\end{bmatrix}$ não é diagonalizável.\\
+
+\noindent b)\\
+
+$(1-\lambda)^{2}\qquad\qquad\begin{bmatrix}0&a\\0&0\end{bmatrix}\qquad\qquad$ só é diagonalizável para $a=0$\\
+
+\noindent Questão 6.\\
+
+\noindent a)\\
+
+$(2-\lambda)(-3-\lambda)^{2}\qquad\qquad \lambda=\lbrace2,-3\rbrace$\\
+
+$\lambda=2\quad\begin{vmatrix}0&0&1\\0&-5&1\\0&0&-5\end{vmatrix}=\left\{\begin{array}{@{}l@{}}z=0\\-5y+z=0\\-5z=0\end{array}\right.\qquad\qquad v=(1,0,0)$\\
+
+$\lambda=-3\quad\begin{vmatrix}-1&0&1\\0&0&1\\0&0&0\end{vmatrix}=\left\{\begin{array}{@{}l@{}}-x+z=0\\z=0\end{array}\right.\qquad\qquad v=(0,1,0)$\\
+
+\noindent b)\\
+
+$[T]_{\beta}=\begin{bmatrix}-3&0&-\frac{5}{2}\\-1&-4&-\frac{7}{2}\\1&1&3\end{bmatrix}\qquad\qquad (2-\lambda)(-3-\lambda)^{2}\quad$ o mesmo polinômio.\\
+
+\noindent c)\quad Não existe, pois $T$ não é diagonalizável já que os autovetores não formam base do $\mathds{R}^{3}$.\\
+
+\noindent Questão 11.\\
+
+\noindent a)\quad $T(v)=T(T(v))\qquad\qquad\lambda v=\lambda^{2}v\qquad\qquad(\lambda^{2}-\lambda)v=0\qquad\qquad\lambda=\lbrace0,1\rbrace$\\
+
+\noindent b)\quad A matriz identidade pois $T(T(x,y))=T(x,y)=(x,y)$ e $\lambda=1$\\
+
+\noindent c)\quad O polinômio característico sera da forma $-\lambda^{n}(1-\lambda)^{m}$ e o polinômio mínimo da forma $-x(1-x)=x(x-1)$ ou seja, fatores lineares distintos, portanto é diagonalizável.\\
+
+\noindent Questão 12.\\
+
+$det\begin{vmatrix}3-\lambda&0&0\\0&2-\lambda&-5\\0&1&-2-\lambda\end{vmatrix}=0\qquad\qquad(3-\lambda)(2-\lambda)(-2-\lambda)+5(3-\lambda)=0$\\
+
+$(3-\lambda)(2-\lambda)(-2-\lambda)+5)=0\qquad\qquad(3-\lambda)(\lambda^{2}+1)\qquad\qquad\lambda=3$\\
+
+$\lambda=3\quad\begin{vmatrix}0&0&0\\0&-1&-5\\0&1&-5\end{vmatrix}\left\{\begin{array}{@{}l@{}}-y-5z=0\\y-5z=0\end{array}\right.\qquad\qquad y=z=0\qquad\qquad v=(1,0,0)$\\
+
+$\lambda=i\quad\begin{vmatrix}3-i&0&0\\0&2-i&-5\\0&1&-2-i\end{vmatrix}\left\{\begin{array}{@{}l@{}}(3-i)x=0\\(2-i)y-5z=0\end{array}\right.\qquad\qquad y=z=0\qquad\qquad v=(1,0,0)$\\
+
+Que por si só não forma base, portanto não é diagonalizável, porém há soluções complexas para $(\lambda^{2}+1),\quad\lambda=\pm i$, o autovetor $(1,0,0)$ junto com os autovetores de $\lambda=\pm i$ formam base portanto $A$ pode ser diagonalizável com uma base complexa.\\ 
+
+\end{document}

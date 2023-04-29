@@ -1,0 +1,306 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}	
+\usepackage{array,latexsym}
+\usepackage{amsmath,amsfonts,amssymb,amsthm,mathabx,amstext}
+\usepackage{dsfont}	% Conjuntos: $\mathds{N, Z, Q, R, C}$
+\usepackage{graphicx}
+\begin{document}
+\pagestyle{empty}
+
+\begin{center}
+	UNIVERSIDADE FEDERAL DA PARAÍBA\\
+	Introdução à Álgebra Linear\\
+	Primeira Lista de Exercícios\\
+	Paulo Ricardo Seganfredo Campana\\
+\end{center}
+	
+Questão I\\
+1.) Não, visto que não satisfaz a propriedade 6 para todos os vetores em $\mathds{R}^{3}$\\
+$(\alpha + \beta)u = \alpha u + \beta u$\\
+$(\alpha + \beta)(x,y,z) = \alpha (x,y,z) + \beta (x,y,z)$\\
+$((\alpha + \beta)x,y,z) = (\alpha x,y,z) + (\beta x,y,z)$\\
+$((\alpha + \beta)x,y,z) = (\alpha x + \beta x, 2y, 2z)$\\
+$y \neq 2y, z \neq 2z\hfill\blacksquare$\\
+
+2.) Não, pois não satisfaz a propriedade 8 para todos os vetores em $\mathds{R}^{3}$\\
+$1u = u$\\
+$1(x,y,z) = (x,y,z)$\\
+$(0,0,0) = (x,y,z)\hfill\blacksquare$\\
+
+3.)  Não, pois não satisfaz a propriedade 8 para todos os vetores em $\mathds{R}^{2}$\\
+$1u = u$\\
+$1(x,y) = (x,y)$\\
+$(2x,2y)=(x,y)\hfill\blacksquare$\\
+
+4.) Sim\\
+
+5.) Não, pois não satisfaz a propriedade 3 para todos os vetores em $\mathds{R}^{2}$\\
+$\exists0\in V, \text{tal que }u+0=u$\\
+$(x,y)+(0,0)=(x,y)$\\
+$(x+0+1,y+0+1)=(x,y)$\\
+$(x+1,y+1)=(x,y)\hfill\blacksquare$\\
+
+6.) Não, pois não satisfaz a propriedade 3 para todas as matrizes na forma 
+$\begin{bmatrix}
+	a & 1 \\
+	1 & b
+\end{bmatrix}$.\\
+
+$\exists0\in V, \text{tal que }u+0=u$\\
+$\begin{bmatrix}
+	a & 1 \\
+	1 & b
+\end{bmatrix} + 
+\begin{bmatrix}
+	x & 1 \\
+	1 & y
+\end{bmatrix} = 
+\begin{bmatrix}
+	a & 1 \\
+	1 & b
+\end{bmatrix}$\\
+$\begin{bmatrix}
+	a+x & 2 \\
+	2 & b+y
+\end{bmatrix} = 
+\begin{bmatrix}
+	a & 1 \\
+	1 & b
+\end{bmatrix}\hfill\blacksquare$\\
+
+7.) Não, pois não satisfaz a propriedade 3 para todas as funções em $F = \lbrace f: \mathds{R} \rightarrow \mathds{R}; f(0) = 1 \rbrace$.\\
+$\exists0\in V, \text{tal que }u+0=u$\\
+$(f+0)(x) = f(x) + f(x)$\\
+$f(x) = 2f(x)\hfill\blacksquare$\\
+
+8.) Sim\\
+
+Questão II\\
+Não, pois pela segunda propriedade de Espaço Vetorial:\\
+$\forall \alpha \in \mathds{R}, \forall u \in V, \alpha u \in V$\\
+Indica que, se existe um r vetor não nulo, irá existir infinitos vetores r multiplicados por uma constante.\\
+Portanto, os dois vetores desse Espaço Vetorial terão de ser nulos, porém não se pode ter dois vetores iguais em um Espaço Vetorial, então V terá apenas um elemento.\\
+
+Questão III\\
+Sim, LUA será um vetor nulo, obedece as 8 propriedades, e o conjunto formado por um vetor nulo é um Espaço Vetorial.\\
+p1: $(l+l)+l=l+(l+l)\Longrightarrow l+l=l+l\Longrightarrow l=l$\\
+p2: $l+l=l+l\Longrightarrow l=l$\\
+p3: $l=0\Longrightarrow l+l=l\Longrightarrow l=l$\\
+p4: $-u=l\Longrightarrow l+l=0=l\Longrightarrow l=l$\\
+p5: $(\alpha\beta)l = \alpha(\beta l) \Longrightarrow l = \alpha l \Longrightarrow l=l$\\
+p6: $(\alpha+\beta)l = \alpha l +\beta l \Longrightarrow l = l+l \Longrightarrow l=l$\\
+p7: $\alpha(l+l)=\alpha l+\alpha l\Longrightarrow\alpha l=l+l\Longrightarrow l=l$\\
+p8: $1\cdot l = l \Longrightarrow l = l\hfill\blacksquare$\\
+
+Questão IV\\
+1. Não, pois a reta $y = a + z$ não necessariamente passa pela origem.\\
+2. Não, pois não obedece a segunda propriedade de Subespaço, já que se multiplicado por um $\alpha$ não inteiro estará fora so Subespaço.
+\par $\alpha u \in W, \forall u \in W, \alpha \in \mathds{R}$\\
+3. Sim.\\
+
+Questão V\\
+Alternativa 3, pois:\\
+$(0, 0, 0) = 0\cdot(2, 1, 4) + 0\cdot(3, 2, 5)$\\
+
+Questão VI\\
+1.)\\
+\begin{equation}
+\left\{\begin{array}{@{}l@{}}
+	2x+y+3z=-9\\
+	x-y+2z=-7\\
+	4x+3y+5z=-15
+\end{array}\right. \Longrightarrow
+\left\{\begin{array}{@{}l@{}}
+	3x+5z=-16\\
+	7x+11z=-36
+\end{array}\right. \Longrightarrow
+\left\{\begin{array}{@{}l@{}}
+	-21x-35z=112\\
+	21x+33z=-108
+\end{array}\right.
+\end{equation}\\
+$z = -2, x = -2, y = 1$\\\\
+$u = (-9, -7, -15) = -2(2, 1, 4) + 1(1, -1, 3) -2(3, 2, 5)$\\
+2.)\\
+\begin{equation}
+\left\{\begin{array}{@{}l@{}}
+	2x+y+3z=-9\\
+	x-y+2z=-7\\
+	4x+3y+6z=-15
+\end{array}\right. \Longrightarrow
+\left\{\begin{array}{@{}l@{}}
+	3x+5z=-16\\
+	7x+12z=-36
+\end{array}\right. \Longrightarrow
+\left\{\begin{array}{@{}l@{}}
+	-21x-35z=112\\
+	21x+36z=-108
+\end{array}\right.
+\end{equation}\\
+$z = 4, x = -12, y = 3$\\\\
+$u = -9 -7x -15x{2} = -12(2 + x + 4x^{2}) + 3(1 - x + 3x^{2}) + 4(3 + 2x + 6x^{2})$\\
+
+{\Huge Exercicios do Boldrini}\\
+
+1.\\
+a) Vetor nulo: $(0,0,\cdots,0)$, $-(x_{1},x_{2},\cdots,x_{n})$ é o vetor oposto\\
+b) $\begin{bmatrix}0&0\\0&0\end{bmatrix}$ e 
+$\begin{bmatrix}-x_{1}&-x_{2}\\-x_{3}&-x_{4}\end{bmatrix}$\\
+
+3.\\
+a) Sim, $a\begin{bmatrix}1&0\\0&0\end{bmatrix} + b\begin{bmatrix}0&1\\1&0\end{bmatrix} +
+		 d\begin{bmatrix}0&0\\0&1\end{bmatrix}$.\\
+b) Não.\\
+
+5.\\
+a) Sim, $dim = n$, sem perda de generalização para o caso 2x2: $\begin{bmatrix}1&0\\0&0\end{bmatrix}, \begin{bmatrix}0&0\\0&1\end{bmatrix}$\\
+b) Sim, $dim = 1$, $\begin{bmatrix}1&0&\cdots&0\\0&1&\cdots&0\\\vdots&\vdots&\ddots&\vdots\\0&0&\cdots&1\end{bmatrix}$\\
+c) Sim, $dim = 2$,
+$\begin{bmatrix}1&1\\1&0\end{bmatrix}, \begin{bmatrix}0&1\\0&1\end{bmatrix}$\\
+d) Sim, $dim = 1$, $(1,1,\cdots,1)$\\
+e) Não, não terá vetor nulo\\
+f) Não, não terá vetor nulo\\
+g) Sim, $dim = 1$, $(1,2,3)$\\
+
+7.\\
+a) Sim, se $a = 0$ e $b = -1$\\
+b) Não, pois o terceiro elemento tem de ser 0 para ser parte deste subespaço.\\
+
+9.\\
+São LI pois a única solução do sistema é a trivial ($a=b=c=d=0$) e geram o espaço através de:\\
+$\begin{bmatrix}a&b\\c&d\end{bmatrix} = 
+a\begin{bmatrix}1&0\\0&0\end{bmatrix} + 
+b\begin{bmatrix}0&1\\0&0\end{bmatrix} +
+c\begin{bmatrix}0&0\\1&0\end{bmatrix} +
+d\begin{bmatrix}0&0\\0&1\end{bmatrix}$\\
+
+11.\\
+$\left\{\begin{array}{@{}l@{}}
+	x-y+z=1\\
+	x+y=0\\
+	x-z=0
+\end{array}\right. \Longrightarrow z=x,\quad y = -x$\\
+$x+x+x=1 \Longrightarrow x = \dfrac{1}{3},\quad y = -\dfrac{1}{3},\quad z = \dfrac{1}{3}$\\
+
+13.\\
+Se estes 4 vetores são LI, irão gerar uma base em $P^{3}$\\
+$a(1-t^{3})+b(1-t)^{2}+c(1-t)+d=0$\\
+$a-at^{3}+b-bt^{2}-2bt+c-ct+d=0$\\
+$-at^{3}+bt^{2}-(2b+c)t+(a+b+c+d)=0$\\
+Só assume solução $a=b=c=d=0$, portanto são LI, formam base, e geram $P^{3}$\\
+
+15.\\
+A terceira matriz é combinação linear dos dois primeiros, para as outras matrizes gerarem o subespaço W, basta serem LI.\\
+$\left\{\begin{array}{@{}l@{}}
+	x+y+z=0\\
+	-5x+y-7z=0\\
+	-4x-y-5z=0\\
+	2x+5y+z=0
+\end{array}\right. \Longrightarrow x=-4y,\quad z=3y$\\
+$-4y\begin{bmatrix}1&-5\\-4&2\end{bmatrix}+
+   y\begin{bmatrix}1&1\\-1&5\end{bmatrix}+
+  3y\begin{bmatrix}1&-7\\-5&1\end{bmatrix}=0$\\
+$ \begin{bmatrix}1&1\\-1&5\end{bmatrix}=
+-3\begin{bmatrix}1&-7\\-5&1\end{bmatrix}+
+ 4\begin{bmatrix}1&-5\\-4&2\end{bmatrix}$\\
+Esta segunda matriz também é combinação linear, a primeira e a quarta são LI, portanto geram W, $dimW=2$.\\
+
+17.\\
+a) Sim, pois B foi obtido pela redução da matriz A.\\
+b) Sim, pois seguirão a forma padrão de uma matriz diagonal de vetores LI que geram um subespaço.\\
+$\begin{bmatrix}a_{11}&0&\cdots&0\\0&a_{22}&\cdots&0\\\vdots&\vdots&\ddots&\vdots\\0&0&\cdots&a_{mn}\end{bmatrix}$\\
+
+19.\\
+Porquê esses três vetores são LI, e três vetores LI são suficientes para gerar $\mathds{R}^{3}$\\
+$\left\{\begin{array}{@{}l@{}}
+	x+y=0\\
+	-y+z=0\\
+	x+y+z=0
+\end{array}\right. \Longrightarrow y=z$\\
+$\left\{\begin{array}{@{}l@{}}
+	x+y=0\\
+	x+2y=0
+\end{array}\right. \Longrightarrow y=0,\quad x=0,\quad z=0$, São LI.\\
+
+21.\\
+a) $a=b=c=0$ para que estes vetores sejam LI.\\
+b) $x=(-\dfrac{5}{3},0,0),\quad y=(0,\dfrac{7}{3},0),\quad z=(0,0,1)$\\
+c) Quanto maior a dimensão de W, mais variáveis livres o sistema terá.\\
+
+23.\\
+$w_{1}+w_{2}\in W_{1}+W_{2}$\\
+$w_{1}'+w_{2}'\in W_{1}+W_{2}$\\
+$u+v = w_{1}+w_{2}+w_{1}'+w_{2}'$\\
+$w_{1}+w_{2}+w_{1}'+w_{2}'\in W_{1}+W_{2}$\\
+$u+v\in W_{1}+W_{2}\hfill\blacksquare$\\\\
+$ku=kw_{1}+kw_{2}$\\
+$kw_{1}+kw_{2}\in W_{1}+W_{2}$\\
+$ku\in W_{1}+W_{2}\hfill\blacksquare$\\
+
+25.\\
+a)\\
+$\left\{\begin{array}{@{}l@{}}
+	x+y=0\\
+	z-t=0\\
+	x-y-z+t=0
+\end{array}\right. \Longrightarrow y = -x,\quad z=t,\quad x+x-z+z=0$\\
+$x=y=0,\quad z=t \in \mathds{R}$\\
+$W_{1}\cap W_{2} = \lbrace(0,0,z,z): z \in \mathds{R} \rbrace$\\
+b) exemplo de base: $(0,0,22,22)$.\\
+c) Feito em sala por escalonamento\\
+$W_{1}+ W_{2} = [(1,-1,0,0),(0,1,1,-1),(0,0,-1,2),(0,0,0,3)]$\\
+d) Não, pois $W_{1}\cap W_{2} \neq (0,0,0,0)$\\
+e) Sim, pois são quatro vetores LI, que pelas propriedades, geram $\mathds{R}^{4}$\\
+
+27. a)\\
+$(x,y,-x-2y) = x(1,0,-1) + y(0,1,-2)$\\
+$V_{1} = [(1,0,-1),(0,1,-2)]$\\
+$V_{2} = [(0,0,1)]$\\
+b) A soma nunca será direta, pois dois subespaços de dimensão dois terão 4 vetores LI, porém $\mathds{R}^{3}$ necessita de 3 e somente 3 vetores LI para ser gerado.\\
+$V_{1} = [(1,0,0),(0,1,0)]$\\
+$V_{2} = [(0,1,0),(0,0,1)]$\\
+
+29.\\
+a) i) $\begin{bmatrix}-1&1\\1&1\end{bmatrix}$\\
+$(-1,1)=a(1,0)+b(0,1) \Longrightarrow a=-1,\quad b=1$\\
+$(1,1)=c(1,0)+d(0,1) \Longrightarrow c=d=1$\\
+a) ii) $\begin{bmatrix}-\frac{1}{2}&\frac{1}{2}\\\frac{1}{2}&\frac{1}{2}\end{bmatrix}$\\
+$(1,0)=a(-1,1)+b(1,1) \Longrightarrow a = -\frac{1}{2},\quad b=\frac{1}{2}$\\
+$(0,1)=c(-1,1)+d(1,1) \Longrightarrow c=d=\frac{1}{2}$\\
+a) iii) $\begin{bmatrix}\frac{\sqrt{3}}{6}&\frac{1}{2}\\\frac{\sqrt{3}}{6}&-\frac{1}{2}\end{bmatrix}$\\
+$(1,0)=a(\sqrt{3},1)+b(\sqrt{3},-1) \Longrightarrow a=b=\frac{\sqrt{3}}{6}$\\
+$(0,1)=c(\sqrt{3},1)+d(\sqrt{3},-1) \Longrightarrow c=\frac{1}{2},\quad d=-\frac{1}{2}$\\
+a) iv) $\begin{bmatrix}\frac{1}{2}&0\\0&\frac{1}{2}\end{bmatrix}$\\
+$(1,0)=a(2,0)+b(0,2) \Longrightarrow a=\frac{1}{2},\quad b=0$\\
+$(0,1)=c(2,0)+d(0,2) \Longrightarrow c=0,\quad d=\frac{1}{2}$\\
+b) i) $\begin{bmatrix}3\\-2\end{bmatrix}$\\
+$(3,-2)=a(1,0)+b(0,1) \Longrightarrow a=3,\quad b=-2$\\
+b) ii) $\begin{bmatrix}-\frac{5}{5}\\\frac{1}{2}\end{bmatrix}$\\
+$(3,-2)=a(-1,1)+b(1,1) \Longrightarrow a=-\frac{5}{2},\quad b=\frac{1}{2}$\\
+b) iii) $\begin{bmatrix}\frac{-2+\sqrt{3}}{2}\\\frac{2+\sqrt{3}}{2}\end{bmatrix}$\\
+$(3,-2)=a(\sqrt{3},1)+b(\sqrt{3},-1) \Longrightarrow a=\frac{-2+\sqrt{3}}{2},\quad b=\frac{2+\sqrt{3}}{2}$\\
+b) iv) $\begin{bmatrix}\frac{3}{2}\\-1\end{bmatrix}$\\
+$(3,-2)=a(2,0)+b(0,2) \Longrightarrow a=\frac{3}{2},\quad b=-1$\\
+c) i) $\begin{bmatrix}-4\\0\end{bmatrix}$\\
+c) ii) $\begin{bmatrix}\frac{-2\sqrt{3}+6}{3}\\\frac{-2\sqrt{3}-6}{3}\end{bmatrix}$\\
+c) iii) $\begin{bmatrix}-2\\2\end{bmatrix}$\\
+
+31.\\
+a)\\
+$\begin{bmatrix}\frac{1}{2}&\frac{\sqrt{3}}{2}\\-\frac{\sqrt{3}}{2}&\frac{1}{2}\end{bmatrix}$\\
+b)\\
+$\begin{bmatrix}\cos(-\frac{\pi}{3})&\sin(-\frac{\pi}{3})\\-\sin(-\frac{\pi}{3})&\cos(-\frac{\pi}{3})\end{bmatrix}$ = $\begin{bmatrix}\frac{1}{2}&-\frac{\sqrt{3}}{2}\\\frac{\sqrt{3}}{2}&\frac{1}{2}\end{bmatrix}$\\
+
+33.\\
+$\begin{bmatrix}1&0\\0&0\end{bmatrix}=\begin{bmatrix}a&b\\0&c\end{bmatrix}
+\Longrightarrow a=1, \quad b=c=0$\\
+$\begin{bmatrix}1&1\\0&0\end{bmatrix}=\begin{bmatrix}a&b\\0&c\end{bmatrix}
+\Longrightarrow a=b=1, \quad c=0$\\
+$\begin{bmatrix}1&0\\0&0\end{bmatrix}=\begin{bmatrix}a&b\\0&c\end{bmatrix}
+\Longrightarrow a=b=c=1$\\\\
+$[I]^{\beta^{'}}_{\beta} = \begin{bmatrix}1&1&1\\0&1&1\\0&0&1\end{bmatrix}$\\
+
+35. Matriz Indentidade $I$.\\
+
+\end{document}
