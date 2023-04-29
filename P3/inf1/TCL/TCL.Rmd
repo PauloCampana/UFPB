@@ -1,0 +1,69 @@
+---
+title: "Apresentação TCL"
+author: "Paulo Ricardo"
+output: prettydoc::html_pretty
+---
+
+```{r message=FALSE, include=FALSE}
+library("ggplot2")
+library("viridis")
+```
+
+## Amostra piloto
+
+#### Estamos interessados em analizar a quantidade de clientes atendidos em um supermercado durante um dia de operação, a partir de uma amostra piloto, observamos a seguinte distribuição:
+
+***
+
+```{r}
+AmostraPiloto <- data.frame(Clientes = rweibull(60, shape = 1, scale = 100))
+
+ggplot(AmostraPiloto, aes(x = Clientes)) +
+    geom_density(fill = "#306090", colour = "#FFFFFF") +
+    ggtitle("Quantidade de clientes atendidos") +
+    ylab("Frequência")
+```
+
+## Amostra final
+
+#### Em seguida, foi estudado durante todos os dias do ano de 2021 essa mesma variável e separadas em 12 amostras correspondentes a cada mês do ano.
+
+***
+
+```{r}
+AmostraFinal <- rweibull(360, shape = 1, scale = 100) |> matrix(nrow = 30, ncol = 12)
+
+Mêses <- c("Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+           "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro") |> as.factor()
+
+AmostraFinalPorMês <- data.frame(
+    Clientes = as.vector(head(AmostraFinal, 30)),
+    Mês = rep(Mêses, each = 30) 
+    ) 
+
+AmostraFinalPorMês$Mês |> levels() <- Mêses
+
+ggplot(AmostraFinalPorMês, aes(x = Clientes, colour = Mês, fill = Mês)) +
+    geom_density() +
+    scale_colour_viridis(discrete = TRUE) +
+    scale_fill_viridis(discrete = TRUE) +
+    facet_wrap(~Mês) +
+    ggtitle("Quantidade de clientes atendidos durante o ano de 2021") +
+    ylab("Frequência")
+```
+
+## Análise das médias amostrais
+
+#### Em cada mês, foi calculado a média de clientes atendidos e podemos observar que esta média segue distribuição aproximamente normal, devido ao Teorema Central do Limite. 
+
+***
+
+```{r}
+MédiaAmostral <- data.frame(Média = apply(AmostraFinal, 1, mean))
+
+ggplot(MédiaAmostral, aes(x = Média)) +
+    geom_density(fill = "#306090", colour = "#FFFFFF") +
+    ggtitle("Média de clientes atendidos por mês") +
+    xlab("Clientes") +
+    ylab("Frequência")
+```
