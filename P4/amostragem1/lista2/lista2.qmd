@@ -1,0 +1,315 @@
+---
+format: pdf
+lang: pt
+title: Lista de exercício
+subtitle: Estimadores razão e regressão
+author: Paulo Ricardo Seganfredo Campana
+date: 2023-05-03
+date-format: long
+df-print: kable
+callout-icon: false
+monofont: "Ubuntu Mono"
+monofontoptions: 
+  Scale=1
+knitr: 
+  opts_chunk: 
+    collapse: true
+    comment: "# >"
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+\def \E #1{{ \text{E} \kern-2pt \left[ #1 \right] }}
+\def \Var #1{{ \text{Var} \kern-2pt \left[ #1 \right] }}
+\def \Cov #1{{ \text{Cov} \kern-2pt \left[ #1 \right] }}
+:::
+
+::: callout-note
+# **Questão 1.**
+Considerando os estimadores $\hat{\bar y}$: média amostral e $\hat{\bar y}_{reg}$: estimador regressão para a média populacional e sabendo-se que:
+
+\begin{align}
+    \Var{\hat{\bar y}}   - \Var{\hat{\bar y}_{reg}} &= 
+    \rho_{XY}^2 \dfrac{\sigma_Y^2}{n} \\
+    \Var{\hat{\bar y}_R} - \Var{\hat{\bar y}_{reg}} &= 
+    \dfrac{1}{n} (\rho_{XY} \sigma_Y - B \sigma_X)^2
+\end{align}
+
+Então é correto afirmar que:
+
+$\Var{\hat{\bar y}} < \Var{\hat{\bar y}_{R}}$ é verdadeira se e somente se $\Cov{X,Y} < \dfrac{B}{2} \Var{X}$, em que $B$ é a razão populacional entre $X$ e $Y$.
+:::
+
+subtraindo as equações (1) e (2) temos que:
+
+\begin{align*}
+    \Var{\hat{\bar y}} - \Var{\hat{\bar y}_R} 
+    &= \rho_{XY}^2 \dfrac{\sigma_Y^2}{n} -\dfrac{1}{n} (\rho_{XY} \sigma_Y - B \sigma_X)^2 \\
+    &= \dfrac{1}{n} \left( \rho_{XY}^2 \sigma_Y^2 - (\rho_{XY} \sigma_Y - B \sigma_X)^2 \right) \\
+    &= \dfrac{1}{n} \left( \rho_{XY}^2 \sigma_Y^2 - \rho_{XY}^2 \sigma_Y^2 + 2 \rho_{XY} \sigma_Y \sigma_X B - B^2 \sigma_X^2 \right) \\
+    &= \dfrac{1}{n} \left( 2 \rho_{XY} \sigma_Y \sigma_X B - B^2 \sigma_X^2 \right) 
+\end{align*}
+
+\begin{align*}
+    \Var{\hat{\bar y}} < \Var{\hat{\bar y}_R} 
+    &\Longleftrightarrow \Var{\hat{\bar y}} - \Var{\hat{\bar y}_R} < 0 \\
+    &\Longleftrightarrow \dfrac{1}{n} \left( 2 \rho_{XY} \sigma_Y \sigma_X B - B^2 \sigma_X^2 \right) < 0 \\
+    &\Longleftrightarrow 2 \rho_{XY} \sigma_Y \sigma_X B < B^2 \sigma_X^2 \\
+    &\Longleftrightarrow 2 \rho_{XY} \sigma_Y < B \sigma_X \\
+    &\Longleftrightarrow \rho_{XY} < \dfrac{R}{2} \dfrac{\sigma_X}{\sigma_Y} \\
+    &\Longleftrightarrow \Cov{X,Y} < \dfrac{R}{2} \dfrac{\Var{X}}{\Var{Y}}
+\end{align*}
+
+::: callout-note
+# **Questão 2.**
+
+A afirmativa:
+
+> "Os estimadores do tipo razão e regressão para a média não são viesados e são mais eficientes do que o estimador da média no método aleatório simples" 
+
+É verdadeira ou falsa? Justifique sua resposta.
+:::
+
+É falsa, pois calculando o viés do estimador $\hat{\bar y}_R$ vemos que o mesmo é diferente de 0.
+Porém, eles são mais eficientes, pois comparando a variância dos estimadores, fica claro que o estimador regressão é o mesmo do estimador da média populacional multiplicado por um termo entre $[0,1]$.
+
+::: {layout-ncol=2}
+\begin{align*}
+    \text{Bias} (\hat{\bar y}_R) 
+    &= \E{\hat{\bar y}_R - \bar y_U} \\
+    &= \E{\dfrac{\bar y}{\bar x} \bar x_U - \bar y_U} \\
+    &= \E{\bar y \dfrac{\bar x_U}{\bar x} - \bar y_U} \\
+    &= \E{\bar y \left( 1 -  \dfrac{\bar x - \bar x_U}{\bar x} \right) - \bar y_U} \\
+    &= \E{\bar y - \dfrac{\bar y}{\bar x} (\bar x - \bar x_U) - \bar y_U} \\
+    &= \E{\bar y} - \E{\hat B (\bar x - \bar x_U)} - \E{\bar y_U} \\
+    &= -\E{\hat B (\bar x - \bar x_U)} \\
+    &= -\Cov{\hat B, \bar x} 
+\end{align*}
+
+\begin{align*}
+    \Var{\hat{\bar y}_{reg}}
+    &= \left( 1 - \dfrac{n}{N} \right) \dfrac{S_y^2}{n} (1 - R^2) \\
+    &= \Var{\hat{\bar y}} (1 - R^2) \\
+    &\leq \Var{\hat{\bar y}} \\
+    \\
+    \text{com} \; R &= \dfrac{\Cov{X,Y}}{\sqrt{\Var{X} \Var{Y}}} \; \text{(correlação)}
+\end{align*}
+:::
+
+{{< pagebreak >}}
+
+::: callout-note
+# **Questão 3.**
+
+Pesquisadores desejam estimar a idade média de determinada espécie de árvore em uma reserva florestal e isso não é simples pois precisam arrancar pedaços da árvore e contar os anéis de crescimento presentes neste pedaço. Sabe-se que quanto mais velha for a árvore maior será o seu diâmetro $X$. Então foi mais fácil medir o diâmetro de todas as 1132 árvores desta reserva e obtiveram diâmetro médio igual a 10 $m$. Em seguida coletaram uma amostra de 20 árvores para avaliar sua idade pelo processo complexo $Y$ e obteve-se as seguintes informações:
+
+```{r}
+#| echo: false
+#| warning: false
+library(tidyverse)
+theme_set(theme_bw())
+q3 <- tibble(
+    x = c( 12, 11,  8,  9, 11,  8,  7, 10, 12, 11,  6,  8, 10, 12,  9,  9,  7, 11,  9,  8),
+    y = c(125,119, 83, 85, 99,117, 69,133,154,168, 61, 80,114,147,122,106, 82, 88, 97, 99)
+)
+q3 |> t() |> knitr::kable()
+```
+:::
+
+a) Construa o gráfico de dispersão de $X$ e $Y$ e calcule o seu coeficiente de correlação.
+
+```{r}
+q3 |> ggplot(aes(x = x, y = y)) +
+    geom_point() +
+    geom_smooth(method = "lm", formula = y ~ x, se = FALSE)
+cor(q3$x, q3$y)
+```
+
+{{< pagebreak >}}
+
+```{r}
+N <- 1132
+n <- 20
+µx <- 10
+```
+
+b) e c) Calcule a estimativa para a média das árvores utilizando o estimador razão e sem utilizar a variável auxiliar $X$, considerando que a amostra de $Y$ foi selecionada com o plano amostral amostragem aleatória simples.
+
+::: {layout-ncol=2}
+```{r}
+B <- mean(q3$y) / mean(q3$x)
+B * µx
+```
+
+```{r}
+mean(q3$y)
+```
+:::
+
+d) Calcule um IC a 95% de confiança para os itens b) e c).
+
+::: {layout-ncol=2}
+```{r}
+resid <- B * q3$x - q3$y
+var <- (1 - n/N) * 
+    (µx / mean(q3$x))^2 *
+    var(resid) / n
+erro <- qt(0.95, df = n-1) * sqrt(var)
+B * µx + c(-erro, +erro)
+```
+
+```{r}
+var <- (1 - n/N) * var(q3$y) / n
+erro <- qt(0.95, df = n-1) * sqrt(var)
+mean(q3$y) + c(-erro, +erro)
+```
+:::
+
+e) Qual dos dois estimadores você escolheria como o melhor? Justifique sua resposta.
+
+O estimador razão, pois apresenta menor variância.
+
+f) Como você justificaria a escolha da estimativa pelo estimador razão?
+
+Pela correlação entre as variáveis $X$ e $Y$ ser razoável (75%).
+
+{{< pagebreak >}}
+
+::: callout-note
+# **Questão 4.**
+
+Deseja-se estimar o número de árvores mortas de determinada espécie em uma reserva florestal. Dividiu-se esta reserva em áreas de 1.5 hectare e o número de árvores mortas foi avaliada por fotografia aérea $X$ nas 200 áreas que apresentou uma contagem de 15600 árvores mortas da espécie em estudo. Em 10 das 200 áreas selecionadas o número de árvores mortas foi avaliada por contagem terrestre $Y$ e já se sabia por fotografia aérea $X$. Estas informações estão na Tabela seguinte  
+
+```{r}
+#| echo: false
+#| warning: false
+q4 <- tibble(
+    x = c(12, 30, 24, 24, 18, 30, 12,  6, 36, 42),
+    y = c(18, 42, 24, 36, 24, 36, 14, 10, 48, 54)
+)
+q4 |> t() |> knitr::kable()
+```
+:::
+
+a) Construa um gráfico de dispersão entre $X$ e $Y$ e calcule o coeficiente de correção entre $X$ e $Y$.
+
+```{r}
+q4 |> ggplot(aes(x = x, y = y)) +
+    geom_point() +
+    geom_smooth(method = "lm", formula = y ~ x, se = FALSE)
+cor(q4$x, q4$y)
+```
+
+{{< pagebreak >}}
+
+```{r}
+N <- 200
+n <- 10
+tx <- 15600
+```
+
+b) e c) Calcule a estimativa para o número de árvores mortas utilizando o estimador razão. e sem utilizar a variável auxiliar $X$, considerando que a amostra de $Y$ foi selecionada com o plano amostral amostragem aleatória simples.
+
+::: {layout-ncol=2}
+```{r}
+B <- mean(q4$y) / mean(q4$x)
+B * tx
+```
+
+```{r}
+mean(q4$y) * N
+```
+:::
+
+d) e e) Calcule as variâncias estimadas e um IC a 95% de confiança para cada um dos estimadores obtidos nos itens b) e c).
+
+::: {layout-ncol=2}
+```{r}
+resid <- B * q4$x - q4$y
+var <- (1 - n/N) * 
+    (tx / mean(q4$x))^2 *
+    var(resid) / n
+erro <- qt(0.95, df = n-1) * sqrt(var)
+B * tx + c(-erro, +erro)
+```
+
+```{r}
+var <- (1 - n/N) * var(q4$y) / n * N^2
+erro <- qt(0.95, df = n-1) * sqrt(var)
+mean(q4$y) * N + c(-erro, +erro)
+```
+:::
+
+f) Qual dos dois estimadores você escolheria como o melhor? Justifique sua resposta.
+
+O estimador razão, pois apresenta menor variância.
+
+g) Como você justificaria a possível escolha da estimativa pelo estimador Razão?
+
+Pela correlação entre as variáveis $X$ e $Y$ ser muito boa (97%).
+
+h) O estimador razão é o mais eficiente?
+
+Sim, pois possui menor variância.
+
+{{< pagebreak >}}
+
+::: callout-note
+# **Questão 5.**
+
+Observe a seguinte população do exemplo 4.4 (LOHR, p. 121)
+
+```{r}
+#| echo: false
+#| warning: false
+q5 <- tibble(
+    i = 1:8,
+    x = c(4, 5, 5, 6, 8, 7, 7, 5),
+    y = c(1, 2, 4, 4, 7, 7, 7, 8)
+)
+q5 |> t() |> knitr::kable()
+```
+
+Utilizando a linguagem R como você determinaria a distribuição de $\hat t_y$ e $\hat t_{y_R}$ para a situação de amostras de tamanho $n = 4$.
+:::
+
+```{r}
+N <- 8
+n <- 4
+µx <- mean(q5$x)
+```
+
+```{r}
+simples <- q5$i |> 
+    sample(size = n) |> 
+    replicate(n = 10000, simplify = FALSE) |> 
+    lapply(sort) |> 
+    unique() |> 
+    sapply(function(i) mean(q5$y[i]) * N) |> 
+    round(0) |> 
+    as_tibble() |> 
+    summarise(prop = n() / 70, .by = value) |> 
+    add_column(tipo = "simples")
+
+razão <- q5$i |>
+    sample(size = n) |> 
+    replicate(n = 10000, simplify = FALSE) |> 
+    lapply(sort) |> 
+    unique() |> 
+    sapply(function(i) mean(q5$y[i]) / mean(q5$x[i]) * µx * N) |> 
+    round(0) |> 
+    as_tibble() |> 
+    summarise(prop = n() / 70, .by = value) |> 
+    add_column(tipo = "razão")
+```
+
+{{< pagebreak >}}
+
+```{r}
+rbind(simples, razão) |> 
+    ggplot(aes(x = value, y = 0)) +
+    geom_segment(aes(xend = value, yend = prop)) +
+    facet_grid(cols = vars(fct_rev(tipo))) +
+    lims(x = c(20,60), y = c(0,0.2))
+```
