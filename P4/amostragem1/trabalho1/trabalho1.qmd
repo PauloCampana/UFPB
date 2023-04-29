@@ -1,0 +1,262 @@
+---
+format: pdf
+# highlight-style: atom-one
+lang: pt
+title: "Trabalho de Amostragem"
+subtitle: "Prática da amostragem aleatória simples, sistemática e estratificada em banco de dados"
+author: "Paulo Ricardo Seganfredo Campana"
+date: "2023-03-20"
+date-format: long
+df-print: kable
+---
+
+# Objetivos 
+
+Desejamos obter valores para os estimadores da média e total, além da variância dos estimadores e intervalo de confiança sobre as variáveis Tempo de internação e uma das 8 doenças do banco de dados. Tal análise será aplicada em amostras de tamanho 30 para amostragem aleatória simples, sistemática e por fim, estratificada por unidade do PSF.
+
+# Leitura e organização do banco de dados 
+
+Fiquei responsável pela variável Alergia, que será gerada aleatoriamente de uma distribuição Bernoulli com $p$ = 0.3, segundo a [ASBAI](https://asbai.org.br/campanha-nacional-de-prevencao-das-doencas-alergicas/) (Associação Brasileira de Alergia e Imunologia).
+
+```{r}
+#| warning: false
+library(dplyr)
+set.seed(8100)
+
+TRAB07 <- readxl::read_excel("TRAB07.xlsx")
+Banco <- TRAB07 |>
+    select(Paciente, Unidade, `Tempo de internação` = Tempoint, Alergias) |> 
+    mutate(
+        Unidade = case_when(
+            Unidade == 1 ~ "Mangabeira",
+            Unidade == 2 ~ "Bancários",
+            Unidade == 3 ~ "Valentina",
+        ),
+        Alergias = rbinom(n(), size = 1, prob = 0.3) |> as.logical()
+    )
+```
+
+{{< pagebreak >}}
+
+```{r}
+#| label: tbl-pop-head
+#| tbl-cap: Primeiras 30 observações do banco de dados após organização
+head(Banco, n = 30)
+```
+
+{{< pagebreak >}}
+
+# Implementação dos estimadores, variância e IC 
+
+Faremos uso dos seguintes estimadores não viesados para média, total e proporção, suas variâncias, e o intervalo de confiança da distribuição $t$ com nível de significância $\alpha = 0.1$:
+
+::: {layout-ncol=3}
+\begin{align*}
+    \bar y &= \dfrac{1}{n} \sum_{i \in S} y_i \\
+    \hat t &= N \dfrac{1}{n} \sum_{i \in S} y_i \\
+    \hat p &= \dfrac{1}{n} \sum_{i \in S} p_i \\
+\end{align*}
+
+\begin{align*}
+    \hat V (\bar y) &= \left( 1 - \dfrac{n}{N} \right) \dfrac{s^2}{n} \\
+    \hat V (\hat t) &= \left( 1 - \dfrac{n}{N} \right) \dfrac{s^2}{n} N^2\\
+    \hat V (\hat p) &= \left( 1 - \dfrac{n}{N} \right) \dfrac{p (1 - p)}{n - 1} \\
+\end{align*}
+
+\begin{align*}
+    \\
+    \text{IC} (\bar y) &= \left[ \bar y \mp t_{\alpha / 2, \; n-1} \sqrt{\hat V (\bar y)} \right] \\
+    \\
+\end{align*}
+:::
+
+```{r}
+Estimador <- function(Amostra, N, tipo) {
+    case_when(
+        tipo == "média"     ~ mean(Amostra),
+        tipo == "total"     ~ mean(Amostra) * N,
+        tipo == "proporção" ~ mean(Amostra),
+    )
+}
+
+VariânciaEstimador <- function(Amostra, N, tipo) {
+    n <- length(Amostra)
+    s2 <- var(Amostra)
+    p <- Estimador(Amostra, N, tipo)
+    case_when(
+        tipo == "média"     ~ (1 - n/N) * s2 / n, 
+        tipo == "total"     ~ (1 - n/N) * s2 / n * N^2, 
+        tipo == "proporção" ~ (1 - n/N) * p * (1-p) / (n-1), 
+    )
+}
+
+IntervaloConfiânça <- function(Amostra, N, tipo, alpha = 0.1) {
+    n <- length(Amostra)
+    t <- qt(1 - alpha/2, df = n-1)
+    SE <- sqrt(VariânciaEstimador(Amostra, N, tipo))
+    Estimador(Amostra, N, tipo) + c(-t * SE, t * SE)
+}
+```
+
+{{< pagebreak >}}
+
+# Pipeline de análise 
+
+Para cada amostra retirada da população, aplicarei a função `Análise`, que utiliza os estimadores implementados acima para descrever a amostra.
+
+```{r}
+Análise <- function(Amostra, N) {
+    Amostra |> 
+        reframe(
+            Variável = rep(c("Alergias", "Tempo de internação"), each = 2),
+            Estimador = c("Proporção", "Total", "Média", "Total"),
+            Estimativa = c(
+                Estimador(Alergias, N, tipo = "proporção"),
+                Estimador(Alergias, N, tipo = "total"),
+                Estimador(`Tempo de internação`, N, tipo = "média"),
+                Estimador(`Tempo de internação`, N, tipo = "total")
+            ),
+            `Variância do Estimador` = c(
+                VariânciaEstimador(Alergias, N, tipo = "proporção"),
+                VariânciaEstimador(Alergias, N, tipo = "total"),
+                VariânciaEstimador(`Tempo de internação`, N, tipo = "média"), 
+                VariânciaEstimador(`Tempo de internação`, N, tipo = "total")
+            ),
+            `Intervalo de confiânça` = list(
+                IntervaloConfiânça(Alergias, N, tipo = "proporção"),
+                IntervaloConfiânça(Alergias, N, tipo = "total"),
+                IntervaloConfiânça(`Tempo de internação`, N, tipo = "média"),
+                IntervaloConfiânça(`Tempo de internação`, N, tipo = "total")
+            )
+        ) |> 
+        mutate(across(
+            Estimativa:`Intervalo de confiânça`, 
+            function(x) lapply(x, function(x) round(x, digits = 3))
+        )) |> 
+        mutate(across(
+            Estimativa:`Variância do Estimador`,
+            as.numeric
+        ))
+}
+```
+ 
+{{< pagebreak >}}
+
+# Análise para amostra aleatória simples 
+
+Na amostragem aleatória simples, cada membro da população possui mesma probabilidade de pertencer a amostra, é usado geração de números aleatórios para sortear $n$ diferentes observações de um total de $N$.
+
+```{r}
+#| label: tbl-simples
+#| tbl-cap: Estimadores para amostra aleatória simples
+AASimples <- slice_sample(Banco, n = 30)
+ANSimples <- Análise(AASimples, N = nrow(Banco))
+ANSimples
+```
+
+# Comparação com o banco de dados 
+
+Por usamos toda a população para fazer as estimativas, a variância dos estimadores é $0$ pelo termo de correção $\left( 1 - \frac{n}{N} \right)$ portanto estas estimativas são pontuais.
+
+```{r}
+#| label: tbl-pop
+#| tbl-cap: Estimadores do banco de dados
+Análise(Banco, N = nrow(Banco))
+```
+
+{{< pagebreak >}}
+
+# Análise para amostra aleatória sistemática 
+
+Para amostragem aleatória sistemática, criei uma função que calcula $k = \lfloor N/n \rfloor$ e $R$ um número aleatório entre 1 e $k$, esses valores serão usados para obter os índices da forma $R, R + k, R + 2k, R + 3k, \cdots$. Devido ao nosso tamanho da população 200 não ser divisível pelo tamanho desejado da amostra 30 e por arredondar $k$ para o inteiro anterior, essa amostragem sistemática resulta em uma amostra de tamanho 33 ou 34 dependendo do valor de $R$.
+
+```{r}
+AmostragemSistemática <- function(População, n){
+    N <- nrow(População)
+    k <- floor(N / n)
+    R <- sample(k, size = 1)
+    amostra <- (1:N + R) %% k == 0
+    População[amostra, ]
+}
+```
+
+```{r}
+#| label: tbl-sistematica
+#| tbl-cap: Estimadores para amostra aleatória sistemática
+AASistemática <- AmostragemSistemática(Banco, 30)
+ANSistemática <- Análise(AASistemática, N = nrow(Banco))
+ANSistemática
+```
+
+{{< pagebreak >}}
+
+# Análise para amostra aleatória estratificada por Unidade do PSF 
+
+Já para amostragem aleatória estratificada, usaremos como estratos as Unidades do PSF que tem como valores distintos os bairros Bancários, Mangabeira e Valentina, é utilizado alocação de Neyman para o tamanho de cada estrato na amostra, que leva em consideração o desvio padrão populacional de cada estrato como peso além do tamanho do estrato.
+
+```{r}
+AmostragemEstratificada <- function(População, n, VarEstrato, VarDesvio) {
+    VarEstrato <- pull(População, {{ VarEstrato }})
+    VarDesvio <- pull(População, {{ VarDesvio }})
+    Nh <- table(VarEstrato)
+    Sh <- tapply(VarDesvio, VarEstrato, sd)
+    tamanhos <- ceiling(
+        n * Nh * Sh / sum(Nh * Sh)
+    )
+    unique(VarEstrato) |> 
+        lapply(function(x) {
+            População |> 
+                filter({{ VarEstrato }} == x) |> 
+                slice_sample(n = tamanhos[x])
+        })
+}
+```
+
+{{< pagebreak >}}
+
+```{r}
+#| label: tbl-estratificada-separada
+#| tbl-cap: Estimadores para amostra aleatória estratificada por unidade do PSF
+AAEstratificada <- AmostragemEstratificada(Banco, 30, Unidade, `Tempo de internação`)
+
+AAEstratificada |> 
+    lapply(function(x) {
+        Análise(x, N = nrow(Banco)) |> 
+            mutate(Unidade = unique(x$Unidade), .before = Variável)
+    }) |> 
+    Reduce(f = rbind)
+```
+
+Esta amostra estratificada possui `r nrow(AAEstratificada[[1]])` observações da unidade Bancários, `r nrow(AAEstratificada[[2]])` de Mangabeira e `r nrow(AAEstratificada[[3]])` de Valentina, devido ao pequeno tamanho da amostra, a variância dos estimadores é grande e o intervalo de confiança pode ficar negativo.
+
+{{< pagebreak >}}
+
+# Análise para amostra aleatória estratificada 
+
+E finalmente, analisando a amostra estratificada como um todo.
+
+```{r}
+#| label: tbl-estratificada
+#| tbl-cap: Estimadores para amostra aleatória estratificada
+AAEstratificada <- Reduce(x = AAEstratificada, f = rbind)
+ANEstratificada <- Análise(AAEstratificada, N = nrow(Banco))
+ANEstratificada
+```
+
+{{< pagebreak >}}
+
+# Comparação entre amostragems 
+
+Vale notar a diferença entre os tipos de amostragem através da variância dos estimadores:
+
+```{r}
+#| label: tbl-final
+#| tbl-cap: Comparação das variâncias dos estimadores entre os tipos de amostragem
+tibble(
+    Variável = rep(c("Alergias", "Tempo de internação"), each = 2),
+    Estimador = c("Proporção", "Total", "Média", "Total"),
+          Simples = pull(      ANSimples, `Variância do Estimador`),
+      Sistemática = pull(  ANSistemática, `Variância do Estimador`),
+    Estratificada = pull(ANEstratificada, `Variância do Estimador`)
+)
+```

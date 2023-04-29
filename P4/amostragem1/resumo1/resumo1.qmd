@@ -1,0 +1,65 @@
+---
+format: pdf
+lang: pt
+title: "Resumo do capítulo I"
+subtitle: "Sampling: Design and Analysis, Sharon L. Lohr"
+author: "Paulo Ricardo Seganfredo Campana"
+date: "2023-03-06"
+date-format: long
+bibliography: bib.bibtex
+---
+
+## Estrutura
+
+O primeiro capítulo do livro *Sampling: Design and Analysis* [@lohr2009sampling] inicialmente conta sobre a pesquisa realizada pela autora do livro *Women and Love: A Cultural Revolution in Progress (1987)* por trazer afirmações duvidosas e uma péssima metodologia de amostragem.
+
+Em seguida, é apresentado algumas definições que serão usadas, como a definição de amostra, população alvo e observação. Discussão sobre os diferentes tipos de viés que devemos evitar numa amostragem, e por fim, a criação de questionários.
+
+## Viés de seleção
+
+O principal tipo de viés presente numa amostragém é o viés de seleção, que acontece quando uma parte da população alvo é desproporcionalmente selecionada na amostra, algumas situações que esse tipo de viés pode se apresentar são:
+
+-   Utilizando uma metodologia de amostra que depende de uma característica de interesse da pesquisa, como por exemplo uma amostra por conveniência.
+-   Procurar por observações que você acredita serem representativas, pois será selecionado obervações que condizem com seu entendimento da população.
+-   Falha na seleção de uma população alvo que faz sentido para o estudo.
+-   A existência de observações que sua amostragem é impossível de incluir.
+-   Inclusão de amostras que estão fora do escopo da população alvo.
+-   A possibilidade de incluir a mesma amostra multiplas vezes.
+-   Substituir uma observação pre-selecionada por outra mais conveniente na ausência da mesma.
+-   Alto índice de não-resposta.
+
+## Viés de medida
+
+É quando mesmo em uma boa amostra, as respostas coletadas de um pesquisa diferem da realidade, é difícil a detecção e correção desse viés por métodos estatísticos, e são inúmeras as possíveis fontes desse viés, como por exemplo:
+
+-   Quando os participantes de um questionário:
+    -   Mentem.
+    -   Não entendem direito as perguntas.
+    -   Respondem de maneira a sempre concordar com o entrevistador ou a sociedade em geral.
+-   Quando o entrevistador não é bem treinado e comete erros ao lêr as perguntas ou anotar as respostas.
+-   Quando as perguntas do questionário podem ser interpretadas de maneiras diferentes.
+
+## Criação de questionário
+
+Como visto a cima, a escrita das perguntas do questionário terá grande efeito na interpretação dos participantes, visto que podem haver problemas no entendimento caso o participante seja estrangeiro e não fale muito bem, ou se a pesquisa for feita por telefone onde as condições de áudio não são boas, o livro destaca algumas boas práticas:
+
+-   Teste seu questionário em uma pequena amostra antes de efetuar a pesquisa.
+-   Use linguagem simples e concisa.
+-   Faça perguntas específicas ao invés de perguntas gerais.
+-   Evite questões que cometam a falácia da pergunta carregada: que conduz o participante a escolher uma alternativa por ser mais bem vista aos olhos da sociedade.
+-   Escreva perguntas que favorecem respostas honestas.
+-   Evite frases com negação dupla, como por exemplo "Não há nenhum...".
+
+## Retomando ao exemplo
+
+Retomando ao exemplo anterior da pesquisa do livro *Women and Love: A Cultural Revolution in Progress (1987)*, foi visto que essa pesquisa cometeu os seguintes erros:
+
+-   Utilizou uma amostra por conveniência, pois somente 4.5% dos participantes responderam o questionário.
+-   A população alvo é diferente do desejado, pois os questionários foram entregues a organizações como igrejas, asilos e clínicas, que não representam totalmente a população.
+-   O questionário era extremamente longo, contendo 127 questões, os indivíduos que tiveram paciência de responder todas claramente não representam a população.
+-   Não foi usado linguagem clara e concisa.
+-   Muitas perguntas carregadas.
+
+|
+|
+|

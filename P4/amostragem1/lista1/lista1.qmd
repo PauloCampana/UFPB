@@ -1,0 +1,206 @@
+---
+format: pdf
+lang: pt
+title: Teste de amostragem estratificada
+author: Paulo R. S. Campana
+date: 2023-04-19
+date-format: long
+df-print: kable
+callout-icon: false
+monofont: "Ubuntu Mono"
+monofontoptions: 
+  Scale=1
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+:::
+
+```{r}
+#| warning: false
+library(tidyverse)
+```
+
+::: callout-note
+# **Questão 1.**
+
+Apresente os cálculos de como podem ser encontrados na amostra de cinco estratos a alocação para os estratos de forma proporcional e a alocação ótima de Neyman. Seus resultados podem divergir dos apresentados abaixo.
+
+```{r}
+q1 <- tibble(
+    stratum = c("BA", "EA", "PA", "RA", "XF"),
+    Nh      = c(2371, 1442, 1710,  659, 1346),
+    Sh      = c(42.4, 15.4, 40.7, 43.7, 54.2)
+)
+```
+:::
+
+```{r}
+q1 |> mutate(
+    nh_prop   = (40 * Nh      / sum(Nh     )) |> ceiling(),
+    nh_neyman = (40 * Nh * Sh / sum(Nh * Sh)) |> ceiling() 
+)
+```
+
+{{< pagebreak >}}
+
+::: callout-note
+# **Questão 2.**
+
+Considera a população com $N$ = 6 domicílios listada com os respectivos valores de variáveis de interesse na Tabela
+
+```{r}
+q2 <- tibble(
+    domicílio     = c(  1,    2,    3,   4,   5,    6),
+    renda         = c(800, 4200, 1600, 500, 900, 2000),
+    moradores     = c(  2,    4,    2,   2,   4,    1),
+    trabalhadores = c(  2,    3,    1,   1,   2,    1)
+)
+```
+:::
+
+## 1. Para cada variável de interesse (Renda, Moradores, Trabalhadores), calcule os seguintes parâmetros populacionais: total, média e variância.
+
+```{r}
+q2 |> summarise(across(
+    c(renda, moradores, trabalhadores),
+    list(total = sum, média = mean, variância = var)
+)) |> 
+round(3) |>  
+pivot_longer(
+    everything(),
+    names_to = c("variável", "parâmetro"),
+    names_sep = "_",
+    values_to = "valor"
+)
+```
+
+{{< pagebreak >}}
+
+## 2. Liste o conjunto $\mathbf S$ de todas as amostras possíveis de tamanho 2 da população, considerando apenas amostras de unidades distintas.
+
+```{r}
+S <- sample(x = 1:6, size = 2) |> 
+    sort() |> 
+    replicate(n = 1000, simplify = FALSE) |> 
+    unique() |> 
+    as_tibble(.name_repair = "minimal")
+```
+
+```{r}
+#| echo: false
+S
+```
+
+## 3. Supondo que todas as amostras listadas no conjunto $\mathbf S$ são equiprováveis (plano A), calcule:
+
+### a. As probabilidades de inclusão das unidades.
+
+```{r}
+#| warning: false
+SA <- S |> 
+    t() |> 
+    as_tibble() |> 
+    arrange(V1, V2) |> 
+    mutate(renda = map2_dbl(V1, V2,
+        function(V1, V2) q2$renda[q2$domicílio == V1] + q2$renda[q2$domicílio == V2]
+    ))
+SA |> reframe(
+    domicílio     = unique(c(V1, V2)),
+    frequência    =  table(c(V1, V2)),
+    probabilidade = frequência / sum(frequência)
+)
+```
+
+{{< pagebreak >}}
+
+### b. As probabilidades de inclusão dos pares de unidade.
+
+```{r}
+SA |> mutate(probabilidade = 1 / n())
+```
+
+{{< pagebreak >}}
+
+### c. Os valores possíveis para o estimador Horvitz-Thompson do total populacional para a variável renda.
+
+```{r}
+HTA <- SA |>
+    mutate(
+        probabilidade = 1 / n(),
+        estimador = renda / probabilidade * (3 / 15)
+    )
+```
+
+```{r}
+#| echo: false
+HTA
+```
+
+### d. O valor esperado e a variância para o estimador Horvitz-Thompson do total populacional para a variável renda.
+
+```{r}
+HTA |> summarise(across(
+    estimador,
+    list(média = mean, variância = var)
+))
+```
+
+{{< pagebreak >}}
+
+## 4. Considere agora que o conjunto $\mathbf S$ é formado pelas amostras (1,2), (2,3), (2,4), (2,5), (2,6), tendo cada uma delas probabilidade 1/5 de ser a amostra selecionada (plano B), Repita os cálculos do item 3. para o novo plano amostral.
+
+```{r}
+SB <- tibble(
+        V1 = c(1,2,2,2,2),
+        V2 = c(2,3,4,5,6)
+    ) |> 
+    mutate(renda = map2_dbl(V1, V2,
+        function(V1, V2) q2$renda[q2$domicílio == V1] + q2$renda[q2$domicílio == V2]
+    ))
+```
+
+```{r}
+HTB <- SB |> 
+    mutate(
+        probabilidade = 1 / n(),
+        estimador = renda / probabilidade * (3 / 5)
+    )
+```
+
+```{r}
+#| echo: false
+HTB
+```
+
+```{r}
+HTB |> summarise(across(
+    estimador,
+    list(média = mean, variância = var)
+))
+```
+
+{{< pagebreak >}}
+
+## 5. Faça gráficos dos valores possíveis do estimador de total sob os dois planos amostrais para comparar as respectivas distribuições.
+
+```{r}
+#| out-width: 100%
+rbind(
+    HTA |> mutate(plano = "plano A"),
+    HTB |> mutate(plano = "plano B")
+) |> 
+    mutate(amostra = paste0("(", V1, ",", V2, ")")) |> 
+    ggplot(aes(x = amostra, y = estimador, fill = estimador)) +
+    geom_col() +
+    facet_grid(cols = vars(plano), scales = "free") +
+    theme_bw() +
+    theme(legend.position = "none", axis.text.x = element_text(angle = 45))
+```
+
+{{< pagebreak >}}
+
+## 6. Use os resultados obtidos em 3. e 4. para comparar os dois planos amostrais e indique qual deles seria preferível usar, caso fosse necessário amostrar duas unidades distintas da população ($\mathbf n$ = 2) para estimar o total da renda. Justifique.
+
+É preferível usar o plano amostral A pois leva em consideração todas as possíveis amostras de tamanho 2 da população de tamanho 6, enquanto o segundo plano selecionou apenas 5 dessas amostras, que acabaram sendo as amostras com maior total de renda, que aumentou consideravelmente o estimador da média de 10000 para 16080.
