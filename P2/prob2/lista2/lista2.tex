@@ -1,0 +1,112 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}	
+\usepackage{array,latexsym}
+\usepackage{amsmath,amsfonts,amssymb,amsthm,mathabx,amstext}
+\usepackage{dsfont}	% Conjuntos: $\mathds{N, Z, Q, R, C}$
+\usepackage{graphicx}
+\usepackage{qtree}
+\begin{document}
+	\pagestyle{empty}
+	\begin{center}
+		Atividade 2 - Propriedades da probabilidade e probabilidade condicional
+		Paulo Ricardo Seganfredo Campana\\
+	\end{center}
+	
+1.\\
+a) $\lbrace RR, RG, RB, GR, GG, GB, BR, BG, BB \rbrace$\\
+b) $\lbrace RG, RB, GR, GB, BR, BG \rbrace$\\
+
+2.\\
+a) $ A \cup B \cup C$\\
+b) $ A - B - C$\\
+c) $(A \cup B \cup C) - (A \cap B) - (A \cap C) - (B \cap C)$\\
+d) $(A \cup B \cup C)^{c}$\\
+e) $(A \cup B) - C$\\
+
+3.\\
+$P(\bigcup A_{i}) = \sum P(A_{i})$\\
+$P(a, b) = P(a) + P(b) = 0.5$\\
+$P(b, c) = P(b) + P(c) = 0.8$\\
+$P(a, b) = P(a) + P(c) = 0.7$\\
+$P(c) = P(b) + 0.2$\\
+$2 \cdot P(b) + 0.2 = 0.8$\\\\
+$P(\lbrace b \rbrace) = 0.3$\\
+$P(\lbrace c \rbrace) = 0.5$\\
+$P(\lbrace a \rbrace) = 0.2$\\ 
+$P(\lbrace a, b \rbrace) = 0.5$\\ 
+$P(\lbrace b, c \rbrace) = 0.8$\\ 
+$P(\lbrace a, c \rbrace) = 0.7$\\
+$P(\lbrace a, b, c \rbrace) = 1$\\  
+$P(\lbrace \varnothing \rbrace) = 0$\\ 
+
+4.\\
+Se $B \subset A, P(A \cap B) = P(B) = 0.6$\\\\
+Se $A \cup B = \Omega$\\
+$P(A \cup B) = P(A) + P(B) - P(A \cap B)$\\
+$P(\Omega) = 0.7 + 0.6 - P(A \cap B)$\\
+$1 = 0.7 + 0.6 - P(A \cap B)$\\
+$P(A \cap B) = 0.3$\\\\
+$0.3 \leq P(A \cap B) \leq 0.6$\\
+
+5.\\
+a)\\
+$P(A \cap B^{c}) = P(A) \cdot P(B^{c})$\\
+$P(A - B) = P(A) \cdot (1 - P(B))$\\
+$P(A - B) = P(A) - P(A \cap B) \hfill\blacksquare$\\\\
+b) Simétrico à letra a, pois a interseção e a multiplicação são comutativas.\\\\
+c) \\
+$P(A^{c} \cap B^{c}) = P(A^{c}) \cdot P(B^{c})$\\
+$P((A \cup B)^{c}) = (1 - P(A)) \cdot (1 - P(B))$\\
+$1 - P(A \cup B) = 1 - P(A) - P(B) + P(A) \cdot P(B)$\\
+$P(A \cup B) = P(A) + P(B) - P(A \cap B)$\\
+Propriedade 7 da probabilidade. $\hfill\blacksquare$\\
+
+6.\\
+$P(A \cup B) = P(A) + P(B) - P(A \cap B)$\\
+$0.7 = 0.4 + p - P(A \cap B)$\\
+$0.3 =  p - P(A \cap B)$\\
+$P(A \cap B) = p - 0.3$\\
+$P(A \cap B) = P(A) \cdot P(B)$\\
+$p - 0.3 = 0.4 \cdot p$\\
+$0.6p = 0.3$\\
+$p = 0.5$\\
+
+7.\\
+$\dfrac{P(C \cap D)}{P(D)} = 0.4$ e $\dfrac{P(C \cap D)}{P(C)} = 0.5$\\ 
+$P(D) \cdot 0.4 = P(C \cap D) = P(C) \cdot 0.5$\\
+$\dfrac{0.4}{0.5} = \dfrac{P(C)}{P(D)}$\\
+$0.8 =  \dfrac{P(C)}{P(D)}$\\
+$P(D) \geq P(C)$\\
+
+8.
+
+\Tree [. [.sabe [.acertou $P(x)=p$ ]
+                [.errou $P(x)=0$ ]]
+         [.não\ sabe [.acertou $P(x)=(1-p)(\frac{1}{m})$ ]
+                     [.errou $P(x)=(1-p)(1-\frac{1}{m})$ ]]]\\
+a)\\
+$P(sabe|acertou) = \dfrac{P(sabe \cap acertou)}{P(acertou)}$\\
+$P(sabe|acertou) = \dfrac{p}{p + \dfrac{1-p}{m}}$\\\\
+b)\\
+Quando o número de alternativas aumenta ao infinito, a chance de chutar uma questão e acertar diminui a zero.\\
+$\displaystyle\lim_{m \to \infty} \dfrac{p}{p + \dfrac{1-p}{m}} = \dfrac{p}{p} = 1$\\\\
+Quando a chance de saber a resposta uma questão diminui, as questão respondidas corretas serão de maioria as questões chutadas.\\
+$\displaystyle\lim_{p \to 0} \dfrac{p}{p + \dfrac{1-p}{m}} = \dfrac{0}{0+\dfrac{1}{m}} = 0$
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+\end{document}

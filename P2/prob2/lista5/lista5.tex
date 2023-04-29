@@ -1,0 +1,99 @@
+\documentclass[12pt]{article}
+\usepackage[a4paper, left=2cm, right=2cm, top=2cm, bottom=2cm]{geometry}
+\usepackage{dsfont}
+\usepackage{amssymb,amstext,amsmath}
+\begin{document}
+\begin{center}
+	UNIVERSIDADE FEDERAL DA PARAÍBA\\
+	Probabilidade II\\
+	Atividade 4\\
+	Paulo Ricardo Seganfredo Campana
+\end{center}
+
+\indent Questão 1 e 2.\\\\\\
+\indent a) $X \sim \text{Bernoulli}(p) \sim p^{x} (1-p)^{1-x} \qquad x = \lbrace 0,1 \rbrace$\\\\\\
+$M_{X}(t) = E(e^{Xt}) = \displaystyle \sum_{x=0}^{1} e^{xt} p^{x} (1-p)^{1-x} = e^{0} p^{0} (1-p)^{1} + e^{t} p (1-p)^{0} = (1-p) + e^{t} p = pe^t-p+1$\\\\\\
+$M_{X}'(t) = pe^{t} \hfill M'_{X}(0) = E(X) = pe^{0} = p$\\\\\\
+$M_{X}''(t) = pe^{t} \hfill M''_{X}(0) = E(X^{2})= pe^{0} = p$\\\\\\
+$\text{Var}(X) = p-p^{2} = p(1-p)$\\\\\\
+
+\indent b) $X \sim \text{Geo}(p) \sim p(1-p)^{x} \qquad x = 0,1,2,3,\cdots$\\\\\\
+$M_{X}(t) = E(e^{Xt}) = \displaystyle \sum_{x=0}^{\infty} e^{xt} p(1-p)^{x} = p \sum_{x=0}^{\infty} (e^{t}(1-p))^{x} = \dfrac{p}{1 -e^{t}(1-p)} = \dfrac{p}{pe^{t} -e^{t} +1}$\\
+$\vdots$\\
+$M_{X}'(t) = -\dfrac{(p-1)pe^{t}}{(pe^{t}-e^{t}+1)^{2}} \hfill M_{X}'(0) = E(X) = -\dfrac{p(p-1)}{(p-1+1)^{2}} = \dfrac{1-p}{p}$\\
+$\vdots$\\
+$M_{X}''(t) = \dfrac{pe^{t} (p-1) (pe^{t}-e^{t}-1)}{(pe^{t}-e^{t}+1)^{3}} \hfill M_{X}''(0) = E(X^{2}) = \dfrac{p(p-1)(p-2)}{p^{3}} = \dfrac{p^{2}-3p+2}{p^{2}}$\\\\\\
+$\text{Var}(X) = \dfrac{p^{2}-3p+2}{p^{2}} - \dfrac{p^{2}-2p+1}{p^{2}} = \dfrac{1-p}{p^{2}}$\\\\\\
+
+\indent c) $X \sim \text{Gama}(\alpha, \beta) \sim \dfrac{\beta^{\alpha}}{\Gamma(\alpha)} x^{\alpha-1} e^{-\beta x} \mathds{I}_{(0,\infty)}(x)$\\\\\\
+$M_{X}(t) = E(e^{Xt}) = \displaystyle \int_{0}^{\infty} e^{xt} \dfrac{\beta^{\alpha}}{\Gamma(\alpha)} x^{\alpha-1} e^{-\beta x} dx = \dfrac{\beta^{\alpha}}{\Gamma(\alpha)} \int_{0}^{\infty} x^{\alpha-1} e^{(t-\beta)x} dx \hfill
+\left \{\begin{array}{@{}l@{}}
+	y = -(t-\beta)x\\
+	dy = -(t-\beta)dx
+\end{array}\right.$\\\\\\
+$ \dfrac{\beta^{\alpha}}{\Gamma(\alpha)(\beta-t)}\displaystyle \int_{0}^{\infty} \left( \dfrac{y}{\beta-t} \right)^{\alpha-1} e^{-y} dy = \dfrac{\beta^{\alpha}}{\Gamma(\alpha)(\beta-t)^{\alpha}} \int_{0}^{\infty} y^{\alpha-1} e^{-y} dy = \dfrac{\beta^{\alpha}\Gamma(\alpha)}{\Gamma(\alpha)(\beta-t)^{\alpha}} = \dfrac{\beta^{\alpha}}{(\beta-t)^{\alpha}}$\\\\\\
+$M_{X}'(t) = \dfrac{\alpha \beta^{\alpha}}{(\beta-t)^{\alpha+1}} \hfill M_{X}'(0) = E(X) = \dfrac{\alpha \beta^{\alpha}}{\beta^{\alpha+1}} = \dfrac{\alpha}{\beta}$\\\\\\
+$M_{X}''(t) = \dfrac{\alpha(\alpha+1)\beta^{\alpha}}{(\beta-t)^{\alpha+2}} \hfill M_{X}''(0) = E(X^{2}) = \dfrac{\alpha(\alpha+1)\beta^{\alpha}}{\beta^{\alpha+2}} = \dfrac{\alpha(\alpha+1)}{\beta^{2}}$\\\\\\
+$\text{Var}(X) = \dfrac{\alpha(\alpha+1)}{\beta^{2}} - \dfrac{\alpha^{2}}{\beta^{2}} = \dfrac{\alpha}{\beta^{2}}$\\\\\\
+
+\indent Questão 3.\\\\\\
+a) $M_{X}(0) = E(e^{X0}) = E(1) = 1$\\\\\\
+b) $M_{Y}(t) = E(e^{Yt}) = E(e^{(aX+b)t}) = E(e^{aXt+bt}) = E(e^{aXt}e^{bt}) = e^{bt} E(e^{aXt}) = e^{bt} M_{X}(at)$\\\\\\
+
+\indent Questão 4.\\\\\\
+$M_{Y}(t) = M_{X}(2t) = E(e^{2Xt}) = \displaystyle \int_{0}^{\infty} e^{2xt} \lambda e^{-\lambda x} dx = \lambda \int_{0}^{\infty} e^{(2t-\lambda)x} dx \hfill
+\left \{\begin{array}{@{}l@{}}
+	y = -(2t-\lambda)x\\
+	dy = -(2t-\lambda)dx
+\end{array}\right.$\\\\\\
+$\dfrac{\lambda}{\lambda-2t} \displaystyle \int_{0}^{\infty} e^{-y} dy = \dfrac{\lambda}{\lambda-2t}(-e^{-y})\biggr|^{\infty}_{0} = \dfrac{\lambda}{\lambda-2t}$\\\\\\
+$M_{Y}'(t) = \dfrac{2\lambda}{(\lambda-2t)^{2}} \hfill M_{Y}'(0) = E(X) = \dfrac{2\lambda}{\lambda^{2}} = \dfrac{2}{\lambda}$\\\\\\
+$M_{Y}''(t) = \dfrac{8\lambda}{(\lambda-2t)^{3}} \hfill M_{Y}''(0) = E(X^{2}) = \dfrac{8\lambda}{\lambda^{3}} = \dfrac{8}{\lambda^{2}}$\\\\\\
+$\text{Var}(Y) = \dfrac{8}{\lambda^{2}} - \dfrac{4}{\lambda^{2}} = \dfrac{4}{\lambda^{2}}$\\\\\\
+
+\indent Questão 5.\\\\\\
+$X \sim \text{Poisson}(\lambda)$ \quad Sabemos que $\mu = E(X) = \text{Var}(X) = \lambda$\\\\\\
+$P(|X-\lambda| \geq \alpha) = P(X-\lambda \geq \alpha) + P(X-\lambda \leq -\alpha)$ \hfill Pois são eventos disjuntos\\\\\\
+$P(X \geq \lambda+\alpha) + P(X \leq \lambda-\alpha)$ \hfill Tomamos $\alpha = \dfrac{\lambda}{2}$\\\\\\
+$P\left(X \geq \dfrac{3\lambda}{2}\right) + P\left(X \leq \dfrac{\lambda}{2}\right) \geq P\left(X \leq \dfrac{\lambda}{2}\right)$ \hfill Pois $P\left(X \geq \dfrac{3\lambda}{2}\right) \geq 0$\\\\\\\\
+$P\left(X \leq \dfrac{\lambda}{2}\right) \leq P\left(|X-\lambda| \geq \dfrac{\lambda}{2}\right) \leq \left(\dfrac{2}{\lambda}\right)^{2}\lambda = \dfrac{4}{\lambda}$\\\\\\
+
+\indent Questão 6.\\\\\\
+A partir da desigualdade clássica de Chebyshev:\\\\\\
+$P(|X-\mu| \geq \alpha) \leq \dfrac{1}{\alpha^{2}} \text{Var}(X)$ \hfill Tomamos $\alpha = k\sigma$ e $\text{Var}(X) = \sigma^{2}$\\\\\\
+$P(|X-\mu| \geq k\sigma) \leq \dfrac{1}{k^{2}\sigma^{2}} \sigma^{2}$\\\\\\
+$P(|X-\mu| \geq k\sigma) \leq \dfrac{1}{k^{2}}$\\\\\\
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

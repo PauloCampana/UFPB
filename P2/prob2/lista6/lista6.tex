@@ -1,0 +1,184 @@
+\documentclass[12pt]{article}
+\usepackage[a4paper, left=2cm, right=2cm, top=2cm, bottom=2cm]{geometry}
+\usepackage{dsfont}
+\usepackage[fleqn]{amsmath}
+\usepackage{amssymb,amstext}
+\usepackage{graphicx}
+\begin{document}
+\setcounter{secnumdepth}{0}
+\begin{center}
+	UNIVERSIDADE FEDERAL DA PARAÍBA\\
+	Probabilidade II\\
+	Atividade 6\\
+	Paulo Ricardo Seganfredo Campana
+\end{center}
+
+\section{Questão 1.}
+\subsection{a)}
+
+\begin{tabular}{|c|ccc|c|}
+	\hline
+	&&&& \\
+	\qquad\quad Y & \quad -1 \quad & \quad 0 \quad & \quad 1 \quad & $P(X=x)$ \\
+	X&&&& \\
+	\hline
+	&&&& \\
+	-1 & 0 & $\dfrac{1}{5}$ & 0 & $\dfrac{1}{5}$ \\
+	&&&& \\
+	0 & $\dfrac{1}{5}$ & $\dfrac{1}{5}$ & $\dfrac{1}{5}$ & $\dfrac{3}{5}$ \\
+	&&&& \\
+	1 & 0 & $\dfrac{1}{5}$ & 0 & $\dfrac{1}{5}$ \\
+	&&&& \\
+	\hline
+	&&&& \\
+	$P(Y=y)$ & $\dfrac{1}{5}$ & $\dfrac{3}{5}$ & $\dfrac{1}{5}$ & 1 \\
+	&&&& \\
+	\hline
+\end{tabular}
+
+\subsection{b)}
+
+
+\[E(X) = (-1)\dfrac{1}{5} + 0\dfrac{3}{5} + 1\dfrac{1}{5} = 0\]
+\[E(Y) = (-1)\dfrac{1}{5} + 0\dfrac{3}{5} + 1\dfrac{1}{5} = 0\]
+\[E(XY) = 0, \text{ pois todos os valores em que X e Y} \neq 0,\ P(X,Y) = 0 \]
+\[Cov(X,Y) = E(XY)-E(X)E(Y) = 0\]
+
+\subsection{c)}
+
+\[\text{Não pois } P_{X,Y}(x,y) \neq P_{X}(x) \cdot P_{Y}(y), \text{ segue o caso com } (x,y)=(1,1)\]
+\[P_{X,Y}(1,1) \neq P_{X}(1) \cdot P_{Y}(1)\]
+\[0 \neq \dfrac{1}{5} \cdot \dfrac{1}{5}\]
+
+\section{Questão 2.}
+
+\[X_{1}, X_{2}, \cdots, X_{n} \text{ independentes, } X_{i} \sim Exp(\beta)\]
+\[S_{n} = X_{1} + X_{2} + \cdots + X_{n}\]
+\[M_{S_{n}}(t) = M_{X_{1}}(t) \cdot M_{X_{2}}(t) \cdots M_{X_{n}}(t)\]
+\[\hspace{+39pt} = \dfrac{\beta}{\beta-t} \cdot \dfrac{\beta}{\beta-t} \cdots \dfrac{\beta}{\beta-t}\]
+\[\hspace{+39pt} = \left( \dfrac{\beta}{\beta-t} \right)^{n}\]
+\[\hspace{+39pt} = \text{f.g.m}(Y), \quad Y \sim Gama(n,\beta)\]
+\[\text{portanto } S_{n} \text{ tem distribuição } Gama(n,\beta)\]
+
+\section{Questão 3.}
+
+\begin{tabular}{|c|ccc|c|}
+	\hline
+	&&&& \\
+	\qquad\quad Y & \quad 0 \quad & \quad 1 \quad & \quad 2 \quad & $P(X=x)$\\
+	X &&&& \\
+	\hline
+	&&&& \\
+	0 & $\dfrac{1}{4}$ & $\dfrac{1}{8}$ & $\dfrac{1}{8}$ & $\dfrac{1}{2}$ \\
+	&&&& \\
+	1 & $\dfrac{1}{4}$ & 0 & $\dfrac{1}{4}$ & $\dfrac{1}{2}$ \\
+	&&&& \\
+	\hline
+	&&&& \\
+	$P(Y=y)$ & $\dfrac{1}{2}$ & $\dfrac{1}{8}$ & $\dfrac{3}{8}$ & 1 \\
+	&&&& \\
+	\hline
+\end{tabular}
+
+\subsection{a)}
+
+\[\rho_{X,Y} = \dfrac{Cov(X,Y)}{\sqrt{Var(X)Var(Y)}}\]
+
+\[E(X) = 0 + 1\dfrac{1}{2} = \dfrac{1}{2}\]
+\[E(X^{2}) = 0 + 1\dfrac{1}{2} = \dfrac{1}{2}\]
+\[Var(X) = \dfrac{1}{2} - \dfrac{1}{4} = \dfrac{1}{4}\]
+\[E(Y) = 0 + 1\dfrac{1}{8} + 2\dfrac{3}{8} = \dfrac{7}{8}\]
+\[E(Y^{2}) = 0 + 1\dfrac{1}{8} +4\dfrac{3}{8} = \dfrac{13}{8}\]
+\[Var(Y) = \dfrac{13}{8} - \dfrac{49}{64} = \dfrac{55}{64}\]
+\[E(XY) = 0 + 0 + 0 + 0 + 0 + 2\dfrac{1}{4} = \dfrac{1}{2}\]
+\[Cov(X,Y) = \dfrac{1}{2} - \dfrac{1}{2} \cdot \dfrac{7}{8} = \dfrac{1}{16}\]
+
+\[\rho_{X,Y} = \dfrac{\dfrac{1}{16}}{\sqrt{\dfrac{1}{4} \cdot \dfrac{55}{64}}} = \dfrac{\dfrac{1}{16}}{\dfrac{\sqrt{55}}{16}} = \dfrac{1}{\sqrt{55}}\]
+
+\subsection{b)}
+
+\[Cov(3X,2Y) = 6 \cdot Cov(X,Y) = \dfrac{3}{8}\]
+
+\[Cov(X+Y,X-Y) = Cov(X,X-Y) + Cov(Y,X-Y) =\]
+\[Cov(X,X) - Cov(X,Y) + Cov(Y,X) - Cov(Y,Y) =\]
+\[Var(X) - Var(Y) = \dfrac{1}{4} - \dfrac{55}{64} = -\dfrac{39}{64}\]
+
+\section{Questão 4.}
+\subsection{a)}
+
+\begin{tabular}{|c|cc|c|}
+	\hline
+	&&& \\
+	\quad\quad Y & \quad 1 \quad & \quad 2 \quad & $P(X=x)$ \\
+	X &&& \\
+	\hline
+	&&& \\
+	1 & $\dfrac{1}{8}$ & $\dfrac{1}{4}$ & $\dfrac{3}{8}$ \\
+	&&& \\
+	2 & $\dfrac{1}{8}$ & $\dfrac{1}{2}$ & $\dfrac{5}{8}$ \\
+	&&& \\
+	\hline
+	&&& \\
+	$P(Y=y)$ & $\dfrac{1}{4}$ & $\dfrac{3}{4}$ & 1 \\
+	&&& \\
+	\hline
+\end{tabular}
+
+\[P(XY \leq 3) = 1 - P(XY > 3)\]
+\[XY \text{ é apenas maior que 3 quando } (X,Y)=(2,2), \quad p(2,2) = \dfrac{1}{2}\]
+\[P(XY \leq 3) = 1 - \dfrac{1}{2} = \dfrac{1}{2}\]
+
+\[P(X+Y) > 2 = 1-P(X+Y \leq 2))\]
+\[X+Y \text{ é apenas menor ou igual a 2 quando } (X,Y)=(1,1), \quad p(1,1) = \dfrac{1}{8}\]
+\[P(X+Y) > 2 = 1-\dfrac{1}{8} = \dfrac{7}{8}\]
+
+\subsection{b)}
+
+\[\text{Não pois } P_{X,Y}(x,y) \neq P_{X}(x) \cdot P_{Y}(y), \text{ segue o caso com } (x,y)=(1,1)\]
+\[P_{X,Y}(1,1) \neq P_{X}(1) \cdot P_{Y}(1)\]
+\[\dfrac{1}{8} \neq \dfrac{3}{8} \cdot \dfrac{1}{4}\]
+
+\section{Questão 5.}
+
+\begin{tabular}{c|cccccc}
+	$x$ & 1 & 2 & 3 & 4 & 5 & 6\\
+	\hline
+	X & -1 & -1 & 1 & 1 & 1 & 1 \\
+	&&&&&& \\
+	$y$ & 1 & 2 & 3 & 4 & 5 & 6 \\
+	\hline
+	Y & 1 & 0 & 1 & 0 & 1 & 0 \\
+\end{tabular}
+
+\subsection{a)}
+
+\[P_{X}(X=1) = \dfrac{2}{3}\]
+\[P_{X}(X=-1) = \dfrac{1}{3}\]
+\[P_{Y}(Y=1) = P_{Y}(Y=0) = \dfrac{1}{2}\]
+
+\subsection{b)}
+
+\[P(X=-1, Y=1) = \dfrac{1}{6} \qquad\qquad \text{apenas em 1}\]
+\[P(X=-1, Y=0) = \dfrac{1}{6} \qquad\qquad \text{apenas em 2}\]
+\[P(X=1, Y=1) = \dfrac{1}{3} \hspace{+9pt} \qquad\qquad \text{apenas em 3 e 5}\]
+\[P(X=1, Y=0) = \dfrac{1}{3} \hspace{+9pt} \qquad\qquad \text{apenas em 4 e 6}\]
+
+\begin{tabular}{|c|cc|c|}
+	\hline
+	&&&\\
+	\qquad\quad Y & \quad 1 \quad & \quad 0 \quad & $P(X=x)$ \\
+	X&&&\\
+	\hline
+	&&&\\
+	-1 & $\dfrac{1}{6}$ & $\dfrac{1}{6}$ & $\dfrac{1}{3}$ \\
+	&&&\\
+	1 & $\dfrac{1}{3}$ & $\dfrac{1}{3}$ & $\dfrac{2}{3}$ \\
+	&&&\\
+	\hline
+	&&&\\
+	$P(Y=y)$ & $\dfrac{1}{2}$ & $\dfrac{1}{2}$ & 1 \\
+	&&&\\
+	\hline
+\end{tabular}
+
+\end{document}
