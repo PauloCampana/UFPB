@@ -1,0 +1,153 @@
+\documentclass[12pt]{article}   % artigo fonte 12
+% Caracteres / Acentos / Português do Brasil
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+% Pacotes Matemática
+\usepackage{array,latexsym}
+\usepackage{amsmath,amsfonts,amssymb,amsthm,amstext}
+\usepackage{graphicx}
+
+\begin{document}
+	\section{Tabelas}
+
+		\begin{table}[h!]
+			\centering
+			\caption{Quadro}
+			\label{tab_quadro}
+			\begin{tabular}{|c|c|}
+				\hline
+				A & B \\
+				\hline
+				C & D \\
+				\hline
+				D & F \\
+				\hline
+			\end{tabular}
+		\end{table}
+
+		\begin{table}[h!]
+			\centering
+			\caption{Tabela}
+			\label{tab_tabela}
+			\begin{tabular}{lr}
+				\hline
+				A & B \\
+				\hline
+				C & D \\
+				\hline
+				D & F \\
+				\hline
+			\end{tabular}
+		\end{table}
+
+	 	\begin{table}[h!]
+	 		\centering
+	 		\caption{Continuação horizontal}
+	 		\label{tab_mes}
+	 		\begin{tabular}{l|r||l|r}
+	 			\hline
+	 			Mês&Dias&Mês&Dias\\
+	 			\hline
+	 			Janeiro&31&Julho&31\\
+	 			Fevereiro&28 ou 29&Agosto&31\\
+	 			Março&31&Setembro&30\\
+	 			Abril&30&Outubro&31\\
+	 			Maio&31&Novembro&30\\
+	 			Junho&30&Dezembro&31\\
+	 			\hline
+	 		\end{tabular}
+	 	\end{table}
+
+		\begin{table}[h!]
+			\centering
+			\caption{População do Titanic}
+			\label{tab_tit}
+			\begin{tabular}{l|c|r|r|r|r|r}
+				\hline
+				&&\multicolumn{4}{c|}{Idade}&\\
+				\cline{3-6}
+				Sexo&Classe&\multicolumn{2}{c|}{Criança}&\multicolumn{2}{c|}{Adulto}&Total\\
+				\cline{3-6}
+				&&Morreu&Sobreviveu&Morreu&Sobreviveu&\\
+				\hline
+				&1ª&0&1&4&140&145\\
+				Feminino&2ª&0&13&13&80&106\\
+				&3ª&17&14&89&76&196\\
+				&&&&&&\\
+				\hline
+				&1ª&0&5&118&57&180\\
+				Masculino&2ª&0&11&154&14&179\\
+				&3ª&35&13&387&75&510\\
+				&&&&&&\\
+				\hline
+				Total&&52&57&765&442&1316\\
+				\hline
+				\multicolumn{7}{l}{\textbf{Fonte:} Conjunto de dados \textit{Titanic} do pacote \textit{datasets} do \textit{software} R}\\
+				\multicolumn{7}{l}{\textbf{Nota:} Não inclui dados dos tripulantes}
+			\end{tabular}
+		\end{table}
+
+		\begin{table}[h!]
+			\centering
+			\caption{População do Titanic}
+			\label{tab_tit2}
+			\begin{tabular}{lc|rrrr|r}
+				\hline
+				&&\multicolumn{4}{c|}{Idade}&\\
+				Sexo&Classe&\multicolumn{2}{c}{Criança}&\multicolumn{2}{c|}{Adulto}&Total\\
+				&&Morreu&Sobreviveu&Morreu&Sobreviveu&\\
+				\hline
+				&1ª&0&1&4&140&145\\
+				Feminino&2ª&0&13&13&80&106\\
+				&3ª&17&14&89&76&196\\
+				&&&&&&\\
+				&1ª&0&5&118&57&180\\
+				Masculino&2ª&0&11&154&14&179\\
+				&3ª&35&13&387&75&510\\
+				&&&&&&\\
+				\hline
+				Total&&52&57&765&442&1316\\
+				\hline
+			\end{tabular}
+		\end{table}
+
+		\begin{table}[h!]
+			\centering
+			\caption{Tabela gerada online}
+			\label{tab_auto}
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				A & B & C & D & E & F & G & H & I & J & K & L & M \\ \hline
+				N & O & P & Q & R & S & T & U & V & W & X & Y & Z \\ \hline
+			\end{tabular}
+		\end{table}
+
+		\begin{table}[h!]
+			\centering
+			\caption{Tabela do Titanic gerada online}
+			\label{tab_titauto}
+			\begin{tabular}{l|c|r|r|r|r|r}
+				\hline
+				&        & \multicolumn{4}{c|}{Idade}                                 &       \\ \cline{3-6}
+				Sexo      & Classe & \multicolumn{2}{c|}{Criança} & \multicolumn{2}{c|}{Adulto} & Total \\ \cline{3-6}
+				&        & Morreu      & Sobreviveu     & Morreu     & Sobreviveu     &       \\ \hline
+				& 1ª     & 0           & 1              & 4          & 140            & 145   \\
+				Feminino  & 2ª     & 0           & 13             & 13         & 80             & 106   \\
+				& 3ª     & 17          & 14             & 89         & 76             & 196   \\
+				&        &             &                &            &                &       \\ \hline
+				& 1ª     & 0           & 5              & 118        & 57             & 180   \\
+				Masculino & 2ª     & 0           & 11             & 154        & 14             & 179   \\
+				& 3ª     & 35          & 13             & 387        & 75             & 510   \\
+				&        &             &                &            &                &       \\ \hline
+				Total     &        & 52          & 57             & 765        & 442            & 1316  \\ \hline
+			\end{tabular}
+		\end{table}
+
+
+
+
+
+
+
+
+\end{document}

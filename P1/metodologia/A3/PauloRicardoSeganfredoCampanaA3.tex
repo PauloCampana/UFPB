@@ -1,0 +1,92 @@
+\documentclass[12pt]{article}   % artigo fonte 12
+\usepackage[
+a4paper,		% papel A4
+left=1.5cm,		% margem esquerda
+right=1.5cm,		% margem direita
+top=1.5cm,		% margem superior
+bottom=1.5cm		% margem inferior
+]{geometry}
+% Caracteres / Acentos / Português do Brasil
+\usepackage{inputenc}[utf8]
+\usepackage{fontenc}[T1]
+\usepackage{babel}[brazil]
+% Pacotes Matemática
+\usepackage{array,latexsym}
+\usepackage{amsmath,amsfonts,amssymb,amsthm,mathabx,amstext}
+\usepackage{dsfont}	% Conjuntos: $\mathds{N, Z, Q, R, C}$
+\usepackage{graphicx}
+
+\begin{document}
+
+	\begin{table}[h!]
+		\centering
+		\caption{Distribuição da população ocupada e da população subocupada por insuficiência de horas (valores absolutos por 1 000 pessoas), segundo grupos de atividades - 2019}
+		\label{tab_ocup}
+		\begin{tabular}{l|rr}
+			\hline
+			\multicolumn{1}{c|}{\textbf{Grupos de atividade (1)}}&\textbf{Ocupada}&\textbf{Subocupada (2)}\\
+			\hline
+			&&\\
+			\textbf{Total}&94 642&7 187\\
+			&&\\
+			Agropecuária&8 652&941\\
+			Indústria&12 231&462\\
+			Construção&6 823&692\\
+			Comércio e reparação&17 914&949\\
+			Adm. pública, educação, saúde e serv. sociais&16 459&936\\
+			Transporte, armazenagem e correio&4 841&256\\
+			Alojamento e alimentação&5 631&554\\
+			Informação, financeira e outras ativ. profissionais&10 716&540\\
+			Serviços domésticos&6 271&1 129\\
+			Outros serviços&5 068&724\\
+			&&\\
+			\hline
+			\multicolumn{3}{l}{\textbf{Fonte:} IBGE, PNAD, 2019.}\\
+			\multicolumn{3}{l}{\textbf{Notas:} (1) Não são apresentados resultados para atividades mal definidas.}\\
+			\multicolumn{3}{l}{(2) dados calculados pelas horas trabalhadas até setembro/2015}\\
+		\end{tabular}
+	\end{table}
+
+	\begin{table}[h!]
+		\centering
+		\caption{População com 14 anos ou mais de idade ocupadas na semana de referência (valores absolutos por 1 000 pessoas), segundo sexo e posição na ocupação e trabalho formal ou informal - 2019}
+		\label{tab_ocupteen}
+		\begin{tabular}{l|rr}
+			\hline
+			\multicolumn{1}{c|}{\textbf{Posição na ocupação}}&\multicolumn{2}{c}{\textbf{Sexo}}\\
+			&\textbf{Homem}&\textbf{Mulher}\\
+			\hline
+			&&\\
+			\textbf{Total}&53 306&41 336\\
+			&&\\
+			\textbf{Formal}&31 210&24 086\\
+			Empregado com carteira&20 747&14 460\\
+			Trabalhador doméstico com carteira&198&1 528\\
+			Militar ou funcionário público&3 425& 4 446\\
+			Conta própria contribuinte&4 736&2 620\\
+			Empregador contribuinte&2 104&1 031\\
+			&&\\
+			\textbf{Informal}&22 096&17 250\\
+			Empregado sem carteira&9 027&5 455\\
+			Trabalhador doméstico sem carteira&290&4 196\\
+			Conta própria não contribuinte&11 067&5 993\\
+			Empregador não contribuinte&930&305\\
+			Trabalhador familiar auxiliar&784&1 300\\
+			&&\\
+			\hline
+			\multicolumn{3}{l}{\textbf{Fonte:} IBGE, PNAD, 2019.}\\
+			\multicolumn{3}{l}{\textbf{Nota:} A classificação dos trabalhos formais/informais}\\
+			\multicolumn{3}{l}{baseia-se na definição da Org. Int. do Trabalho - OTI.}
+		\end{tabular}
+	\end{table}
+
+
+
+
+
+
+
+
+
+
+\end{document}

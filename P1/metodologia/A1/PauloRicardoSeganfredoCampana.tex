@@ -1,0 +1,57 @@
+\documentclass[12pt]{article}   % artigo fonte 12
+\usepackage[
+a4paper,		% papel A4
+left=3cm,		% margem esquerda
+right=2cm,		% margem direita
+top=3cm,		% margem superior
+bottom=2cm		% margem inferior
+]{geometry}
+% Caracteres / Acentos / Português do Brasil
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}	
+\usepackage[brazil]{babel}
+% Pacotes Matemática
+\usepackage{array,latexsym}
+\usepackage{amsmath,amsfonts,amssymb,amsthm,mathabx,amstext}
+\usepackage{dsfont}	% Conjuntos: $\mathds{N, Z, Q, R, C}$
+\usepackage{csquotes} %adicionei essa aq que achei na internet pra fazer \enquote{a}
+
+\begin{document}
+	
+	\tableofcontents
+	
+	\section{Variável Aleatória Contínua}
+	
+	Uma variável $X$ é denominada de \textbf{variável aleatória contínua (v.a.c.)} quando seu espaço amostral $R_{X}$ é um conjunto infinito não enumerável. Como exemplos de variáveis aleatórias contínuas podemos citar:
+	
+	\begin{itemize}
+		\item resistência de um material,
+		\item concentração de CO2 na água,
+		\item tempo de vida de um componente eletrônico,
+		\item tempo de resposta de um sistema computacional,
+		\item temperatura e
+		\item medições (peso, altura, comprimento,...).
+	\end{itemize}
+	
+	\subsection{Função de densidade}
+	
+	Seja $X$ uma variável aleatória contínua (v.a.c). A função $f(x)$ que associa a cada $x \in R_{X}$ um número real que satisfaz as seguintes condições:
+	
+	\begin{enumerate}
+		\item $f(x) \geq 0$, para todo $x \in R_{X}$ e
+		
+		\item $\displaystyle\int_{-\infty}^{\infty} f(x)dx = 1,$
+	\end{enumerate}
+	
+	\noindent é denominada de \textbf{função densidade de probabilidade (fdp)} da variável aleatória $X$.
+	\par Neste caso $f(x)$ representa apenas a densidade no ponto $x$, ao contrário da função de probabilidade $p(x)$ de uma variável aleatória discreta, $f(x)$ aqui \textbf{não é a probabilidade} da variável $X$ assumir o valor $x$. Veremos a seguir como se calcula probabilidades quando se tem uma distribuição contínua.
+	
+	\subsection{Cálculo das Probabilidades}
+	
+	Seja $X$ uma v.a.c com função densidade de probabilidade $f(x)$. Sejam $a < b$, dois números reais. Define-se:
+	
+	\[ P(a < X < b) = \int_{a}^{b} f(x)dx,\]
+	
+	\noindent isto é, a probabilidade de que $X$ assuma valores entre os números \enquote{a} e \enquote{b} é a área sob o gráfico da função $f(x)$ entre os pontos $x = a$ e $x = b$.
+	
+\end{document}

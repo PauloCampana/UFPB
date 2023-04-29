@@ -1,0 +1,186 @@
+\documentclass[12pt]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{ragged2e}
+\usepackage{array,latexsym}
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathabx, amstext}
+\usepackage{dsfont}
+%Sonny, Lenny, Glenn, Conny, Rejne, Bjarne, Bjornstrup
+\usepackage[Rejne]{fncychap}
+
+\begin{document}
+	
+\tableofcontents	
+	
+	\chapter{Introdução ao \LaTeX}	
+	
+		\section{Formatando o texto}
+		
+			\subsection{Criando listas}
+			
+				\subsubsection{Não numeradas}
+				
+					\begin{description}
+						\item[*]Estatística,
+						\item[@] Matemática,
+						\item[\%] Informática,
+						\item[\$] Estimação,
+							\begin{itemize}
+								\item pontual e 
+								\item intervalar.
+							\end{itemize}
+					    \item[\&] Teste de hipóteses.
+					\end{description}
+			
+				\subsubsection{Numeradas}
+					
+					\begin{enumerate}
+						\item Janeiro,
+							\begin{enumerate}
+								\item Segunda,
+								\item Terça e 
+								\item Quarta,
+							\end{enumerate}
+						\item Fevereiro e
+						\item Março.
+						
+					\end{enumerate}
+				
+			\subsection{Estilo da letra}
+			
+				\textbf{negrito}
+				\textit{itálico}			
+				\underline{sublinhado}
+				\textbf{\textit{\underline{tudo}}}
+				\texttt{eita porra}
+			
+			\subsection{O tamanho da fonte}
+			 
+				\begin{itemize}
+					\item \tiny pequeninho
+					\item \scriptsize não sei
+					\item \footnotesize tmb ñ
+					\item \small pequeno
+					\item \normalsize normal
+					\item \large grandinho
+					\item \Large grande
+					\item \LARGE grandão
+					\item \huge enorme
+					\item \Huge chonk
+				\end{itemize}
+			
+		\section{Formatando o parágrafo}
+		
+			\subsection{Criando parágrafos}
+			
+				sem parágrafo
+				\par parágrafo\\
+				\indent outro parágrafo
+				\par mais fácil botar o barra par
+				\par\noindent pra que isso?
+			
+			\subsection{Alinhamento}
+			
+				\justify{esse texto bem grandão esse texto bem grandão esse texto bem grandão esse texto bem grandão esse texto bem grandão esse texto bem grandão esse texto bem grandão esse texto bem grandão esse texto bem grandão}
+			
+				\begin{flushleft}
+					alinhado a esquerda
+				\end{flushleft}
+		
+				\begin{flushright}
+					alinhado a direita
+				\end{flushright}
+		
+				\begin{center}
+					centralizado
+				\end{center}
+			
+			\subsection{Espaços}
+			
+				\par texto
+				\par reduzir espaço
+				\par \vspace{-10pt} reduzir espaço
+				\par adicionar
+				\par \vspace{+10pt} adicionar
+				
+				
+				
+				==================
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+		\section{Equações}
+		
+			\subsection{Equações no texto}
+			
+				\par\indent $ p(x)=p^x(1-p)^{1-x} $ e da?
+				\par \( p(x)=p^x(1-p)^{1-x} \) e da?
+				\par \[ p(x)=p^x(1-p)^{1-x} \] e da?
+				
+				\par $ x_{o} $
+				\par $ x^{o} $
+				\par $ \frac{a}{b} $
+				\par $ \dfrac{a}{b} $
+				\par $ \mathds{N,Z,Q,R,C} $
+			
+			\subsection{Ambiente de equações}
+			
+				\par \[ p(x)=\binom{n}{x}p^x(1-p)^{n-x} \]
+			
+				\begin{equation}
+					p(x)=abx
+					\label{eq:eita}
+				\end{equation}
+			
+				(\ref{eq:eita})
+				
+				\begin{eqnarray}
+					\mbox{E}(Y) &=& p\\
+					\nonumber \mbox{Var}(Y) &=& np(1-p)
+				\end{eqnarray}
+			
+			\subsection{Matriz}
+			
+			\[ I=\left(\begin{array}{ccc}
+				1 & 0 & 0\\
+				0 & 1 & 0\\
+				0 & 0 & 1
+			\end{array}\right).\]
+		
+			\[ \left(\begin{array}{lll}
+				a & b & c \\
+				d & e & f \\
+				g & h & i
+			\end{array}\right).\]
+		
+			
+		\section{Mostrando códigos no PDF}
+			\subsection{Verb}
+			
+					\begin{verbatim}
+						\documentclass[12pt]{article}
+					
+						\usepackage[utf8]{inputenc}
+						\usepackage[T1]{fontenc}
+						\usepackage[brazil]{babel}
+						%Sonny, Lenny, Glenn, Conny, Rejne, Bjarne, Bjornstrup
+						\usepackage[Rejne]{fncychap}
+						\verb|\section{eitaporra}|
+					\end{verbatim}
+				
+
+\end{document}
+	
+	
