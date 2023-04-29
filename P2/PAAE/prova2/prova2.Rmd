@@ -1,0 +1,156 @@
+---
+title: "Gráficos, Teste de hipótese e Intervalos de confiança."
+author: "Paulo Ricardo Seganfredo Campana e Jéssika Helen de Almeida"
+date: "31/05/2022"
+output: html_document
+---
+
+Banco de dados sobre preço dos combustíveis no Brasil.\
+
+```{r}
+# banco de dados
+gas.raw <- read.delim2("~/R/pesq/prova2/2004-2021.tsv", dec = ".", encoding = "UTF-8")
+gas <- gas.raw[,-c(2, 7, 10:18)]
+
+names(gas) <- c("Data", "Região", "Estado", "Produto", "Observações", "Preço", "Desvio")
+```
+
+Para usar o banco de forma mais eficiente e fácil, foram feitas algumas modificações:\
+
+```{r}
+# limpeza
+gas <- gas[gas$Produto != "GLP",]
+gas$Data <- lubridate::ymd(gas$Data)
+gas$Produto[gas$Produto == "OLEO DIESEL"] <- "ÓLEO DIESEL"
+gas$Produto[gas$Produto == "OLEO DIESEL S10"] <- "ÓLEO DIESEL S10"
+
+gas$Região <- stringr::str_to_title(gas$Região)
+gas$Estado <- stringr::str_to_title(gas$Estado)
+gas$Produto <- stringr::str_to_title(gas$Produto)
+```
+
+# Criação de gráficos\
+## Mapa do Brasil\
+### Estados do Brasil com maior número de observações coletadas\
+
+```{r message=FALSE}
+# informações geograficas
+brasil <- geojsonio::geojson_read("https://raw.githubusercontent.com/codeforgermany/click_that_hood/main/public/data/brazil-states.geojson", what = "sp")
+```
+
+```{r include=FALSE}
+brasil@data$obs <- c(
+  sum(gas$Observações[gas$Estado == "Acre"]),
+  sum(gas$Observações[gas$Estado == "Alagoas"]),
+  sum(gas$Observações[gas$Estado == "Amazonas"]),
+  sum(gas$Observações[gas$Estado == "Amapa"]),
+  sum(gas$Observações[gas$Estado == "Bahia"]),
+  sum(gas$Observações[gas$Estado == "Ceara"]),
+  sum(gas$Observações[gas$Estado == "Espirito Santo"]),
+  sum(gas$Observações[gas$Estado == "Goias"]),
+  sum(gas$Observações[gas$Estado == "Maranhao"]),
+  sum(gas$Observações[gas$Estado == "Minas Gerais"]),
+  sum(gas$Observações[gas$Estado == "Mato Grosso Do Sul"]),
+  sum(gas$Observações[gas$Estado == "Mato Grosso"]),
+  sum(gas$Observações[gas$Estado == "Para"]),
+  sum(gas$Observações[gas$Estado == "Paraiba"]),
+  sum(gas$Observações[gas$Estado == "Pernambuco"]),
+  sum(gas$Observações[gas$Estado == "Piaui"]),
+  sum(gas$Observações[gas$Estado == "Parana"]),
+  sum(gas$Observações[gas$Estado == "Rio De Janeiro"]),
+  sum(gas$Observações[gas$Estado == "Rio Grande Do Norte"]),
+  sum(gas$Observações[gas$Estado == "Rondonia"]),
+  sum(gas$Observações[gas$Estado == "Roraima"]),
+  sum(gas$Observações[gas$Estado == "Rio Grande Do Sul"]),
+  sum(gas$Observações[gas$Estado == "Santa Catarina"]),
+  sum(gas$Observações[gas$Estado == "Sergipe"]),
+  sum(gas$Observações[gas$Estado == "Sao Paulo"]),
+  sum(gas$Observações[gas$Estado == "Tocantins"]),
+  sum(gas$Observações[gas$Estado == "Distrito Federal"]))
+```
+
+```{r message=FALSE, warning=FALSE}
+# paleta de cores
+library(viridis)
+color <- viridis(27)
+bins <- cut(log(brasil$obs), 27)
+color <- color[as.numeric(bins)]
+
+sp::plot(brasil, col = color, main = "Obsevações por Estado")
+```
+
+## Histograma\
+### Número de observações de cada combustível, entre os anos de 2004 à 2021\
+
+```{r warning=FALSE}
+library(ggplot2)
+```
+
+```{r}
+ggplot(gas, aes(x = Preço, color = Produto, fill = Produto)) +
+  geom_histogram(alpha = 0.7, binwidth = 0.1) +
+  scale_fill_viridis(discrete = TRUE) +
+  scale_color_viridis(discrete = TRUE) +
+  facet_wrap(~Produto) +
+  ylab("Observações") +
+  ggtitle("Histograma dos combustíveis 2004-2021")
+```
+
+## Série temporal\
+### Preço dos combustíveis entre os anos de 2004 à 2021\
+
+```{r}
+ggplot(gas, aes(x = Data, y = Preço, color = Produto)) +
+  geom_line(alpha = 0.7) +
+  scale_fill_viridis(discrete = TRUE) +
+  scale_color_viridis(discrete = TRUE) +
+  facet_wrap(~Produto) +
+  scale_x_date(date_labels = "%Y", date_breaks = "4 year") +
+  xlab("Ano") +
+  ggtitle("Preço dos combustíveis 2004-2021")
+```
+
+Teste de hipótese - preço da gasolina comum de Janeiro a Abril de 2021\
+
+```{r message=FALSE, warning=FALSE}
+library(BSDA)
+
+# informações
+media <- mean(gas$Preço[gas$Produto == "Gasolina Comum" & gas$Data > "2021-01-01"])
+desvio <- mean(gas$Desvio[gas$Produto == "Gasolina Comum" & gas$Data > "2021-01-01"])
+
+preçoparaiba <- gas$Preço[gas$Produto == "Gasolina Comum" & gas$Data > "2021-01-01" & gas$Estado == "Paraiba"]
+preçopernambuco <- gas$Preço[gas$Produto == "Gasolina Comum" & gas$Data > "2021-01-01" & gas$Estado == "Pernambuco"]
+preçorionorte <- gas$Preço[gas$Produto == "Gasolina Comum" & gas$Data > "2021-01-01" & gas$Estado == "Rio Grande Do Norte"]
+```
+
+```{r}
+# testes
+testeparaiba <- z.test(preçoparaiba, mu = media, sigma.x = desvio, alternative = "less")
+testepernambuco <- z.test(preçopernambuco, mu = media, sigma.x = desvio, alternative = "less")
+testerionorte <- z.test(preçorionorte, mu = media, sigma.x = desvio, alternative = "less")
+```
+
+```{r}
+# tabela
+tabela <- data.frame(
+  "Estado" = c("Paraíba", "Pernambuco", "Rio Grande do Norte"),
+  "Preço médio" = c(mean(preçoparaiba), mean(preçopernambuco), mean(preçorionorte)),
+  "Intervalo de confiança superior" = c(testeparaiba$conf.int[2], testepernambuco$conf.int[2], testerionorte$conf.int[2]),
+  "Z" = c(testeparaiba$statistic[1], testepernambuco$statistic[1], testerionorte$statistic[1]),
+  "p-valor" = round(c(testeparaiba$p.value, testepernambuco$p.value, testerionorte$p.value), 6),
+  check.names = FALSE)
+
+```
+
+Hipótese: O preço da gasolina comum nos Estados da Paraíba, Pernambuco e Rio Grande do Norte foi menor que a média nacional de 5,18 Reais no período de Janeiro a Abril de 2021.\
+
+> H~0~: Média $\geq$ 5.18 Reais\
+> H~1~: Média $<$ 5.18 Reais\
+
+```{r}
+# resultados
+knitr::kable(tabela, caption = "Resultados do teste de hipótese")
+```
+
+Portanto com um nível de confiança superior a 99%, para Paraíba e Pernambuco rejeita a hipótese nula, e para Rio Grande do Norte rejeita a hipótese alternativa.\

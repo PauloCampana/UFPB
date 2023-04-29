@@ -1,0 +1,255 @@
+---
+title: "Apresentação sobre o gtsummary"
+author: "Paulo Ricardo Seganfredo Campana e Jéssika Helen de Almeida"
+date: "26/04/2022"
+output:
+  html_document: default
+---
+
+## O Banco de dados
+
+  O banco escolhido foi sobre preço de combustíveis em todas as regiões do Brasil entre os anos de 2004 a 2021. Se encontra no Kaggle a partir deste [link](https://www.kaggle.com/datasets/matheusfreitag/gas-prices-in-brazil).  
+
+```{r warning=FALSE}
+# leitura do banco
+library(readr)
+gas.raw <- read_delim("2004-2021.tsv", delim = "\t", escape_double = FALSE,
+                  trim_ws = TRUE, show_col_types = FALSE)
+
+# visualização do banco
+gas.raw[ ,7] <- "Real por litro"
+knitr::kable(head(gas.raw))
+```
+
+  Tal banco aborda muitas variáveis que se tornam desnecessarias para a nossa análise, com isso, criamos um novo banco.  
+
+```{r}
+# criar novo banco apenas com colunas que usaremos
+gas <- data.frame("Data" = as.character(gas.raw$`DATA INICIAL`),
+                  "Região" = gas.raw$REGIÃO,
+                  "Estado" = gas.raw$ESTADO,
+                  "Produto" = gas.raw$PRODUTO,
+                  "Preço" = gas.raw$`PREÇO MÉDIO REVENDA`)
+
+# ajeitar os nomes dos produtos
+gas$Produto[gas$Produto == "ETANOL HIDRATADO"] <- "Etanol Hidratado"
+gas$Produto[gas$Produto == "GASOLINA COMUM"] <- "Gasolina Comum"
+gas$Produto[gas$Produto == "GASOLINA ADITIVADA"] <- "Gasolina Aditivada"
+gas$Produto[gas$Produto == "OLEO DIESEL"] <- "Óleo Diesel"
+gas$Produto[gas$Produto == "ÓLEO DIESEL"] <- "Óleo Diesel"
+gas$Produto[gas$Produto == "OLEO DIESEL S10"] <- "Óleo Diesel S10"
+gas$Produto[gas$Produto == "ÓLEO DIESEL S10"] <- "Óleo Diesel S10"
+```
+
+  A partir desse novo banco, iremos ultilizar as funções do pacote gtsummary, cuja documentação pode ser vista no [site](https://www.danieldsjoberg.com/gtsummary/reference/index.html) do autor Daniel D. Sjoberg.  
+
+## Utilizando o pacote
+
+  O pacote foi criado para geração de tabelas de dados e estatísticas descritivas de diferentes tipos de variáveis. Os comandos principais para geração de tabelas são:  
+
+* __tbl_summary()__
+* __tbl_regression() e tbl_uvregression()__
+* __tbl_survfit()__
+* __tbl_svysummary()__
+* __tbl_cross()__
+
+
+### tbl_summary()
+
+A principal função geradora de tabelas, veremos um exemplo:  
+
+```{r warning=FALSE}
+library(gtsummary)
+
+# criar tabela
+tabelasimples <- tbl_summary(
+  gas,                                                  # o banco a ser utilizado
+  by = Produto,                                         # qual variável para organizar a tabela
+  include = Preço,                                      # quais variáveis a serem utilizadas
+  statistic = Preço ~ "{min} Reais {max} Reais ({sd})", # a forma dos dados e quais estatísticas a serem calculadas
+  digits = Preço ~ 2)                                   # mostrar quantas casas decimais
+
+tabelasimples
+```
+
+
+
+  Existem comandos adicionais para as funções tbl_...(), estes são escritos fora da função e ligados com o operador "%>%".  
+
+As funções add_...() adicionam novas colunas a tabela.  
+
+* add_p()         
+  + Faz teste de P para variáveis qualitativas
+* add_q()
+  + Faz ajustes ao teste de P
+* add_overall()
+  + Adiciona uma coluna que calcula as estatísticas do totais
+* add_n()
+  + Adiciona uma coluna com o total de observações
+* add_ci()
+  + Adiciona uma coluna com intervalos de confiança
+* add_difference()
+  + Adiciona uma coluna com a diferença entre dois grupos
+* add_stat_label()
+  + Adiciona uma coluna mostrando as estatísticas utilizadas
+* add_stat()
+  + Adiciona uma coluna que aplica uma função customizável
+* remove_row_type()
+  + Deleta linhas da tabela especificadas
+
+
+As funções modify_...() modificam elementos da tabela.  
+
+* modify_header()
+  + Modifica os nomes das colunas
+* modify_footnote()
+  + Modifica o rodapé
+* modify_spanning_header()
+  + Adiciona categorias às colunas
+* modify_caption()
+  + Adiciona título
+  
+As funções a seguir formatam o texto (negrito e itálico).  
+
+* bold_labels() e bold_levels()
+  + Transformam o nome das linhas em negrito
+* italicize_labels() e italicize_levels()
+  + Transformam o nome das linhas em itálico
+* bold_p()
+  + Transformam o nome de todas as linhas em negrito
+  
+Segue um exemplo de tabela com alguns comandos adicionais:  
+  
+```{r}
+# tabela com comandos adicionais
+tabelabonita <- tbl_summary(
+  gas, 
+  by = Produto,
+  include = Preço,
+  label = Preço ~ "Valor do Litro",
+  statistic = Preço ~ "{min} Reais {max} Reais ({sd})",
+  digits = Preço ~ 2) %>%
+  modify_header(list(
+    label = "**Combustível**",
+    all_stat_cols() ~ "**{level}**")) %>%                              # mudar os nome das colunas
+  modify_footnote(everything() ~ "Minino, Maximo e Desvio padrão") %>% # mudar rodapé
+  modify_caption("Tabela de Preços 2004-2021") %>%                     # adicionar título
+  bold_labels()                                                        # nomes das linhas em negrito
+
+tabelabonita
+```
+
+### tbl_regression() e tbl_uvregression()
+
+  São as funções para criação de tabelas de modelos de regressão, se diferem pelo fato de que tbl_uvregression() é usada para modelos univariados.  
+
+```{r}
+# criar modelo de regressão
+modelo <- lm(Preço ~ Produto + Estado, gas)
+
+# criar tabela de regressão
+tabelamodelo <- tbl_regression(
+  modelo,
+  include = Produto) %>%                                              
+  bold_labels() %>%                                                    # negrito
+  bold_levels() %>%                                                    # negrito
+  modify_header(label ~ "**Combustível**")                             # nome das colunas
+
+tabelamodelo
+```
+
+
+
+Existem também comandos adicionais para tbl_regression() e tbl_uvregression():  
+
+* add_global_p()
+  + Adiciona teste de P global
+* add_vif()
+  + Adiciona uma coluna de Fator de Inflação de Variação 
+* add_significance_stars()
+  + Adiciona uma coluna com Estralas de Significância
+* add_glance_table() e add_glance_source_note()
+  + Adiciona uma linha ou rodapé com algumas estatísticas extras como desvio padrão, R^2^, entre outros
+* combine_terms()
+  + Combina os termos de uma tabela de regressão em uma só linha
+  
+### tbl_svysummary()
+ 
+  Esta função possui a mesma funcionalidade do tbl_summary() já visto, com o adicional de lidar com variáveis de peso para o cálculo das estatísticas.  
+  
+### tbl_survfit()
+
+  Função para criação de tabelas de Análise de Sobrevivência, segue um exemplo obtido no site do gtsummary, porém não nos aprofundaremos.  
+ 
+```{r}
+library(survival)
+
+# tabela de análise de sobrevivência
+tabelasurv <- tbl_survfit(
+  survfit(Surv(ttdeath, death) ~ trt, trial),
+  times = c(12, 24),
+  label_header = "**{time} Month**")
+
+tabelasurv
+```
+
+### tbl_cross()
+
+  Outra função principal é a tbl_cross(), cria tabelas cruzadas para duas variáveis qualitativas nominais.  
+
+```{r}
+# tabela cruzada
+tabelacruzada <- tbl_cross(
+  gas,                                       # banco de dados
+  row = Região,                              # qual variável para as linhas da tabela
+  col = Produto,                             # qual variável para as colunas da tabela
+  percent = "row") %>%                       # adiciona porcentagem das observações
+  bold_labels() %>%
+  bold_levels() %>%
+  modify_header(label ~ "**Combustível**") %>%
+  modify_caption("Observações de combustíveis em diferentes Estados")
+
+tabelacruzada
+```
+
+### inline_text()
+
+  Uma função importante é inline_text(), é usada para referir a dados de uma tabela no rmarkdown.  
+
+  Por exemplo: para se referir sobre as observações de Gasolina comum na Região Norte se usa:
+  
+inline_text(tabelacruzada, row = Região, row_level = "NORTE", col = Produto, col_level = "Gasolina Comum")
+
+  O primeiro argumento se refere a tabela, row e row_level a linha, col e col_level a coluna a ser citada:  
+
+  As obervações de Gasolina comum na Região Norte foi de `r inline_text(tabelacruzada, row = Região, row_level = "NORTE", col = Produto, col_level = "Gasolina Comum")`  
+
+### União de tabelas
+
+  Os comandos tbl_merge() e tbl_stack() servem para juntar duas tabelas em uma:  
+
+```{r warning=FALSE}
+tbl_stack(list(
+  tabelabonita,                                # primeira tabela
+  tabelacruzada),                              # segunda tabela
+  quiet = TRUE)                              
+```
+
+### Reduzir tabelas
+
+  As tabelas do gtsummary contém muitas informações por trás delas, por isso existe a função tbl_butcher para reduzir o tamanho de tabelas na memória, retendo apenas as informações essenciais da tabela, segue uma comparação:   
+
+```{r}
+# reduzir a tabela
+tabelareduzida <- tbl_butcher(tabelacruzada)
+
+# comparação de tamanho
+object.size(tabelacruzada) %>% format(units = "Kb")
+object.size(tabelareduzida) %>% format(units = "Kb")
+```
+
+A tabela reduzida ocupa 40Kb de memória comparado com a tabela original que ocupa 7700Kb.    
+
+### Temas
+
+  Existe também a possibilidade de mudar o tema das tabelas com theme_gtsummary_language(), que permite escolher a linguagem padrão das tabelas e se usa ponto ou virgula como decimal, além das funções style_...() que servem para mudar características como número de casas decimais padrões de diferentes tipos de estatísticas calculadas.  
