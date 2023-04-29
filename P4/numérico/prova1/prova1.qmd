@@ -1,0 +1,239 @@
+---
+format: pdf
+lang: pt
+title: "Avaliação 1"
+subtitle: "Resolução numérica de equações"
+author: "Paulo Ricardo Seganfredo Campana"
+date: "2023-03-15"
+date-format: long
+callout-icon: false
+monofont: "Ubuntu Mono"
+---
+
+```{r}
+#| include: false
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+# Funções de resolução numérica
+As seguintes funções são implementações dos métodos da bissecção e Newton-Raphson que solucionam equações da forma $f(x) = h$ com uma certa margem de erro. O método da bissecção exige um intervalo $[a,b]$ e irá encontrar uma solução dentro do intervalo, enquanto o método de Newton-Raphson requer apenas um chute inicial porém a solução pode não ser a mais próxima do chute.
+```{r}
+bissecção <- function(f, h, a, b, erro = 1e-8) {
+    while(TRUE) {
+        m <- (a + b) / 2
+        fm <- f(m) - h
+        fa <- f(a) - h
+        if(abs(fm) <= erro) return(m)
+        if(fm * fa > 0) a <- m
+        else b <- m
+    }
+}
+
+newton <- function(f, h, x, erro = 1e-8) {
+    while(TRUE) {
+        fx <- f(x) - h
+        if(abs(fx) <= erro) return(x)
+        dfx <- (f(x + erro) - f(x)) / erro
+        x = x - fx / dfx
+    }
+}
+```
+Usarei sempre um erro absoluto de $10^{-8}$ embora as questões dessa avaliação peçam erros muito maiores, isso se deve a facilidade de obter um resultado com tal prescisão usando programação.
+
+Para calcular a derivada no ponto $x$ no método de Newton-Raphson, usei a seguinte aproximação baseada na definição de derivada: porém tomando $h$ como um valor muito pequeno, igual ao erro absoluto.
+$$
+\lim_{h \to 0} \dfrac{f(x + h) - f(x)}{h}
+$$
+
+# Função de geração de gráfico
+Cria o gráfico de uma função $f(x)$ e a reta $h$ constante no intervalo $[a,b]$, será usada para rapidamente visualizar um intervalo onde se encontra uma raíz e também para verificar se o resultado numérico coincide com uma interseção da curva e da reta.
+```{r}
+library(ggplot2)
+plot_fun <- function(f, h, a, b) {
+    ggplot() +
+        geom_function(fun = f, n = 1000, color = "#4080f0") +
+        geom_hline(yintercept = h, color = "#204080") + 
+        xlim(a, b) +
+        labs(
+            x = "x", y = "f(x)",
+            title = glue::glue("Gráfico de f(x) e h = {h}")
+        ) +
+        theme_minimal()
+}
+```
+\newpage
+
+# Questão 1.
+::: {.callout-note}
+## **Aplicação na Física**
+A velocidade de ascensão de um foguete em vôo vertical próximo à superfície terrestre pode ser aproximada pela seguinte expressão na qual $u$ é a velocidade de exaustão relativa ao foguete, $M_0$ a massa do foguete ao ser lançado, $c$ a taxa de consume de combustível $g$ a aceleração gravitacional e $t$ o tempo medido a partir do lançamento:
+$$
+v = u \ln \left( \dfrac{M_0}{M_0 - ct} \right) + gt
+$$ {#eq-q1}
+Considerando os valores:
+\begin{align*}
+      u &= 200 m/s   \\
+    M_0 &= 1600 Kg   \\
+      g &= 9.8 m/s^2 \\
+      c &= 27 Kg/s   \\
+\end{align*}
+Determinar o instante em que $v = 100 m/s$. Empregar o método da bissecção ou da falsa posição para determinar uma raiz aproximada para a equação, com intervalo inicial $[6,8]$. Explicite o erro
+relativo associado a cada iteração.
+:::
+```{r}
+q1_geral <- function(t, u, M0, c, g) {
+    ln <- log(M0 / (M0 - c*t))
+    u * ln + g*t
+}
+
+q1_aplicada <- function(t) {
+    q1_geral(t, u = 200, M0 = 1600, c = 27, g = 9.8)
+}
+```
+\newpage
+```{r}
+#| warning: false
+plot_fun(f = q1_aplicada, h = 100, a = -60, b = 60)
+bissecção(f = q1_aplicada, h = 100, a = 6, b = 8)
+```
+Portanto, será no segundo $t = `r bissecção(f = q1_aplicada, h = 100, a = 6, b = 8) |> round(digits = 3)` s$ que um foguete atingirá velocidade de $v = 100 m/s$ a partir da @eq-q1. 
+Consulte a @tbl-q1 para visualizar o erro absoluto em cada etapa
+\newpage
+
+# Questão 2.
+::: {.callout-note}
+## **Aplicação na Física**
+Um cabo telefônico suspenso entre dois postes tem um peso de $\alpha$ quilogramas-força por metro linear. Considerando que a tensão $T$ na metade do cabo é obtida a partir resolução da seguinte equação na qual $S$ é o comprimento do cabo e $L$ é a distância entre os postes:
+$$
+\dfrac{2T}{\alpha} \sinh \left( \dfrac{\alpha L}{2T} \right) = S
+$$ {#eq-q2}
+A partir das seguintes condições: 
+\begin{align*}
+         S &= 32 m \\
+         L &= 30 m \\
+    \alpha &= 0.10 Kgf \\
+\end{align*}
+Utilizar o método da bissecção para determinar a tensão T. Considerar o intervalo inicial $[2,3]$. Obs: Utilizar método de Newton ou da Secante.
+:::
+Como o enunciado da questão deixou ambíguo qual método usar, optei pelo método de Newton.
+```{r}
+q2_geral <- function(t, alpha, L) {
+    sinh <- sinh(alpha * L / (2 * t))
+    2 * t / alpha * sinh
+}
+
+q2_aplicada <- function(t) {
+    q2_geral(t, alpha = 0.1, L = 30)
+}
+```
+\newpage
+```{r}
+plot_fun(f = q2_aplicada, h = 32, a = 1, b = 10)
+newton(f = q2_aplicada, h = 32, x = 2)
+```
+Consequentemente, a tensão $T$ do cabo para dados valores de $\alpha, L$ e $S$ é de $T = `r newton(f = q2_aplicada, h = 32, x = 2.8) |> round(digits = 3)`$ segundo a @eq-q2.
+\newpage
+
+# Questão 5.
+::: {.callout-note}
+## **Aplicação na Engenharia Mecânica**
+Em um automóvel, de massa $m$, com constante da mola $k$ e amortecimento $c$, sabe-se que o deslocamento vertical $x_0$ do centro de gravidade do carro é dado por:
+$$
+x(t) = x_0(t) \; e^{-nt} \left( \cos (pt) + \frac{n}{p} \sin (pt) \right)
+$$ {#eq-q5}
+$$
+p = \sqrt{\dfrac{k}{m} – \dfrac{c^2}{4m^2}}, \quad n = \dfrac{c}{2m}
+$$
+Com os seguintes valores:
+\begin{align*}
+    m &= 1.2 \times 10^6 g \\
+    k &= 1.25 \times 10^9 g/s^2 \\
+    c &= 1.4 \times 10^7 g/s \\
+\end{align*}
+Calcular os três primeiros instantes em que o centro de gravidade passa por sua posição de equilíbrio, isto é, $x = 0$
+:::
+Calculando $x_0(t)$ que presumo ser a condição inicial da função $x$ no instante $t = 0$:
+$$
+x_0(t) = x(0) = e^{0} \left( \cos (0) + \frac{n}{p} \sin (0) \right) = 1
+$$
+$$
+x(t) = e^{-nt} \left( \cos (pt) + \frac{n}{p} \sin (pt) \right)
+$$
+```{r}
+q5_geral <- function(t, m, k, c) {
+    n <- c / (2 * m)
+    p <- sqrt(k / m - n^2)
+    exp(-n * t) * (cos(p * t) + n / p * sin(p * t))
+}
+
+q5_aplicado <- function(t) {
+    q5_geral(t, m = 1.2e6, k = 1.25e9, c = 1.4e7)
+}
+```
+\newpage
+```{r}
+plot_fun(q5_aplicado, h = 0, a = 0, b = 1)
+```
+Devido a necessidade de encontrar em específico as três primeiras soluções, optei por usar o método da bissecção para garantir que a solução se encontra no intervalo.
+```{r}
+c(
+    bissecção(q5_aplicado, h = 0, a = 0.0, b = 0.1),
+    bissecção(q5_aplicado, h = 0, a = 0.1, b = 0.2),
+    bissecção(q5_aplicado, h = 0, a = 0.2, b = 0.3)
+)
+```
+Com esses resultados, os três primeiros instantes em que o centro de gravidade passa pela origem de acordo com a @eq-q5 são dados por $t = \lbrace `r bissecção(q5_aplicado, h = 0, a = 0.0, b = 0.1) |> round(digits = 3)`, \; `r bissecção(q5_aplicado, h = 0, a = 0.1, b = 0.2) |> round(digits = 3)`, \; `r bissecção(q5_aplicado, h = 0, a = 0.2, b = 0.3) |> round(digits = 3)` \rbrace$
+\newpage
+
+# Questão 6.
+::: {.callout-note}
+## **Aplicação na Engenharia Ambiental**
+Na engenharia ambiental, a equação abaixo pode ser usada para calcular o nível de oxigênio em um rio, após a chegada de uma descarga de esgoto.
+$$
+C = 10 - 15 \left( e^{-0.1x} - e^{-0.5x} \right)
+$$ {#eq-q6}
+Em que $x$ é a distância rio abaixo. Determine em que ponto, após a descarga de esgoto, o nível de oxigênio terá caído para $4$.
+:::
+```{r}
+q6 <- function(x) {
+    10 - 15 * (exp(-0.1 * x) - exp(-0.5 * x))
+}
+```
+\newpage
+```{r}
+plot_fun(f = q6, h = 4, a = 0, b = 30)
+c(
+    newton(q6, h = 4, x = 0),
+    newton(q6, h = 4, x = 10)
+)
+```
+Ou seja, pelo modelo da @eq-q6, o nível de oxigênio terá caido para 4 a uma distância de $`r newton(q6, h = 4, x = 0) |> round(digits = 2)` m$ rio abaixo, atingirá um ponto de mínimo, e passará por 4 de novo $`r newton(q6, h = 4, x = 10) |> round(digits = 2)` m$ rio abaixo.
+\newpage
+
+```{r} 
+#| label: tbl-q1
+#| tbl-cap: Método da bissecção para questão 1.
+#| echo: false
+bissecção2 <- function(f, h, a, b, erro = 1e-8) {
+    for(i in 1:999) {
+        m <- (a[i] + b[i]) / 2
+        if(abs(f(m) - h) <= erro) break
+        if((f(m) - h) * (f(a[i]) - h) > 0) {
+            a[i + 1] <- m
+            b[i + 1] <- b[i]
+        } else {
+            b[i + 1] <- m  
+            a[i + 1] <- a[i]   
+        }
+    }
+    tibble::tibble(
+        a, b,
+        m = (a + b) / 2,
+        `f(a)` = f(a),
+        `f(b)` = f(b),
+        `f(m)` = f(m),
+        erro = `f(m)` - h
+    )
+}
+bissecção2(f = q1_aplicada, h = 100, a = 6, b = 8) |> knitr::kable()
+```
