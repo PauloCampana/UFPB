@@ -1,0 +1,49 @@
+---
+format: html
+theme: sketchy
+callout-icon: false
+callout-appearance: minimal
+fontsize: "18pt"
+backgroundcolor: "#f0fff0"
+---
+
+![](de2.png){height=160px fig-align="center"}
+
+# Monitoria de Probabilidade II
+
+* Monitor: Paulo Ricardo S. Campana
+* Orientador: Rodrigo Bernardo da Silva
+
+
+:::: {.callout-tip}
+# Horário de atendimento
+::: {layout-ncol=2}
+
+#### Presencial:
+Terça-feira:  10:00 - 12:00 \
+Quinta-feira: 10:00 - 12:00
+
+
+#### Online:
+Flexível: 18:00 - 20:00
+
+Sala de monitoria CCEN
+
+Google meet, Whatsapp
+
+:::
+::::
+
+
+:::: {.callout-tip}
+# Contato
+::: {layout-ncol=2}
+
+#### Whatsapp
+\(54\) 98100-5000
+
+#### E-mail
+paulo.campana@academico.ufpb.br
+
+:::
+::::

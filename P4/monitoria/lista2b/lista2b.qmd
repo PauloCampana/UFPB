@@ -1,0 +1,196 @@
+---
+format: pdf
+title: Probabilidade II
+subtitle: Lista 3
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+\def \p #1{{ \text{P} \kern-2pt \left( #1 \right) }}
+\def \E #1{{ \text{E} \left[ #1 \right] }}
+\def \Var #1{{ \text{Var} \left[ #1 \right] }}
+:::
+
+# 1. TODO
+Seja X uma variável aleatória com valores não negativos. Mostre que
+
+$$
+\E{X} = \int \limits_0^{\infty} \p{X > x} dx
+$$
+
+{{< pagebreak >}}
+
+# 2.
+A função de distribuição de X é dada por:
+
+$$
+F_X(x) = \left \lbrace \begin{array}{ll}
+    0,                                             & \text{se} \;         x < -2; \\
+    \frac{1}{10} (x + 2),                          & \text{se} \; -2 \leq x < 0;  \\
+    \frac{1}{5} + \frac{x}{10} + \frac{3x^2}{250}, & \text{se} \;  0 \leq x < 5;  \\
+    1,                                             & \text{se} \;  x \geq 5.      \\
+\end{array} \right.
+$$
+
+## a)
+Calcule $\E{X}$ sem obter primeiro a densidade de X.
+
+\begin{align*}
+    \E{X} &= \int \limits_{-\infty}^{0} 1 - F_X(x) dx - \int \limits_0^{\infty} F_X(x) dx \\
+          &= \int \limits_{-2}^0 1 - \frac{1}{10} (x + 2) dx - \int \limits_0^5 \frac{1}{5} + \frac{x}{10} + \frac{3x^2}{250} dx \\
+          &= \left( x - \dfrac{x^2}{20} - \dfrac{x}{5} \right) \Big|_{-2}^0 - \left( \dfrac{x}{5} + \dfrac{x^2}{20} + \dfrac{x^3}{250} \right) \Big|_0^5 \\
+          &= \left( 0 + 2 + \dfrac{1}{5} + \dfrac{2}{5} \right) - \left( 1 + \dfrac{5}{4} + \dfrac{1}{2} - 0 \right) \\
+          &= \dfrac{13}{5} - \dfrac{11}{4} \\
+          & = \dfrac{-3}{20}
+\end{align*}
+
+{{< pagebreak >}}
+
+## b)
+Obtenha $\E{X^2}$ via densidade de X.
+
+Derivando $F_X(x)$:
+
+\begin{align*}
+    \dfrac{d}{dx} \left( \dfrac{1}{10} (x + 2) \right)
+        &= \dfrac{1}{10} \qquad \quad \; \;
+        \text{para} \; -2 \leq x < 0; \\
+    \dfrac{d}{dx} \left( \dfrac{1}{5} + \dfrac{x}{10} + \dfrac{3x^2}{250} \right)
+        &= \dfrac{1}{10} + \dfrac{3x}{125}, \;
+        \text{para} \;  0 \leq x < 5; \\
+        &= 0 \qquad \qquad \; \;
+        \text{para} \; x < -2 \; \text{e} \; x \geq 5.
+\end{align*}
+
+\begin{align*}
+    \E{X^2} &= \int \limits_{-\infty}^{\infty} x^2 f_X(x) dx \\
+            &= \int \limits_{-2}^0 x^2 \dfrac{1}{10} dx + \int \limits_0^5 x^2 \left( \dfrac{1}{10} + \dfrac{3x}{125} \right) dx \\
+            &= \left( \dfrac{x^3}{30} \right) \Big|_{-2}^0 + \left( \dfrac{x^3}{30} + \dfrac{3x^4}{500} \right) \Big|_0^5          \\
+            &= \left( 0 - \dfrac{-8}{30} \right) + \left( \dfrac{125}{30} + \dfrac{1875}{500} - 0 \right)\\
+            &= \dfrac{16}{60} + \dfrac{250}{60} + \dfrac{225}{60} \\
+            &= \dfrac{491}{60}
+\end{align*}
+
+{{< pagebreak >}}
+
+# 3.
+Suponha que a duração da vida (em horas) de uma certa válvula seja uma variável aleatória com densidade $f(x) = 100/x^2$, para $x > 100$, e zero caso contrário. Mostre que $\E{X}$ não existe para a variável aleatória X.
+
+\begin{align*}
+    \E{X} &= \int \limits_{-\infty}^\infty x f(x) dx \\
+          &= \int \limits_{100}^\infty x \dfrac{100}{x^2} dx = 100 \int \limits_{100}^\infty \dfrac{1}{x} dx \\
+          &= 100 \ln(x) \Big|_{100}^\infty \\
+          &= 100 \left( \lim_{n \to \infty} \ln(n) - \ln(100) \right) \\
+          &\to \infty
+\end{align*}
+
+O limite da esperança de X diverge para o infinito, portanto $\E{X}$ não existe.
+
+# 4.
+Para quaisquer constantes $a$ e $b$, mostre que se $\p{a \leq X \leq b} = 1$, então, $a \leq \E{X} \leq b$.
+
+Defina as variáveis aleatórias $A$ e $B$ em que $A$ e $B$ só assumem os valores $a$ e $b$ com probabilidade 1.
+
+\begin{align*}
+    \p{a \leq X \leq b} = 1 &\implies \p{A \leq X \leq B} = 1 \\
+                            &\implies A \leq X \leq B \\
+                            &\implies \E{A} \leq \E{X} \leq \E{B} \qquad \qquad \text{pela linearidade da esperança} \\
+                            &\implies a \leq \E{X} \leq b
+\end{align*}
+
+{{< pagebreak >}}
+
+# 5.
+A função de distribuição da variável aleatória X é dada seguir. Obtenha $\E{X}$.
+
+$$
+F_X(x) = \left \lbrace \begin{array}{ll}
+    0,   & \text{se} \;        x < 0 \\
+    x/4, & \text{se} \; 0 \leq x < 1 \\
+    1/2, & \text{se} \; 1 \leq x < 2 \\
+    1,   & \text{se} \; x \geq 2
+\end{array} \right.
+$$
+
+\begin{align*}
+    \E{X} &= \int \limits_{-\infty}^{0} 1 - F_X(x) dx - \int \limits_0^{\infty} F_X(x) dx \\
+          &= 0 -\int \limits_0^{\infty} F_X(x) dx \qquad \qquad \text{pois} \; F_X(x) = 0 \; \text{para} \; x < 0 \\
+          &= -\int \limits_0^1 \dfrac{x}{4} dx -\int \limits_1^2 \dfrac{1}{2} dx \\
+          &= -\left( \dfrac{x^2}{8} \right) \Big|_0^1 -\left( \dfrac{x}{2} \right) \Big|_1^2 \\
+          &= -\dfrac{1}{8} + 0 - 1 + \dfrac{1}{2} \\
+          &= -\dfrac{5}{8}
+\end{align*}
+
+{{< pagebreak >}}
+
+# 6.
+Suponha que a variável aleatória X admita densidade $f(x) = 2xe^{-x^2}, x \geq 0$. Seja $Y = X^2$. Calcule $\E{Y}$:
+
+## a) 
+Diretamente, sem primeiro obter a densidade de Y.
+
+::: {layout-ncol=2}
+
+\begin{align*}
+    F_X(x) &= \int \limits_0^x 2te^{-t^2} dt \\
+           &= \int \limits_0^{x^2} e^{-u} du \\
+           &= (-e^{-u}) \Big|_0^{x^2} \\
+           &= -e^{-x^2} + e^{-0} \\
+           &= 1 - e^{-x^2} \qquad \qquad \text{para} \; x \geq 0
+\end{align*}
+
+\begin{align*}
+     u &= t^2 \\
+    du &= 2t dt \\
+    t \to 0 &\implies u \to 0 \\
+    t \to x &\implies u \to x^2
+\end{align*}
+
+:::
+
+\begin{align*}
+F_Y(y) &= \p{Y \leq y} = \p{X^2 \leq y} \\ 
+       &= \p{\sqrt{X^2} \leq \sqrt y} = \p{|X| \leq \sqrt y} \\
+       &= \p{-\sqrt y \leq X \leq \sqrt y} \\
+       &= \p{X \leq \sqrt y} - \p{X \leq - \sqrt y} \\
+       &= F_X(\sqrt y) - F_X(-\sqrt y) \\
+       &= F_X(\sqrt y) - 0 \qquad \qquad \text{pois} \; F_X(x) = 0 \; \text{para} \; x < 0 \\
+       &= 1 - e^{-{\sqrt y}^2} \\
+       &= 1 - e^{-y}
+\end{align*}
+
+Vemos que a função de distribuição acumulada de Y é a mesma de uma variável aleatória Exponencial de parâmetro $\lambda = 1$, portanto sua esperança é $\frac{1}{\lambda} = 1$.
+
+{{< pagebreak >}}
+
+## b)
+Primeiramente obtendo a densidade de Y.
+
+\begin{align*}
+    F_Y(y) &= 1 - e^{-y} \\
+    f_Y(y) &= \dfrac{d}{dy} (1 - e^{-y}) \\
+           &= e^{-y} \qquad \qquad \text{para} \; y \geq 0
+\end{align*}
+
+Integração por partes para achar $\E{Y}$:
+
+::: {layout-ncol=2}
+
+\begin{align*}
+    \E{Y} &= \int \limits_0^\infty y e^{-y} dy \\
+          &= (-y e^{-y}) \Big|_0^\infty - \int \limits_0^\infty -e^{-y} dy \\
+          &= \lim_{n \to \infty} -n e^{-n} + (e^{-y}) \Big|_0^\infty \\
+          &= 0 - \lim_{n \to \infty} e^{-n} + e^{-0} \\
+          &= 1
+\end{align*}
+
+\begin{align*}
+     u &= y \\
+    du &= dy \\
+    dv &= e^{-y} dy \\
+     v &= -e^{-y} \\
+\end{align*}
+
+
+:::

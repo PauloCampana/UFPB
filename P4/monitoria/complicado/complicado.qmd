@@ -1,0 +1,153 @@
+---
+format: pdf
+---
+
+# Questão 1.
+
+$$
+f(x) = 2e^{-2x}, \quad x > 0
+$$
+
+Note que $f(x)$ é uma distribuição exponencial de parâmetro $\lambda = 2$, Portanto terá função de distribuição acumulada, valor esperado e variância conhecida.
+
+::: {layout-ncol=3}
+$$
+\text{F}_{\small X} (x) = 1 - e^{-\lambda x}
+$$
+
+$$
+\text{E} (X) = \dfrac{1}{\lambda}
+$$
+
+$$
+\text{Var} (X) = \dfrac{1}{\lambda^2}
+$$
+:::
+
+### a) $\text{P} (1 \leq X \leq 3)$
+
+$$
+\text{P} (1 \leq X \leq 3) = \text{P} (X \leq 3) - \text{P} (X \leq 1) = 
+$$
+$$
+= \text{F}_{\small X} (3) - \text{F}_{\small X} (1) = (1 - e^{-6}) - (1 - e^{-2}) = e^{-2} - e^{-6}
+$$
+
+### b) O valor esperado
+
+$$
+\text{E} (X) = \dfrac{1}{\lambda} = \dfrac{1}{2}
+$$
+
+### c) A variância
+
+$$
+\text{Var} (X) = \dfrac{1}{\lambda^2} = \dfrac{1}{4}
+$$
+
+### d) A Função acumulada
+
+$$
+\int \limits_0^x 2e^{-2t} dt = \left( \dfrac{2}{-2} e^{-2t}  \right) \Biggr|_0^x = (-e^{-2t}) \Biggr|_0^x = (-e^{-2x}) - (-e^0) = 1 - e^{-2x}
+$$
+
+{{< pagebreak >}}
+
+# Questão 2.
+
+Será uma distribuição uniforme $\mathcal U (1,10)$, portanto:
+
+\begin{align*}
+                       f(x) &= \dfrac{1}{b-a} \\\\
+    \text{F}_{\small X} (x) &= \dfrac{x-a}{b-a}, \; a \leq x \leq b \\\\
+               \text{E} (X) &= \dfrac{a+b}{2} \\\\
+             \text{Var} (X) &= \dfrac{(a-b)^2}{12}
+\end{align*}
+
+### a) $\text{P} (7 \leq X \leq 10)$
+
+$$
+\text{P} (7 \leq X \leq 10) = \int \limits_7^{10} \dfrac{1}{10-1} dx = \dfrac{1}{9} (x) \Biggr|_7^{10} = \dfrac{10-7}{9} = \dfrac{1}{3}
+$$
+
+### b) $\text{P} (X = 5)$
+
+$$
+\text{P} (X = 5) = \int \limits_5^5 \dfrac{1}{9} dx = 0
+$$
+
+### c) a média dessa distribuição
+
+$$
+\text{E} (X) = \dfrac{a+b}{2} = \dfrac{11}{2}
+$$
+
+### d) a variância dessa distribuição
+
+$$
+\text{Var} (X) = \dfrac{(a-b)^2}{12} = \dfrac{81}{12} = \dfrac{27}{4}
+$$
+
+{{< pagebreak >}}
+
+# Questão 3.
+
+$$
+f(x) = k (x^2 - 1), \quad 1 \leq x \leq5
+$$
+
+Para $f(x)$ ser função de densidade, a integral de $f(x)$ em seu suporte deve ser 1.
+
+$$
+\int \limits_1^5 k (x^2 - 1) dx = 1 
+$$
+$$
+k \left( \dfrac{x^3}{3} - x \right) \Biggr|_1^5 = 1
+$$
+$$
+k \left( \left( \dfrac{125}{3} - 5 \right) - \left( \dfrac{1}{3} - 1 \right) \right) = 1
+$$
+$$
+k \left( \dfrac{110}{3} - \dfrac{-2}{3} \right) = 1
+$$
+$$
+k \left( \dfrac{112}{3} \right) = 1
+$$
+$$
+k = \dfrac{3}{112}
+$$
+
+{{< pagebreak >}}
+
+# Questão 4.
+
+::: {layout-ncol=2}
+$$
+\text{D1} \sim \mathcal N (42,36)
+$$
+
+$$
+\text{D2} \sim \mathcal N (45,9)
+$$
+:::
+
+Padronize as varíaveis
+
+$$
+\text{P} (\text{D1} < 45) = \text{P} \left( \dfrac{\text{D1} - 42}{\sqrt{36}} < \dfrac{45 - 42}{\sqrt{36}} \right) = \text{P} \left( Z < \dfrac{1}{2} \right) = \text{F}_{\small Z} \left( \dfrac{1}{2} \right)
+$$
+
+$$
+\text{F}_{\small Z} \left( \dfrac{1}{2} \right) \approx 0.6914
+$$
+
+$$
+\text{P} (\text{D2} < 45) = \text{P} \left( \dfrac{\text{D2} - 45}{\sqrt{9}} < \dfrac{45 - 45}{\sqrt{9}} \right) = \text{P} \left( Z < 0 \right) = \text{F}_{\small Z} (0)
+$$
+
+$$
+\text{F}_{\small Z} (0) = 0.5
+$$
+
+O aparelho D1 possui maior probabilidade de sua vida útil ser inferior a 45 horas, portanto deve ser preferido o aparelho D2.
+

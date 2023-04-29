@@ -1,0 +1,435 @@
+---
+format: pdf
+title: Probabilidade II
+subtitle: Lista 2
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+\def \p #1{{ \text{P} \kern-2pt \left( #1 \right) }}
+\def \E #1{{ \text{E} \left[ #1 \right] }}
+\def \Var #1{{ \text{Var} \left[ #1 \right] }}
+:::
+
+# 1.
+Suponha que $f$ e $g$ sejam densidade nesse intervalo $a \leq x \leq b$
+
+Para $f + g$ ser densidade, $f + g$ tem que ser positivo e com integral no suporte igual a 1:
+
+## a)
+Verifique que $f + g$ não é uma densidade nesse intervalo.
+
+$$
+\int \limits_a^b f(x) + g(x) dx = \int \limits_a^b f(x) dx + \int \limits_a^b g(x) dx = 1 + 1 = 2
+$$
+
+$\int \limits_a^b f(x) + g(x) dx \neq 1, \; f + g$ não é densidade.
+
+## b)
+Verifique que, para todo número $\beta, \; 0 < \beta < 1, \; \beta f(x) + (1 - \beta) g(x)$ é uma densidade nesse intervalo.
+
+$$
+\beta f(x) + (1 - \beta) g(x) \geq 0, \; \text{para} \; 0 < \beta < 1
+$$
+$$
+\int \limits_a^b \beta f(x) + (1 - \beta) g(x) dx = \beta \int \limits_a^b f(x) dx + (1 - \beta) \int \limits_a^b g(x) dx = \beta + (1 - \beta) = 1
+$$
+
+Então $\beta f(x) + (1 - \beta) g(x)$ é densidade
+
+{{< pagebreak >}}
+
+# 2.
+Um componente eletrônico, de marca 'A', tem duração de vida que segue uma distribuição exponencial com vida média de 100 horas e um custo unitário de R\$10,00. A marca "B", desse componente eletrôico, tem uma vida média de 200 horas e um custo de R\$15,00. Considere também a incidêcia de um custo adicional de R\$8,00 se o componente durar menos de 200 horas, qualquer que seja a marca. Pergunta: Qual a marca mais econômica?
+
+$A \sim \text{Exp} \left( \lambda = \dfrac{1}{100} \right)$ com custo de R\$10,00 e $B \sim \text{Exp} \left( \lambda = \dfrac{1}{200} \right)$ com custo de R\$15,00. Para levar em consideração o custo adicional de R\$8,00, calcule a probabilidade do componente durar menos de 200 horas:
+
+A função de distribuição acumulada de uma variável exponencial é dada por: $1 - e^{-\lambda x}$
+
+\begin{align*}
+    P(A < 200) &= F_A(200) = 1 - e^{-\frac{1}{100} 200} = 1 - e^{-2} = `r pexp(200, rate = 1/100) |> round(3)` \\
+    P(B < 200) &= F_B(200) = 1 - e^{-\frac{1}{200} 200} = 1 - e^{-1} = `r pexp(200, rate = 1/200) |> round(3)`
+\end{align*}
+
+O custo total do componente eletrônico será o custo unitário + custo adicional $\times$ probabilidade de ocorrer o custo adicional:
+
+\begin{align*}
+    C_A &= 10 + 8 \times `r pexp(200, rate = 1/100) |> round(3)` = `r (10 + 8 * pexp(200, rate = 1/100)) |> round(3)` \\
+    C_B &= 15 + 8 \times `r pexp(200, rate = 1/200) |> round(3)` = `r (15 + 8 * pexp(200, rate = 1/200)) |> round(3)`
+\end{align*}
+
+A marca com melhor custo-benefício sera aquela que custa menos por unidade de tempo:
+
+\begin{align*}
+    C_A/h &= `r (10 + 8 * pexp(200, rate = 1/100)) |> round(3)` / 100 = `r ((10 + 8 * pexp(200, rate = 1/100)) / 100) |> round(3)` \; \text{R\$ por hora} \\
+    C_B/h &= `r (15 + 8 * pexp(200, rate = 1/200)) |> round(3)` / 200 = `r ((15 + 8 * pexp(200, rate = 1/200)) / 200) |> round(3)` \; \text{R\$ por hora}
+\end{align*}
+
+Então a marca A é a mais barata e a marca B tem melhor custo-benefício, pois é 7 centavos por hora mais barata que a marca A.
+
+{{< pagebreak >}}
+
+# 3.
+Seja X a duração de vida de uma válvula eletrônica e admita que X possa ser representada por uma variável aleatória contínua, com densidade $f(x) = be^{-bx}, x \geq 0$. Seja $p_j = \p{j \leq X < j + 1}$. Verifique que $p_j$ é da forma $(1 − a) a^j$ e determine a.
+
+Note que X é uma variável aleatória exponencial e sua distribuição acumulada é dada por: $F(x) = 1 - e^{-\lambda x}$.
+
+\begin{align*}
+    \p{j \leq X < j + 1} &= \p{X < j + 1} - \p{X \leq j}    \\
+                         &= F(j+1) - F(j)                   \\
+                         &= 1 - e^{-b(j+1)} - (1 - e^{-bj}) \\
+                         &= e^{-bj} - e^{-b(j+1)}
+\end{align*}
+
+Multiplique $e^{-bj} - e^{-b(j+1)}$ por $e^{bj} e^{-bj} = 1$:
+
+\begin{align*}
+    \p{j \leq X < j + 1} &= e^{-bj} - e^{-b(j+1)}                  \\
+                         &= (e^{-bj} - e^{-b(j+1)}) e^{bj} e^{-bj} \\
+                         &= (1 - e^{-b}) e^{-bj}
+\end{align*}
+
+Comparando $(1 - e^{-b}) e^{-bj}$ com $(1 − a) a^j$ vemos que $a = e^{-b}$:
+
+{{< pagebreak >}}
+
+# 4.
+Suponha que o diâmetro X de um cabo elétrico é uma variável aleatória com f.d.p. $f(x) = 6x(1 - x), \;
+0 \leq x \leq 1$.
+
+## a)
+Verifique que essa expressão é realmente uma densidade.
+
+$$
+6x(1 - x) \geq 0 \; \text{para todo} \; 0 \leq x \leq 1
+$$
+$$
+\int \limits_0^1 6x(1 - x) dx = \int \limits_0^1 6x - 6x^2 dx = (3x^2 - 2x^3) \Big|_0^1 = 3 - 2 = 1   
+$$
+
+$f(x)$ é densidade.
+
+## b)
+Obtenha uma expressão para a função de distribuição de X.
+
+$$
+F(x) = \int \limits_0^x f(t) dt = \int \limits_0^x 6t(1 - t) dt = (3t^2 - 2t^3) \Big|_0^x = 3x^2 - 2x^3
+$$
+
+## c)
+Calcule $\p{X \leq 1/2 \; \big| \; 1/3 < X < 2/3}$.
+
+$$
+\p{X \leq 1/2 \; \big| \; 1/3 < X < 2/3} = \dfrac{\p{[ X \leq 1/2 ] \cap [ 1/3 < X < 2/3 ]}}{\p{1/3 < X < 2/3}} =
+$$
+
+Fazendo a interseção desses dois conjuntos temos que $[ X \leq 1/2 ] \cap [ 1/3 < X < 2/3 ] = [1/3 < X \leq 1/2]$
+
+$$
+\dfrac{\p{1/3 < X \leq 1/2}}{\p{1/3 < X < 2/3}} = \dfrac{F(1/2) - F(1/3)}{F(2/3) - F(1/3)} =
+$$
+$$
+\dfrac{(3/4 - 1/4) - (1/3 - 2/27)}{(4/3 - 16/27) - (1/3 - 2/27)} = \dfrac{1/2 - 7/27}{20/27 - 7/27} = \dfrac{13/54}{26/54} = \dfrac{13}{26} = \dfrac{1}{2}
+$$
+
+{{< pagebreak >}}
+
+# 5.
+Seja a variável aleatória X com função de distribuição:
+
+$$
+F(x) = \left \lbrace \begin{array}{lcr}
+    0,                           & \text{se} &     x \leq 0 \\
+    \dfrac{x}{4}[1 + \log(4/x)], & \text{se} & 0 < x \leq 4 \\
+    1,                           & \text{se} &     x > 4
+\end{array} \right.
+$$
+
+Obtenha a densidade de X.
+
+$f(x) = F'(x)$, portanto, para $x \leq 0$ e $x > 4, \; f(x) = 0$. E para $0 < x \leq 4$:
+
+\begin{align*}
+    f(x) &= F'(x)                                                             \\
+         &= \dfrac{d}{dx} \dfrac{x}{4}[1 + \log(4/x)]                         \\
+         &= \dfrac{d}{dx} \left( \dfrac{x}{4} + \dfrac{x}{4}\log(4/x) \right) \\        
+         &= \dfrac{1}{4} + \dfrac{1}{4} \log(4/x) + \dfrac{x}{4} \left( \dfrac{1}{\frac{4}{x}} \right) \left( -\dfrac{4}{x^2} \right)                                                \\
+         &= \dfrac{1}{4} + \dfrac{\log(4/x)}{4} - \dfrac{1}{4}                \\
+         &= \dfrac{\log(4/x)}{4}
+\end{align*}
+
+$$
+f(x) = \left \lbrace \begin{array}{ll}
+    \dfrac{\log(4/x)}{4}, & \text{se} \; 0 < x \leq 4 \\
+    0,                    & \text{caso contrário}
+\end{array} \right.
+$$
+
+{{< pagebreak >}}
+
+# 6.
+Supondo que a expectativa de vida, em anos, seja uma variável aleatória com distribuição $X \sim \text{Exp}(1/60)$:
+
+Lembre da distribuição acumulada da exponencial: $F(x) = 1 - e^{-\lambda x}$
+
+## a)
+Determine, para um indivíduo escolhido ao acaso, a probabilidade de viver pelo menos até os 70 anos.
+
+$$
+P(X \geq 70) = 1 - P(X \leq 70) = 1 - F(70) = 1 - (1 - e^{-\frac{1}{60}70}) = e^{-\frac{7}{6}} = `r (1 - pexp(70, rate = 1/60)) |> round(3)`
+$$
+
+## b)
+Determine, para um indivíduo escolhido ao acaso, a probabilidade de morrer antes dos 70, sabendo-se que o indivíduo acabou de completar 50 anos.
+
+Use a falta de memória da distribuição exponencial: $\p{X < s + t | X > s} = \p{X < t}$
+
+$$
+\p{X < 70 | X \geq 50} = \p{X < 20} = F(20) = 1 - e^{-\frac{1}{60}20} = 1 - e^{-\frac{1}{3}} = `r pexp(20, rate = 1/60) |> round(3)`
+$$
+
+## c)
+Calcule a idade mínima tal que a chance de um indivíduo continuar vivo após essa idade seja de 50%.
+\begin{align*}
+              0.5 &= \p{X > x}                    \\
+                  &= 1 - \p{X < x}                \\
+                  &= 1 - F(x)                     \\
+                  &= 1 - (1 - e^{-\frac{1}{60}x}) \\
+                  &= e^{-\frac{x}{60}}            \\
+        \log(0.5) &= -\frac{x}{60}                \\
+    -60 \log(0.5) &= x                            \\
+     60 \log(2)   &= x                            \\
+                x &= `r qexp(0.5, rate = 1/60) |> round(3)`
+\end{align*}
+
+Seguindo essa distribuição, apenas 50% dos indivíduos vivierão após os `r qexp(0.5, rate = 1/60) |> round(0)` anos.
+
+{{< pagebreak >}}
+
+# 7.
+Uma fábrica utiliza dois métodos para a produção de lâmpadas: 70% delas são produzidas pelo método A e o resto pelo método B. A duração em horas das lâmpadas tem distribuição exponencial com parâmetro 1/80 ou 1/100, conforme se utilize o método A ou o B. Em um grupo de 10 lâmpadas selecionadas ao acaso, qual a probabilidade de que 6 delas durem pelo menos 90 horas?
+
+Calcule a probabilidade de que cada tipo de lâmpada dure pelo menos 90 horas:
+
+\begin{align*}
+    P(A \geq 90) &= 1 - P(A < 90) = 1 - F_A(90) = 1 - (1 - e^{-\frac{1}{80}90}) = e^{-\frac{9}{8}}   \\
+    P(B \geq 90) &= 1 - P(B < 90) = 1 - F_B(90) = 1 - (1 - e^{-\frac{1}{100}90}) = e^{-\frac{9}{10}}
+\end{align*}
+
+Agora a probabilida de que uma lâmpada selecionada ao acaso dure pelo menos 90 horas:
+
+$$
+P(X \geq 90) = P(A)P(A \geq 90) + P(B)P(B \geq 90) = \dfrac{7}{10} e^{-\frac{9}{8}} + \dfrac{3}{10} e^{-\frac{9}{10}} = `r (7/10 * (1 - pexp(90, rate = 1/80)) + 3/10 * (1 - pexp(90, rate = 1/100))) |> round (3)`
+$$
+
+E use a distribuição Binomial para obter a probabilidade de que entre 10 lâmpadas, 6 durem pelo menos 90 horas:
+
+$Y \sim \text{Bin}(n = 10, \; p = 0.349)$
+
+$$
+P(Y = 6) = \binom{10}{6} \; 0.349^6 \; 0.651^4 = `r dbinom(6, size = 10, prob = 0.349) |> round(3)`
+$$
+
+{{< pagebreak >}}
+
+# 8.
+Sendo $X \sim \text{N}(\mu, \; \sigma^2), \; \mu > 0$, avalie as probabilidades abaixo em função de $\Phi(z)$ ou numericamente, se possível:
+
+Lembre que $\p{X < a} = \p{\frac{X - \mu}{\sigma} < \frac{a - \mu}{\sigma}} = \p{Z < \frac{a - \mu}{\sigma}} = \Phi(\frac{a - \mu}{\sigma})$.
+
+## a) 
+$\p{|X| < \mu}$.
+
+\begin{align*}   
+    \p{|X| < \mu} &= \p{-\mu < X < \mu}                                                   \\
+                  &= \p{X < \mu} - P(X < -\mu)                                            \\
+                  &= \p{Z < \frac{\mu - \mu}{\sigma}} - \p{Z < \frac{-\mu - \mu}{\sigma}} \\
+                  &= \p{Z < 0} - \p{Z < \frac{-2\mu}{\sigma}}                             \\
+                  &= \Phi(0) - \Phi\left( \frac{-2\mu}{\sigma} \right)                    \\
+                  &= \dfrac{1}{2} - \Phi\left( \frac{-2\mu}{\sigma} \right)
+\end{align*}
+
+## b) 
+$\p{|X - \mu| > 0}$.
+
+Note que $|X - \mu|$ é sempre positivo, então:
+
+$$
+\p{|X - \mu| > 0} = \p{|X - \mu| \neq 0} = 1
+$$
+
+## c)
+$\p{X - \mu < -\sigma}$.
+
+$$
+\p{X - \mu < -\sigma} = \p{\frac{X - \mu}{\sigma} < -1} = \p{Z < -1} = \Phi(-1)
+$$
+
+{{< pagebreak >}}
+
+## d)
+$\p{\sigma < |X - \mu| < 2\sigma}$.
+
+$$
+\p{\sigma < |X - \mu| < 2\sigma} = \p{1 < \frac{|X - \mu|}{\sigma} < 2} = \p{1 < \left| \frac{X - \mu}{\sigma} \right| < 2} = 
+$$
+
+\begin{align*}
+    \p{1 < |Z| < 2} &= \p{|Z| < 2} - \p{|Z| < 1}                         \\
+                    &= \p{-2 < Z < 2} - \p{-1 < Z < 1}                   \\
+                    &= \p{Z < 2} - \p{Z < -2} - (\p{Z < 1} - \p{Z < -1}) \\
+                    &= \Phi(2) - \Phi(-2) - \Phi(1) + \Phi(-1)           \\
+                    &= \Phi(2) - (1 - \Phi(2)) - \Phi(1) + (1 - \Phi(1)) \\
+                    &= 2\Phi(2) - 1 - 2\Phi(1) + 1                       \\
+                    &= 2(\Phi(2) - \Phi(1))
+\end{align*}
+
+# 9.
+Suponha que X seja uniformemente distribuída sobre $[-\alpha, \; \alpha]$, com $\alpha > 0$. Determine $\alpha$ de modo que
+as seguintes relações sejam satisfeitas:
+
+Lembre que para $X \sim \text{Unif}(-\alpha, \; \alpha), \; F(x) = \dfrac{x - (-\alpha)}{\alpha - (-\alpha)} = \dfrac{x + \alpha}{2 \alpha}$.
+
+## a)
+$\p{X > 1} = 1/3$.
+
+\begin{align*}
+         1/3 &= \p{X > 1}                    \\     
+         2/3 &= \p{X < 1}                    \\   
+         2/3 &= F(1)                         \\
+         2/3 &= \dfrac{1 + \alpha}{2 \alpha} \\
+    4 \alpha &= 3 + 3 \alpha                 \\
+      \alpha &= 3
+\end{align*}
+
+{{< pagebreak >}}
+
+## b)
+$\p{X > 1} = 1/2$.
+
+\begin{align*}
+         1/2 &= \p{X > 1}                    \\     
+         1/2 &= \p{X < 1}                    \\   
+         1/2 &= F(1)                         \\
+         1/2 &= \dfrac{1 + \alpha}{2 \alpha} \\
+    2 \alpha &= 2 + 2 \alpha                 \\
+      \alpha &= 1 + \alpha
+\end{align*}
+
+Não existe soluções para $\alpha$. 
+
+## c)
+$\p{|X| < 1} = \p{|X| > 1}$.
+
+::: {layout-ncol=2}
+
+\begin{align*}
+    \p{|X| < 1} &= \p{-1 < X < 1}                                               \\  
+                &= \p{X < 1} - \p{X < -1}                                       \\          
+                &= F(1) - F(-1)                                                 \\ 
+                &= \dfrac{1 + \alpha}{2 \alpha} - \dfrac{-1 + \alpha}{2 \alpha} \\
+                &= \dfrac{2}{2 \alpha}                                          \\
+                &= \dfrac{1}{\alpha}
+\end{align*}
+
+\begin{align*}
+    \p{|X| > 1} &= \p{X > 1} + \p{X < -1}                                           \\          
+                &= 1 - \p{X < 1} + \p{X < -1}                                       \\
+                &= 1 - F(1) + F(-1)                                                 \\ 
+                &= 1 - \dfrac{1 + \alpha}{2 \alpha} + \dfrac{-1 + \alpha}{2 \alpha} \\
+                &= \dfrac{2 \alpha - 2}{2 \alpha}                                   \\
+                &= \dfrac{\alpha - 1}{\alpha}                                       \\
+                &= 1 - \dfrac{1}{\alpha}
+\end{align*}
+
+:::
+
+\begin{align*}
+          \p{|X| < 1} &= \p{|X| > 1}           \\
+    \dfrac{1}{\alpha} &= 1 - \dfrac{1}{\alpha} \\
+    \dfrac{2}{\alpha} &= 1                     \\
+               \alpha &= 2
+\end{align*}
+
+{{< pagebreak >}}
+
+# 10.
+Uma fábrica de lâmpadas oferece uma garantia de troca se a duração da lâmpada for inferior à 60 horas. A duração das lâmpadas é uma variável aleatória contínua X exponencialmente distribuída com função de densidade dada por:
+
+$$
+f(x) = \left \lbrace \begin{array}{ll}
+    \frac{1}{5000} e^{-\frac{1}{5000}x}, & \text{se} \; x \geq 0;    \\
+    0,                                   & \text{caso contrário}.
+\end{array} \right.
+$$
+
+Determine quantas lâmpadas são trocadas por conta da garantia para cada 1000 lâmpadas fabricadas.
+
+$X \sim \text{Exp}(\lambda = \frac{1}{5000}), \; F(x) = 1 - e^{-\frac{1}{5000}x}$.
+
+Primeiramente, a probabilidade da duração da lâmpada ser inferior à 60 horas:
+
+$$
+\p{X < 60} = F(60) = 1 - e^{-\frac{1}{5000}60} = 1 - e^{-\frac{3}{250}} = `r pexp(60, rate = 1/5000) |> round(6)`
+$$
+
+E para 1000 lâmpadas, em média `r (1000 * pexp(60, rate = 1/5000)) |> round(3)` delas podem ser trocadas pela garantia.
+
+# 11.
+Suponha que X tenha distribuição $\text{N}(\mu, \; \sigma^2)$. Determine $c$ como uma função de $\mu$ e $\sigma$ tal que $\p{X \leq c} = 2 \p{X > c}$.
+
+\begin{align*}
+    \p{X \leq c}                               &= 2 \p{X > c}                  \\        
+    \p{X \leq c}                               &= 2 - 2\p{X < c}               \\           
+    \p{X \leq c}                               &= 2/3                          \\
+    \p{Z \leq \frac{c - \mu}{\sigma}}          &= 2/3                          \\
+    \Phi \left( \frac{c - \mu}{\sigma} \right) &= 2/3                          \\ 
+    \frac{c - \mu}{\sigma}                     &= \Phi^{-1} (2/3)              \\
+    c                                          &= \sigma \Phi^{-1} (2/3) + \mu
+\end{align*}
+
+{{< pagebreak >}}
+
+# 12.
+Verifique que se $X \sim \text{N} (\mu, \; \sigma^2)$ e $Y = aX + b$, então, $Y \sim \text{N} (a\mu + b, \; a^2 \sigma^2)$.
+
+Por função de variável aleatória:
+
+$$
+F_Y(y) =  \p{Y \leq y} = \p{aX + b \leq y} = \p{X \leq \frac{y - b}{a}} = F_X \left( \frac{y - b}{a} \right)
+$$
+
+$$
+f_Y(y) = F'_Y(y) = F_X '\left( \frac{y - b}{a} \right) = f_X \left( \frac{y - b}{a} \right) \dfrac{1}{a} =
+$$
+
+$$
+\dfrac{1}{a} \int \limits_{-\infty}^{\infty} \dfrac{1}{\sqrt{2 \pi} \sigma} \text{exp} \left \lbrace -\dfrac{1}{2} \left( \dfrac{\frac{y -b}{a} - \mu}{\sigma} \right) \right \rbrace dx = 
+\int \limits_{-\infty}^{\infty} \dfrac{1}{\sqrt{2 \pi} (a \sigma)} \text{exp} \left \lbrace -\dfrac{1}{2} \left( \dfrac{y - (a \mu + b)}{(a \sigma)} \right) \right \rbrace dx
+$$
+
+Portanto, $Y \sim \text{N} (a\mu + b, \; a^2 \sigma^2)$
+
+---
+
+Pela experança e variância de $Y$:
+
+::: {layout-ncol=2}
+
+\begin{align*}
+      \E{x} &= \mu                                   \\
+      \E{Y} &= \E{a X + b} = a \E{X} + b = a \mu + b
+\end{align*}
+
+\begin{align*}
+    \Var{x} &= \sigma^2                                   \\
+    \Var{x} &= \Var{a X + b} = a^2 \Var{X} = a^2 \sigma^2
+\end{align*}
+
+:::
+
+\begin{align*}
+    X &\sim \text{N} (\mu, \; \sigma^2)          \\
+    Y &\sim \text{N} (a\mu + b, \; a^2 \sigma^2)
+\end{align*}
