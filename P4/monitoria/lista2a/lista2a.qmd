@@ -171,8 +171,6 @@ $$
 # 6.
 Supondo que a expectativa de vida, em anos, seja uma variável aleatória com distribuição $X \sim \text{Exp}(1/60)$:
 
-Lembre da distribuição acumulada da exponencial: $F(x) = 1 - e^{-\lambda x}$
-
 ## a)
 Determine, para um indivíduo escolhido ao acaso, a probabilidade de viver pelo menos até os 70 anos.
 
@@ -183,11 +181,16 @@ $$
 ## b)
 Determine, para um indivíduo escolhido ao acaso, a probabilidade de morrer antes dos 70, sabendo-se que o indivíduo acabou de completar 50 anos.
 
-Use a falta de memória da distribuição exponencial: $\p{X < s + t | X > s} = \p{X < t}$
-
-$$
-\p{X < 70 | X \geq 50} = \p{X < 20} = F(20) = 1 - e^{-\frac{1}{60}20} = 1 - e^{-\frac{1}{3}} = `r pexp(20, rate = 1/60) |> round(3)`
-$$
+Use a falta de memória da distribuição exponencial: $\p{X > s + t | X > s} = \p{X < t}$
+\begin{align*}
+    \p{X < 70 | X \geq 50} &= 1 - \p{X \geq 70 | X \geq 50} \\
+                           &= 1 - \p{X > 20} \\
+                           &= \p{X < 20} \\
+                           &= F(20) \\
+                           &= 1 - (1 - e^{-\frac{1}{60}20}) \\
+                           &= e^{-\frac{1}{3}} \\
+                           &= `r (1 - pexp(20, rate = 1/60)) |> round(3)`
+\end{align*}
 
 ## c)
 Calcule a idade mínima tal que a chance de um indivíduo continuar vivo após essa idade seja de 50%.
@@ -205,19 +208,16 @@ Calcule a idade mínima tal que a chance de um indivíduo continuar vivo após e
 
 Seguindo essa distribuição, apenas 50% dos indivíduos vivierão após os `r qexp(0.5, rate = 1/60) |> round(0)` anos.
 
-{{< pagebreak >}}
-
 # 7.
 Uma fábrica utiliza dois métodos para a produção de lâmpadas: 70% delas são produzidas pelo método A e o resto pelo método B. A duração em horas das lâmpadas tem distribuição exponencial com parâmetro 1/80 ou 1/100, conforme se utilize o método A ou o B. Em um grupo de 10 lâmpadas selecionadas ao acaso, qual a probabilidade de que 6 delas durem pelo menos 90 horas?
 
 Calcule a probabilidade de que cada tipo de lâmpada dure pelo menos 90 horas:
-
 \begin{align*}
     P(A \geq 90) &= 1 - P(A < 90) = 1 - F_A(90) = 1 - (1 - e^{-\frac{1}{80}90}) = e^{-\frac{9}{8}}   \\
     P(B \geq 90) &= 1 - P(B < 90) = 1 - F_B(90) = 1 - (1 - e^{-\frac{1}{100}90}) = e^{-\frac{9}{10}}
 \end{align*}
 
-Agora a probabilida de que uma lâmpada selecionada ao acaso dure pelo menos 90 horas:
+Agora a probabilidade de que uma lâmpada selecionada ao acaso dure pelo menos 90 horas:
 
 $$
 P(X \geq 90) = P(A)P(A \geq 90) + P(B)P(B \geq 90) = \dfrac{7}{10} e^{-\frac{9}{8}} + \dfrac{3}{10} e^{-\frac{9}{10}} = `r (7/10 * (1 - pexp(90, rate = 1/80)) + 3/10 * (1 - pexp(90, rate = 1/100))) |> round (3)`
@@ -225,10 +225,8 @@ $$
 
 E use a distribuição Binomial para obter a probabilidade de que entre 10 lâmpadas, 6 durem pelo menos 90 horas:
 
-$Y \sim \text{Bin}(n = 10, \; p = 0.349)$
-
 $$
-P(Y = 6) = \binom{10}{6} \; 0.349^6 \; 0.651^4 = `r dbinom(6, size = 10, prob = 0.349) |> round(3)`
+Y \sim \text{Bin}(n = 10, \; p = 0.349), \; P(Y = 6) = \binom{10}{6} \; 0.349^6 \; 0.651^4 = `r dbinom(6, size = 10, prob = 0.349) |> round(3)`
 $$
 
 {{< pagebreak >}}
@@ -405,8 +403,8 @@ f_Y(y) = F'_Y(y) = F_X '\left( \frac{y - b}{a} \right) = f_X \left( \frac{y - b}
 $$
 
 $$
-\dfrac{1}{a} \int \limits_{-\infty}^{\infty} \dfrac{1}{\sqrt{2 \pi} \sigma} \text{exp} \left \lbrace -\dfrac{1}{2} \left( \dfrac{\frac{y -b}{a} - \mu}{\sigma} \right) \right \rbrace dx = 
-\int \limits_{-\infty}^{\infty} \dfrac{1}{\sqrt{2 \pi} (a \sigma)} \text{exp} \left \lbrace -\dfrac{1}{2} \left( \dfrac{y - (a \mu + b)}{(a \sigma)} \right) \right \rbrace dx
+\dfrac{1}{a} \int \limits_{-\infty}^{\infty} \dfrac{1}{\sqrt{2 \pi} \sigma} \text{exp} \left \lbrace -\dfrac{1}{2} \left( \dfrac{\frac{y -b}{a} - \mu}{\sigma} \right)^2 \right \rbrace dx = 
+\int \limits_{-\infty}^{\infty} \dfrac{1}{\sqrt{2 \pi} (a \sigma)} \text{exp} \left \lbrace -\dfrac{1}{2} \left( \dfrac{y - (a \mu + b)}{(a \sigma)} \right)^2 \right \rbrace dx
 $$
 
 Portanto, $Y \sim \text{N} (a\mu + b, \; a^2 \sigma^2)$
@@ -418,13 +416,13 @@ Pela experança e variância de $Y$:
 ::: {layout-ncol=2}
 
 \begin{align*}
-      \E{x} &= \mu                                   \\
-      \E{Y} &= \E{a X + b} = a \E{X} + b = a \mu + b
+      \E{x} &= \mu \\
+      \Var{X} &= \sigma^2 
 \end{align*}
 
 \begin{align*}
-    \Var{x} &= \sigma^2                                   \\
-    \Var{x} &= \Var{a X + b} = a^2 \Var{X} = a^2 \sigma^2
+    \E{Y} &= \E{a X + b} = a \E{X} + b = a \mu + b \\
+    \Var{Y} &= \Var{a X + b} = a^2 \Var{X} = a^2 \sigma^2
 \end{align*}
 
 :::
