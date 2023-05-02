@@ -1,7 +1,7 @@
 ---
 format: pdf
 title: Probabilidade II
-subtitle: Lista 2
+subtitle: Lista 2a
 ---
 
 ::: hidden

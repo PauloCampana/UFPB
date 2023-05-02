@@ -1,7 +1,7 @@
 ---
 format: pdf
 title: Probabilidade II
-subtitle: Lista 3
+subtitle: Lista 2b
 ---
 
 ::: hidden
@@ -12,12 +12,19 @@ subtitle: Lista 3
 \def \Var #1{{ \text{Var} \left[ #1 \right] }}
 :::
 
-# 1. TODO
+# 1.
 Seja X uma variável aleatória com valores não negativos. Mostre que
 
 $$
-\E{X} = \int \limits_0^{\infty} \p{X > x} dx
+\E{X} = \int \limits_0^{\infty} \p{X > x} \; dx
 $$
+
+\begin{align*}
+    \E{X} &= \int \limits_{0}^{\infty} 1 - F_X(x) \; dx - \int \limits_{-\infty}^0 F_X(x) dx \\
+    &= \int \limits_{0}^{\infty} 1 - F_X(x) \; dx - 0 \qquad \text{pois a V.A. é positiva.} \\
+    &= \int \limits_{0}^{\infty} 1 - \p{X \leq x} \; dx \\
+    &= \int \limits_{0}^{\infty} \p{X > x} \; dx
+\end{align*}
 
 {{< pagebreak >}}
 
@@ -37,12 +44,12 @@ $$
 Calcule $\E{X}$ sem obter primeiro a densidade de X.
 
 \begin{align*}
-    \E{X} &= \int \limits_{-\infty}^{0} 1 - F_X(x) dx - \int \limits_0^{\infty} F_X(x) dx \\
-          &= \int \limits_{-2}^0 1 - \frac{1}{10} (x + 2) dx - \int \limits_0^5 \frac{1}{5} + \frac{x}{10} + \frac{3x^2}{250} dx \\
-          &= \left( x - \dfrac{x^2}{20} - \dfrac{x}{5} \right) \Big|_{-2}^0 - \left( \dfrac{x}{5} + \dfrac{x^2}{20} + \dfrac{x^3}{250} \right) \Big|_0^5 \\
-          &= \left( 0 + 2 + \dfrac{1}{5} + \dfrac{2}{5} \right) - \left( 1 + \dfrac{5}{4} + \dfrac{1}{2} - 0 \right) \\
-          &= \dfrac{13}{5} - \dfrac{11}{4} \\
-          & = \dfrac{-3}{20}
+    \E{X} &= \int \limits_0^\infty 1 - F_X(x) dx - \int \limits_{-\infty}^0 F_X(x) dx \\
+          &= \int \limits_0^5 1 - \frac{1}{5} - \frac{x}{10} - \frac{3x^2}{250} dx - \int \limits_{-2}^0 1 - \frac{1}{10} (x + 2) dx \\
+          &= \left( x - \dfrac{x}{5} - \dfrac{x^2}{20} - \dfrac{x^3}{250} \right) \Big|_0^5 - \left( x - \dfrac{x^2}{20} - \dfrac{x}{5} \right) \Big|_{-2}^0 \\
+          &= \left( 5 - 1 - \dfrac{5}{4} - \dfrac{1}{2} \right) - \left( 2 + \dfrac{1}{5} - \dfrac{2}{5} \right) \\
+          &= \dfrac{9}{4} - \dfrac{9}{5} \\
+          & = \dfrac{9}{20}
 \end{align*}
 
 {{< pagebreak >}}
@@ -114,12 +121,12 @@ F_X(x) = \left \lbrace \begin{array}{ll}
 $$
 
 \begin{align*}
-    \E{X} &= \int \limits_{-\infty}^{0} 1 - F_X(x) dx - \int \limits_0^{\infty} F_X(x) dx \\
-          &= 0 -\int \limits_0^{\infty} F_X(x) dx \qquad \qquad \text{pois} \; F_X(x) = 0 \; \text{para} \; x < 0 \\
-          &= -\int \limits_0^1 \dfrac{x}{4} dx -\int \limits_1^2 \dfrac{1}{2} dx \\
-          &= -\left( \dfrac{x^2}{8} \right) \Big|_0^1 -\left( \dfrac{x}{2} \right) \Big|_1^2 \\
-          &= -\dfrac{1}{8} + 0 - 1 + \dfrac{1}{2} \\
-          &= -\dfrac{5}{8}
+    \E{X} &= \int \limits_0^{\infty} 1 - F_X(x) dx - \int \limits_{-\infty}^0 F_X(x) dx \\
+          &= \int \limits_0^{\infty} 1 - F_X(x) dx - 0 \qquad \qquad \text{pois} \; F_X(x) = 0 \; \text{para} \; x < 0 \\
+          &= \int \limits_0^1 \dfrac{x}{4} dx + \int \limits_1^2 \dfrac{1}{2} dx \\
+          &= \left( \dfrac{x^2}{8} \right) \Big|_0^1 + \left( \dfrac{x}{2} \right) \Big|_1^2 \\
+          &= \dfrac{1}{8} - 0 + 1 - \dfrac{1}{2} \\
+          &= \dfrac{5}{8}
 \end{align*}
 
 {{< pagebreak >}}
