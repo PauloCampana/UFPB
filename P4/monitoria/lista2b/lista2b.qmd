@@ -45,11 +45,11 @@ Calcule $\E{X}$ sem obter primeiro a densidade de X.
 
 \begin{align*}
     \E{X} &= \int \limits_0^\infty 1 - F_X(x) dx - \int \limits_{-\infty}^0 F_X(x) dx \\
-          &= \int \limits_0^5 1 - \frac{1}{5} - \frac{x}{10} - \frac{3x^2}{250} dx - \int \limits_{-2}^0 1 - \frac{1}{10} (x + 2) dx \\
-          &= \left( x - \dfrac{x}{5} - \dfrac{x^2}{20} - \dfrac{x^3}{250} \right) \Big|_0^5 - \left( x - \dfrac{x^2}{20} - \dfrac{x}{5} \right) \Big|_{-2}^0 \\
-          &= \left( 5 - 1 - \dfrac{5}{4} - \dfrac{1}{2} \right) - \left( 2 + \dfrac{1}{5} - \dfrac{2}{5} \right) \\
-          &= \dfrac{9}{4} - \dfrac{9}{5} \\
-          & = \dfrac{9}{20}
+          &= \int \limits_0^5 1 - \frac{1}{5} - \frac{x}{10} - \frac{3x^2}{250} dx - \int \limits_{-2}^0 \frac{1}{10} (x + 2) dx \\
+          &= \left( x - \dfrac{x}{5} - \dfrac{x^2}{20} - \dfrac{x^3}{250} \right) \Big|_0^5 - \left(\dfrac{x^2}{20} + \dfrac{x}{5} \right) \Big|_{-2}^0 \\
+          &= \left( 5 - 1 - \dfrac{5}{4} - \dfrac{1}{2} \right) - \left(- \dfrac{1}{5} + \dfrac{2}{5} \right) \\
+          &= \dfrac{9}{4} - \dfrac{1}{5} \\
+          & = \dfrac{41}{20}
 \end{align*}
 
 {{< pagebreak >}}
