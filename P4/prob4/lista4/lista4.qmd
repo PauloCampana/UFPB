@@ -248,7 +248,7 @@ Para que valores de $r$ temos que $X_n \overset{\text{r}} \longrightarrow 0$?
 \end{align*}
 :::
 
-$X_n \overset{\text{r}} \longrightarrow 0$ apenas para $r > -2$.
+$X_n \overset{\text{r}} \longrightarrow 0$ apenas para $r = 1$.
 
 {{< pagebreak >}}
 
