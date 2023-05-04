@@ -27,7 +27,6 @@ Mostre que $\p{A_n} \longrightarrow 0 \Longleftrightarrow X_n \overset{\text{P}}
     &\Longleftrightarrow \limseq{\p{|X_n - 0| > \varepsilon}} = 0 \\
     &\Longleftrightarrow \limseq{\p{|\mathbb 1_{A_n}| > \varepsilon}} = 0 \\
     &\Longleftrightarrow \limseq{\p{\mathbb 1_{A_n} = 1}} = 0 \\
-    &\Longleftrightarrow \limseq{\p{\omega \in A_n}} = 0 \\
     &\Longleftrightarrow \limseq{\p{A_n}} = 0 \\
     &\Longleftrightarrow \p{A_n} \longrightarrow 0 \\
 \end{align*}
@@ -37,10 +36,12 @@ Mostre que $\p{A_n} \longrightarrow 0 \Longleftrightarrow X_n \overset{\text{P}}
 # 2.
 Seja ($X_n$) sequência de variáveis aleatórias tal que $\E{X_n} = \alpha$ para todo $n$ e $\Var{X_n} \longrightarrow 0$ quando $n \to \infty$. Mostre que $X_n \overset{\text{P}} \longrightarrow \alpha$ (Dica: use a desigualdade clássica de Chebyshev).
 
+Seja $\varepsilon > 0$ qualquer: 
+
 \begin{align*}
-    \p{|X_n - \E{X_n}| \geq \alpha} &\leq \frac{1}{\alpha^2} \Var{X_n} \\
-    \limseq{\p{|X_n - \alpha| \geq \alpha}} &\leq \limseq{\frac{1}{\alpha^2}} \Var{X_n} \\
-    \limseq{\p{|X_n - \alpha| \geq \alpha}} &\leq 0 \\ 
+    \p{|X_n - \E{X_n}| \geq \varepsilon} &\leq \frac{1}{\varepsilon^2} \Var{X_n} \\
+    \limseq{\p{|X_n - \alpha| \geq \varepsilon}} &\leq \limseq{\frac{1}{\varepsilon^2}} \Var{X_n} \\
+    \limseq{\p{|X_n - \alpha| \geq \varepsilon}} &\leq 0 \\ 
     \limseq{\p{|X_n - \alpha| \geq \varepsilon}} &= 0 \\ 
     X_n \overset{\text{P}} \longrightarrow \alpha
 \end{align*}
@@ -95,9 +96,9 @@ $Y_n \overset{\text{P}} \longrightarrow 0$.
 
 ::: {layout-ncol=3}
 \begin{align*}
-    &F_{Y_n}(u) \\
-    &= 1 - (1 - F_{X_n}(u))^n \\
-    &= 1 - (1 - u)^n 
+    &F_{Y_n}(y) \\
+    &= 1 - (1 - F_{X_n}(y))^n \\
+    &= 1 - (1 - y)^n 
 \end{align*}
 
 \begin{align*}
@@ -219,7 +220,6 @@ Mostre que $X_n \overset{\text{q.c.}} \longrightarrow 0$.
     &= \p{\lim \sup [\mathbb 1_{(0,1/n^2]} = 1]} \\
     &= \p{\lim \sup (0,1/n^2]} \\
     &= \p{(0,0]} \\
-    &= \p{\varnothing} \\
     \p{\lim \sup [|Xn| > \varepsilon]} &= 0 \\
     &\implies X_n \overset{\text{q.c.}} \longrightarrow 0
 \end{align*}
@@ -232,18 +232,19 @@ Para que valores de $r$ temos que $X_n \overset{\text{r}} \longrightarrow 0$?
 \begin{align*}
     \lim_{n \to \infty} \E{|X_n|^r}
     &= \lim_{n \to \infty} \E{(n \mathbb 1_{(0,1/n^2]})^r} \\
-    &= \lim_{n \to \infty} n^r \E{(\mathbb 1_{(0,1/n^2]})^r} \\
-    &= \lim_{n \to \infty} n^r \int \limits_0^{1/n^2} x^r dx \\
-    &= \lim_{n \to \infty} n^r \dfrac{(1/n^2)^{r+1}}{r+1} \\
-    &= \dfrac{1}{r+1} \lim_{n \to \infty} n^{-r-2} 
+    &= \lim_{n \to \infty} n^r \E{(\mathbb 1_{(0,1/n^2]})} \\
+    &= \lim_{n \to \infty} n^r \p{(0,1/n^2]} \\
+    &= \lim_{n \to \infty} n^r / n^2 \\
+    &= \lim_{n \to \infty} n^{r-2}
 \end{align*}
 
 \begin{align*}
     X_n \overset{\text{r}} \longrightarrow 0
     &\Longleftrightarrow \lim_{n \to \infty} \E{|X_n|^r} = 0 \\
-    &\Longleftrightarrow \dfrac{1}{r+1} \lim_{n \to \infty} n^{-r-2} = 0\\
-    &\Longleftrightarrow -r-2 < 0 \\
-    &\Longleftrightarrow r > -2 \\
+    &\Longleftrightarrow \lim_{n \to \infty} n^{r-2} = 0\\
+    &\Longleftrightarrow r-2 < 0 \\
+    &\Longleftrightarrow r < 2 \\
+    &\Longleftrightarrow r = 1, \; \text{pois} \; r \in \mathbb N^*
 \end{align*}
 :::
 
