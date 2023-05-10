@@ -1,0 +1,240 @@
+---
+format: pdf
+lang: pt
+title: Avaliação 3
+subtitle: Integração numérica e sistemas lineares
+author: Paulo Ricardo Seganfredo Campana
+date: 2023-05-10
+date-format: long
+callout-icon: false
+highlight-style: github
+monofont: "Ubuntu Mono"
+monofontoptions: 
+  Scale=1
+df-print: kable
+header-includes: \usepackage{tabstackengine}
+fig-height: 3
+knitr: 
+ opts_chunk: 
+   collapse: true
+   comment: "#"
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+:::
+
+O código fonte desta prova está disponível no [Github](https://github.com/PauloCampana/UFPB/blob/main/P4/numérico/prova3/prova3.qmd)
+
+# Funções de integração numérica
+
+```{r}
+#| warning: false
+library(dplyr)
+library(Deriv)
+```
+
+```{r}
+integral <- function(função, a, b, n, método) {
+    i <- seq(a, b, length.out = n+1)
+    h <- (b - a) / n
+    valores <- sapply(i, função)
+    pesos <- case_when(
+método == "trapézio"  ~ (rep(2, n)                        - c(1, rep(0, n-1))) |> c(1),
+método == "simpson13" ~ (rep(4, n) - rep(c(2, 0),    n/2) - c(1, rep(0, n-1))) |> c(1),
+método == "simpson38" ~ (rep(3, n) - rep(c(1, 0, 0), n/3) - c(1, rep(0, n-1))) |> c(1)
+    )
+    case_when(
+        método == "trapézio"  ~   h/2 * sum(valores * pesos),
+        método == "simpson13" ~   h/3 * sum(valores * pesos),
+        método == "simpson38" ~ 3*h/8 * sum(valores * pesos)
+    )
+}
+```
+
+A função `integral()` calcula uma aproximação da integral definida de $f(x)$ no intevalo $[a,b]$ com suporte para a regra dos trapézios, regra de 1/3 de Simpson e regra de 3/8 de Simpson.
+
+{{< pagebreak >}}
+
+```{r}
+erro <- function(função, a, b, n, método) {
+    f2x <- sapply(
+        seq(b, a, length.out = 1000),
+        Deriv(função, nderiv = 2)
+    )
+    f4x <- sapply(
+        seq(b, a, length.out = 1000),
+        Deriv(função, nderiv = 4)
+    )
+    case_when(
+        método == "trapézio"  ~ (b-a)^3 / n^2 / 12  * max(abs(f2x)),
+        método == "simpson13" ~ (b-a)^5 / n^4 / 180 * max(abs(f4x)),
+        método == "simpson38" ~ (b-a)^5 / n^4 / 80  * max(abs(f4x))
+    )
+}
+```
+
+A função `erro()` calcula o máximo erro absoluto da aproximação da função `integral()`, com base nos seguintes limitantes do erro:
+
+\begin{align*}
+    \text{regra dos trapézios:}     \quad & |E| \leqslant \dfrac{(b - a)^3}{12 n^2} \max_{a \leqslant x \leqslant b} \left| f^{(2)}(x) \right| \\
+    \text{regra de 1/3 de Simpson:} \quad & |E| \leqslant \dfrac{(b - a)^5}{180 n^4} \max_{a \leqslant x \leqslant b} \left| f^{(4)}(x) \right| \\
+    \text{regra de 3/8 de Simpson:} \quad & |E| \leqslant \dfrac{(b - a)^5}{80 n^4} \max_{a \leqslant x \leqslant b} \left| f^{(4)}(x) \right| 
+\end{align*}
+
+```{r}
+tabela <- function(função, ...) {
+    métodos <- c("trapézio", "simpson13", "simpson38")
+    tibble(
+        `valor da integral` = sapply(
+            métodos,
+            function(método) integral(função, ..., método)
+        ),
+        `limite superior do erro` = sapply(
+            métodos,
+            function(método) erro(função, ..., método)
+        )
+    )
+}
+```
+
+{{< pagebreak >}}
+
+# Funções de solução de sistemas lineares
+
+```{r}
+sistema <- function(matriz, iterações = 10) {
+    nrow <- nrow(matriz)
+    ncol <- ncol(matriz)
+    novo <- function(tabela, matriz) {
+        anterior <- tabela[nrow(tabela), ] |> as.numeric()
+        tabela[nrow(tabela) + 1, ] <- lapply(
+            1:(ncol-1),
+            function(i) {
+                prod <- anterior[-i] * -matriz[i,-c(i,ncol)]
+                sum(prod, matriz[i,ncol]) / matriz[i,i]
+            }
+        )
+        tabela
+    }
+    zeros <- data.frame(lapply(1:nrow, function(x) 0))
+    names(zeros) <- paste0("x", 1:nrow)
+    Reduce(
+        f = function(a, b) novo(a, matriz),
+        x = 1:iterações,
+        init = zeros
+    )
+}
+```
+
+A função `sistema()` recebe uma matriz de tamanho arbitrário contendo os coeficientes do sistema linear e aplica o método de resolução de Gauss-Siedel para encontrar uma solução aproximada, começando por um chute inicial de $\mathbf x = \vec 0$.
+
+{{< pagebreak >}}
+
+::: {.callout-important}
+
+# **Questão 1.**
+Calcule o valor aproximado da seguinte interal usando $n$ = 6 e a regra dos trapézios generalizada, a regra de 1/3 de Simpson e a regra de 3/8 de Simpson, em cada caso determine um limitante superior para o erro
+
+$$
+\int \limits_0^2 e^{-x^2} dx
+$$
+
+:::
+
+```{r}
+função <- function(x) exp(-x^2)
+tabela(função, 0, 2, n = 6)
+```
+
+::: {.callout-important}
+
+# **Questão 2.**
+Um radar foi usado para medir a velocidade de um corredor durante os primeiros 5 segundos de uma corrida. Use a regra 1/3 de Simpson para estimar a distância que o corredor cobriu durante aqueles 5 segundos
+
+```{r}
+q2 <- tibble(
+tempo      = c(0, 0.5,   1, 1.5,   2,  2.5,    3,  3.5,    4,  4.5,    5),
+velocidade = c(0,4.67,7.34,8.86,9.73,10.22,10.51,10.67,10.76,10.81,10.81)
+)
+```
+
+:::
+
+```{r}
+h <- 0.5
+pesos <- c(1,4,2,4,2,4,2,4,2,4,1)
+h / 3 * sum(q2$velocidade * pesos)
+```
+
+A Distância estimada que o corredor percorreu nos primeiros 5 segundos da corrida é de 44.735 metros.
+
+{{< pagebreak >}}
+
+::: {.callout-important}
+
+# **Questão 3.**
+Considere o sistema linear:
+
+$$
+\left\{
+    \setstackgap{L}{18pt}
+    \Matrixstack[r]{
+        5x_1 +& 2x_2 +&   x_3 =& 7 \\
+        -x_1 +& 4x_2 +&  2x_3 =& 3 \\
+        2x_1 -& 3x_2 +& 10x_3 =& 1
+    }
+\right.
+$$
+
+a) Verificar a possibilidade de aplicação do método de Gauss-Seidel usando o critério de Sassenfeld.
+b) Se possível, resolvê-lo pelo método do item a), obtendo um resultado com erro absoluto < $10^{-2}$.
+
+:::
+
+Primeiramente, divide-se cada linha pelo coeficiente da diagonal:
+
+$$
+\left\{
+    \setstackgap{L}{18pt}
+    \Matrixstack[r]{
+        5x_1 +& 2x_2 +&   x_3 =& 7 \\
+        -x_1 +& 4x_2 +&  2x_3 =& 3 \\
+        2x_1 -& 3x_2 +& 10x_3 =& 1
+    }
+\right. \Longrightarrow
+\left\{
+    \setstackgap{L}{18pt}
+    \Matrixstack[r]{
+             x_1 +& 0.4x_2 +& 0.1x_3 =& 1.4 \\
+        -0.25x_1 +&    x_2 +& 0.5x_3 =& 0.75 \\
+          0.2x_1 -& 0.3x_2 +&    x_3 =& 0.1
+    }
+\right.
+$$
+
+O critério de Sassenfeld é tal que $\beta_i = \displaystyle \sum_{j=1}^{i-1} |a_{ij}| \beta_j + \sum_{j=i+1}^n |a_{ij}|$
+
+\begin{align*}
+    \beta_1 = |a_{11}| + |a_{12}| &= 0.4 + 0.1 = 0.5 \\
+    \beta_2 = |a_{21}| \beta_1 + |a_{23}| &= 0.25 \times 0.5 + 0.5 = 0.625 \\
+    \beta_3 = |a_{31}| \beta_1 + |a_{32}| \beta_2 &= 0.2 \times 0.5 + 0.3 \times 0.625 = 0.2875
+\end{align*}
+
+$\displaystyle \max_{1 \leqslant i \leqslant n} \beta_i < 1$, portanto o critério de Sassenfeld é satisfeito e o método de Gauss-Siedel irá convergir:
+
+{{< pagebreak >}}
+
+```{r}
+matriz = matrix(
+    c( 5,  2,  1, 7,
+      -1,  4,  2, 3,
+       2, -3, 10, 1),
+    byrow = TRUE, ncol = 4
+)
+
+sistema(matriz, iterações = 25)
+```
+
+
