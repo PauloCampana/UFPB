@@ -85,15 +85,15 @@ A função `erro()` calcula o máximo erro absoluto da aproximação da função
 
 ```{r}
 tabela <- function(função, ...) {
-    métodos <- c("trapézio", "simpson13", "simpson38")
     tibble(
+        método = c("trapézio", "simpson13", "simpson38"),
         `valor da integral` = sapply(
-            métodos,
-            function(método) integral(função, ..., método)
+            método,
+            function(x) integral(função, ..., x)
         ),
         `limite superior do erro` = sapply(
-            métodos,
-            function(método) erro(função, ..., método)
+            método,
+            function(x) erro(função, ..., x)
         )
     )
 }
@@ -227,7 +227,7 @@ $\displaystyle \max_{1 \leqslant i \leqslant n} \beta_i < 1$, portanto o critér
 {{< pagebreak >}}
 
 ```{r}
-matriz = matrix(
+matriz <- matrix(
     c( 5,  2,  1, 7,
       -1,  4,  2, 3,
        2, -3, 10, 1),
