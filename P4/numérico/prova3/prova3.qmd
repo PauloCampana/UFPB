@@ -207,7 +207,7 @@ $$
 \left\{
     \setstackgap{L}{18pt}
     \Matrixstack[r]{
-             x_1 +& 0.4x_2 +& 0.1x_3 =& 1.4 \\
+             x_1 +& 0.4x_2 +& 0.2x_3 =& 1.4 \\
         -0.25x_1 +&    x_2 +& 0.5x_3 =& 0.75 \\
           0.2x_1 -& 0.3x_2 +&    x_3 =& -0.1
     }
@@ -217,9 +217,9 @@ $$
 O critério de Sassenfeld é tal que $\beta_i = \displaystyle \sum_{j=1}^{i-1} |a_{ij}| \beta_j + \sum_{j=i+1}^n |a_{ij}|$
 
 \begin{align*}
-    \beta_1 = |a_{11}| + |a_{12}| &= 0.4 + 0.1 = 0.5 \\
-    \beta_2 = |a_{21}| \beta_1 + |a_{23}| &= 0.25 \times 0.5 + 0.5 = 0.625 \\
-    \beta_3 = |a_{31}| \beta_1 + |a_{32}| \beta_2 &= 0.2 \times 0.5 + 0.3 \times 0.625 = 0.2875
+    \beta_1 = |a_{11}| + |a_{12}| &= 0.4 + 0.2 = 0.6 \\
+    \beta_2 = |a_{21}| \beta_1 + |a_{23}| &= 0.25 \times 0.6 + 0.5 = 0.65 \\
+    \beta_3 = |a_{31}| \beta_1 + |a_{32}| \beta_2 &= 0.2 \times 0.6 + 0.3 \times 0.65 = 0.315
 \end{align*}
 
 $\displaystyle \max_{1 \leqslant i \leqslant n} \beta_i < 1$, portanto o critério de Sassenfeld é satisfeito e o método de Gauss-Siedel irá convergir:
