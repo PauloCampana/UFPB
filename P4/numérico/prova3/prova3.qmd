@@ -183,7 +183,7 @@ $$
     \Matrixstack[r]{
         5x_1 +& 2x_2 +&   x_3 =& 7 \\
         -x_1 +& 4x_2 +&  2x_3 =& 3 \\
-        2x_1 -& 3x_2 +& 10x_3 =& 1
+        2x_1 -& 3x_2 +& 10x_3 =& -1
     }
 \right.
 $$
@@ -201,7 +201,7 @@ $$
     \Matrixstack[r]{
         5x_1 +& 2x_2 +&   x_3 =& 7 \\
         -x_1 +& 4x_2 +&  2x_3 =& 3 \\
-        2x_1 -& 3x_2 +& 10x_3 =& 1
+        2x_1 -& 3x_2 +& 10x_3 =& -1
     }
 \right. \Longrightarrow
 \left\{
@@ -209,7 +209,7 @@ $$
     \Matrixstack[r]{
              x_1 +& 0.4x_2 +& 0.1x_3 =& 1.4 \\
         -0.25x_1 +&    x_2 +& 0.5x_3 =& 0.75 \\
-          0.2x_1 -& 0.3x_2 +&    x_3 =& 0.1
+          0.2x_1 -& 0.3x_2 +&    x_3 =& -0.1
     }
 \right.
 $$
@@ -228,13 +228,14 @@ $\displaystyle \max_{1 \leqslant i \leqslant n} \beta_i < 1$, portanto o critér
 
 ```{r}
 matriz <- matrix(
-    c( 5,  2,  1, 7,
-      -1,  4,  2, 3,
-       2, -3, 10, 1),
+    c( 5,  2,  1,  7,
+      -1,  4,  2,  3,
+       2, -3, 10, -1),
     byrow = TRUE, ncol = 4
 )
 
-sistema(matriz, iterações = 25)
+sistema(matriz, iterações = 20) |> round(5)
 ```
 
+A solução do sistema é então $\lbrace 1,1,0 \rbrace$.
 
