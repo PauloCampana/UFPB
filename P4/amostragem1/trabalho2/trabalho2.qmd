@@ -1,0 +1,526 @@
+---
+format: 
+  revealjs: 
+    theme: solarized
+self-contained: true
+self-contained-math: true
+highlight-style: solarized
+code-line-numbers: false
+callout-icon: false
+title: Tamanho da amostra em modelos estatísticos
+author: Paulo R. S. Campana
+---
+
+# Teste de Hipótese
+
+```{r}
+library(dplyr)
+library(purrr)
+library(ggplot2)
+theme_set(theme(
+    plot.background = element_rect("#fdf6e3"),
+    panel.background = element_blank(),
+    panel.grid = element_line("#586e7540"),
+    axis.ticks = element_line("#586e7540"),
+    text = element_text(colour = "#586e75", size = 18),
+    axis.text = element_text(colour = "#586e75", size = 16)
+))
+```
+
+## Teste z
+Suponha um teste de hipótese em relação a média populacional de uma amostra aleatória que segue distribuição normal, com as seguintes hipóteses:
+
+$$
+X \sim \mathcal N(\mu, \sigma^2)
+\qquad
+\begin{cases}
+    H_0: \mu \leqslant \mu_0 \\
+    H_1: \mu >         \mu_0
+\end{cases}
+$$
+
+## Teste z
+Sabemos que tal teste tem região crítica relacionada a média amostral $\bar X$ ou soma das variáveis aleatórias, desse modo, podemos calcular as probabilidades dos erros tipo I e II.
+
+$$
+Y = \sum X_i > c
+\qquad
+Y \sim \mathcal N(n \mu, n \sigma^2)
+$$
+
+$$
+\alpha = P(Y >         c; \mu = \mu_0) \\
+\beta  = P(Y \leqslant c; \mu = \mu_1) 
+$$
+
+Em que $\mu_1$ é o valor de $\mu$ para ser calculado a probabilidade do erro tipo II.
+
+## Teste z {.smaller}
+Padronizando a variável $Y$ para uma normal, podemos obter uma relação entre o tamanho da amostra e os valores do teste.
+
+:::: {.columns}
+::: {.column width="50%"}
+
+$$
+\alpha = P(Y > c; \mu = \mu_0) \\
+1 - P \left( Z \leqslant \frac{c - n \mu_0}{\sigma \sqrt n} \right) \\
+\frac{c - n \mu_0}{\sigma \sqrt n} = \mathrm{qn}(1 - \alpha) \\
+c = n \mu_0 + \sigma \sqrt n \mathrm{qn}(1 - \alpha)
+$$ 
+
+:::
+::: {.column width="50%"}
+
+$$
+\beta = P(Y \leqslant c; \mu = \mu_1) \\
+P \left( Z \leqslant \frac{c - n \mu_1}{\sigma \sqrt n} \right) \\
+\frac{c - n \mu_1}{\sigma \sqrt n} = \mathrm{qn}(\beta) \\
+c = n \mu_1 + \sigma \sqrt n \mathrm{qn}(\beta)
+$$ 
+
+:::
+::::
+
+Em que $\mathrm{qn}$ é função quantílica da distribuição normal.
+
+## Teste z {.smaller}
+Podemos resolver o sistema de equações em relação a $n$ de manéira simbólica.
+
+$$
+\begin{cases}
+    c = n \mu_0 + \sigma \sqrt n \mathrm{qn}(1 - \alpha) \\
+    c = n \mu_1 + \sigma \sqrt n \mathrm{qn}(\beta)
+\end{cases}
+$$
+
+$$
+n \mu_0 + \sigma \sqrt n \mathrm{qn}(1 - \alpha) = n \mu_1 + \sigma \sqrt n \mathrm{qn}(\beta)
+$$
+$$
+n (\mu_0 - \mu_1) + \sqrt n \sigma (\mathrm{qn}(\beta) - \mathrm{qn}(1 - \alpha)) = 0 \\\\
+$$
+$$
+\sqrt n (\mu_0 - \mu_1) = \sigma (\mathrm{qn}(\beta) - \mathrm{qn}(1 - \alpha)) = 0 \\\\
+$$
+$$
+n = \dfrac{\sigma^2 (\mathrm{qn}(\beta) + \mathrm{qn}(\alpha))^2}{(\mu_0 - \mu_1)^2}
+$$
+
+## Teste z
+Obtemos como resultado que o tamanho da amostra pode ser calculado com a seguinte equação:
+
+$$
+n = \dfrac{\sigma^2 (\mathrm{qn}(\beta) + \mathrm{qn}(\alpha))^2}{(\mu_0 - \mu_1)^2}
+$$
+
+Note que:
+
+* $n$ cresce se $\sigma$ cresce,
+* $n$ cresce se $\alpha$ ou $\beta$ diminuem,
+* $n$ cresce se $\mu_1$ se aproxima de $\mu_0$.
+
+## Exemplo {.smaller}
+
+::: {.callout-warning}
+### **Fumo de cigarros da China**
+Um artigo publicado em 1995 chama o fumo na china de "emergência de saúde pública". Os pesquisadores descobriram que os fumantes nesse país fumam um média de 16.5 cigarros por dia. A alta taxa de fumo é uma razão pela qual a indústria do tabaco é a maior fonte de receitas de impostos do governo central dos Estados Unidos. Será que a média de cigarros fumados por dia pelos fumantes chineses aumentou nos últimos anos? Considere que uma amostra de 200 fumantes chineses, o número médio de cigarros fumados por dia tinha média de 17.05 e desvio-padrão de 5.21.
+:::
+
+$$
+\begin{cases}
+    H_0 : \mu \leqslant 16.5 \\
+    H_1 : \mu >         16.5
+\end{cases} \qquad
+\begin{cases}
+    \bar x = 17.05 \\
+    \sigma = 5.21 
+\end{cases} \qquad
+\begin{cases}
+    n = 200 \\
+    \alpha = 0.05
+\end{cases}
+$$
+
+Com essas informações, chegamos num teste de hipótese que rejeita $H_0$ para $\bar x > 17.106$, podemos calcular a probabilidade do erro tipo II tomando $\mu_1 = 17.5$.
+
+$$
+\beta = P(\bar X < 17.106) = P(Z < -1.069) = 0.142
+$$
+
+## Exemplo
+Fazendo a engenharia reversa nesse problema, é possível verificar a equação de cálculo da amostra 
+
+$$
+\begin{align}
+    n &= \dfrac{\sigma^2 (\mathrm{qn}(\beta) + \mathrm{qn}(\alpha))^2}{(\mu_0 - \mu_1)^2} \\
+      &= \dfrac{5.21^2 (\mathrm{qn}(0.142) + \mathrm{qn}(0.05))^2}{(16.5 - 17.5)^2} \\
+      &= 5.21^2 (-2.725)^2 \\
+      &= 200
+\end{align}
+$$
+
+## Exemplo
+Se quisermos saber qual o tamanho necessário para um erro tipo II de 5%.
+
+$$
+\begin{align}
+    n &= \dfrac{\sigma^2 (\mathrm{qn}(\beta) + \mathrm{qn}(\alpha))^2}{(\mu_0 - \mu_1)^2} \\
+      &= \dfrac{5.21^2 (\mathrm{qn}(0.05) + \mathrm{qn}(0.05))^2}{(16.5 - 17.5)^2} \\
+      &= 5.21^2 (-3.289)^2 \\
+      &= 293.631 \\
+      &= 294
+\end{align}
+$$
+
+
+## Exemplo 
+Podemos também observar a relação que a escolha de $\beta$ tem com o tamanho da amostra.
+
+```{r}
+#| fig-align: center
+ene <- function(beta) 5.21^2 * (qnorm(beta) + qnorm(0.05))^2
+
+ggplot() +
+    geom_function(fun = ene, col = "#586e75", linewidth = 1, n = 1000) +
+    labs(
+        title = "Relação entre β e tamanho da amostra",
+        x = "β", y = "n"
+    )
+```
+
+## Teste t
+A relação de tamanho da amostra pode ser derivada de maneira similar ao teste Z, porém, não é possível isolar a variável $n$, então os resultados são obtidos apenas de maneira numérica.
+
+$$
+n = \frac{S^2 (\mathrm{qt}(\beta; n-1) + \mathrm{qt}(\alpha; n-1))^2}{(\mu_1 - \mu_0)^2}
+$$
+
+Em que $\mathrm{qt}$ é função quantílica da distribuição t-student com n-1 graus de liberdade.
+
+## Exemplo
+Sejam os mesmos dados e hipóteses do exemplo anterior, porém usamos $S^2 = 5.21$ ao invés de $\sigma$, Para achar solução numérica de $n$, precisamos minimizar a função:
+
+:::: {.columns}
+::: {.column width="50%"}
+
+$$
+\scriptsize \left| n - \frac{S^2 (\mathrm{qt}(\beta; n-1) + \mathrm{qt}(\alpha; n-1))^2}{(\mu_1 - \mu_0)^2} \right|
+$$
+$$
+n = 202
+$$
+
+:::
+::: {.column width="50%"}
+
+```{r}
+#| echo: true
+fun <- function(n) {
+    5.21^2 * (
+        qt(0.142, n-1) +
+        qt(0.05, n-1)
+    )^2
+}
+
+optimize(
+    f = function(n) abs(n - fun(n)),
+    interval = c(1, 1e6)
+)$minimum
+```
+
+:::
+::::
+
+## Teste de variância
+Suponha um teste de hipótese em relação a variância populacional de uma amostra aleatória que segue distribuição normal, com as seguintes hipóteses:
+
+$$
+X \sim \mathcal N(\mu, \sigma^2)
+\qquad
+\begin{cases}
+    H_0: \sigma^2 \leqslant \sigma^2_0 \\
+    H_1: \sigma^2 >         \sigma^2_0
+\end{cases}
+$$
+
+## Teste de variância
+Sabemos que tal teste tem região crítica relacionada a variância amostral $S^2$ ou soma quadrada das variáveis aleatórias, desse modo, podemos calcular as probabilidades dos erros tipo I e II.
+
+$$
+Y = \sum X^2_i > c
+\qquad
+\frac{Y - n \bar x}{\sigma^2} \sim \chi^2_{(n-1)} \\
+\alpha = P(Y >         c; \sigma^2 = \sigma^2_0) \\
+\beta  = P(Y \leqslant c; \sigma^2 = \sigma^2_1) 
+$$
+
+Em que $\sigma^2_1$ é o valor de $\sigma^2$ para ser calculado a probabilidade do erro tipo II.
+
+## Teste de variância {.smaller}
+Padronizando a variável $Y$ para uma $\chi^2$, podemos obter uma relação entre o tamanho da amostra e os valores do teste.
+
+:::: {.columns}
+::: {.column width="50%"}
+
+$$
+\alpha = P(Y > c; \sigma^2 = \sigma^2_0) \\
+1 - P \left( \chi^2 \leqslant \frac{c - n \bar x}{\sigma^2_0} \right) \\
+\frac{c - n \bar x}{\sigma^2_0} = \mathrm{qc}(1 - \alpha; n-1) \\
+c = n \bar x + \sigma^2_0 \mathrm{qc}(1 - \alpha; n-1)
+$$ 
+
+:::
+::: {.column width="50%"}
+
+$$
+\beta = P(Y \leqslant c; \sigma^2 = \sigma^2_1) \\
+P \left( \chi^2 \leqslant \frac{c - n \bar x}{\sigma^2_1} \right) \\
+\frac{c - n \bar x}{\sigma^2_1} = \mathrm{qc}(\beta; n-1) \\
+c = n \bar x + \sigma^2_1 \mathrm{qc}(\beta; n-1)
+$$ 
+
+:::
+::::
+
+Em que $\mathrm{qc}$ é função quantílica da distribuição $\chi^2$ com $n-1$ graus de liberdade.
+
+## Teste de variância {.smaller}
+Não é necessário tomarmos $\alpha = \beta$, pois a distribuição $\chi^2$ não é simetrica, não é possível obter solução fechada para $n$, portanto os resultados são obtidos apenas de maneira numérica.
+
+$$
+\begin{cases}
+    c = n \bar x + \sigma^2_0 \mathrm{qc}(1 - \alpha; n-1) \\
+    c = n \bar x + \sigma^2_1 \mathrm{qc}(\beta; n-1)
+\end{cases}
+$$
+
+$$
+\begin{align}
+    \sigma^2_0 \mathrm{qc}(1 - \alpha; n-1) &= \sigma^2_1 \mathrm{qc}(\beta; n-1) \\\\
+    \frac{\sigma^2_0}{\sigma^2_1} &= \frac{\mathrm{qc}(\beta; n-1)}{\mathrm{qc}(1 - \alpha; n-1)}
+\end{align}
+$$
+
+## Teste de variância
+Obtemos como resultado uma relação entre o tamanho da amostra e os valores do teste:
+
+$$
+\frac{\sigma^2_0}{\sigma^2_1} = \frac{\mathrm{qc}(\beta; n-1)}{\mathrm{qc}(1 - \alpha; n-1)}
+$$
+
+É mais difícil notar, porém:
+
+* $n$ cresce se $\alpha$ ou $\beta$ diminuem,
+* $n$ cresce se $\sigma^2_1$ se aproxima de $\sigma^2_0$.
+
+## Teste F
+Suponha um teste de hipótese em relação a razão de variâncias populacionais sobre duas amostras aleatórias de tamanho $n$ e $m$ que seguem distribuição normal, com as seguintes hipóteses:
+
+$$
+X_1 \sim \mathcal N(\mu_1, \sigma^2_1) \qquad
+X_2 \sim \mathcal N(\mu_2, \sigma^2_2)
+$$
+
+$$
+\begin{cases}
+    H_0: \sigma^2_1 / \sigma^2_2 \leqslant f_0 \\
+    H_1: \sigma^2_1 / \sigma^2_2 >         f_0 
+\end{cases}
+$$
+
+## Teste F
+Sabemos que tal teste tem região crítica relacionada a razão das variâncias amostrais $S^2_1 / S^2_2$, desse modo, podemos calcular as probabilidades dos erros tipo I e II.
+
+$$
+Y = S^2_1 / S^2_2 \qquad
+Y \frac{\sigma^2_2}{\sigma^2_1} \sim F_{(n-1, m-1)} \\
+\alpha = P(Y >         c; \sigma^2_1 / \sigma^2_2 = f_0) \\
+\beta  = P(Y \leqslant c; \sigma^2_1 / \sigma^2_2 = f_1)
+$$
+
+Em que $f_1$ é o valor de $f$ para ser calculado a probabilidade do erro tipo II.
+
+## Teste F {.smaller}
+Padronizando a variável $Y$ para uma F-snedecor, podemos obter uma relação entre o tamanho da amostra e os valores do teste.
+
+:::: {.columns}
+::: {.column width="50%"}
+
+$$
+\alpha = P(Y > c; \sigma^2_1 / \sigma^2_2 = f_0) \\
+1 - P \left(F \leqslant \frac{c}{f_0} \right) \\
+c / f_0 = \mathrm{qf}(1 - \alpha; n-1, m-1) \\
+c = f_0 \mathrm{qf}(1 - \alpha; n-1, m-1)
+$$ 
+
+:::
+::: {.column width="50%"}
+
+$$
+\beta = P(Y \leqslant c; \sigma^2_1 / \sigma^2_2 = f_1) \\
+P \left(F \leqslant \frac{c}{f_1} \right) \\
+c / f_1 = \mathrm{qf}(\beta; n-1, m-1) \\
+c = f_1 \mathrm{qf}(\beta; n-1, m-1)
+$$ 
+
+:::
+::::
+
+Em que $\mathrm{qf}$ é função quantílica da distribuição F-snedecor com $n-1$ e $m-1$ graus de liberdade.
+
+## Teste F {.smaller}
+Não é necessário tomarmos $\alpha = \beta$, pois a distribuição F-snedecor não é simetrica, não é possível obter solução fechada para $n$ e $m$, portanto os resultados são obtidos apenas de maneira numérica.
+
+$$
+\begin{cases}
+    c = f_0 \mathrm{qf}(1 - \alpha; n-1, m-1) \\
+    c = f_1 \mathrm{qf}(\beta; n-1, m-1)
+\end{cases}
+$$
+
+$$
+\begin{align}
+    f_0 \mathrm{qf}(1 - \alpha; n-1, m-1) &= f_1 \mathrm{qf}(\beta; n-1, m-1) \\\\
+    \frac{f_0}{f_1} &= \frac{\mathrm{qf}(\beta; n-1, m-1)}{\mathrm{qf}(1 - \alpha; n-1, m-1)}
+\end{align}
+$$
+
+## Teste F
+Obtemos como resultado uma relação entre os tamanhos das amostras e os valores do teste:
+
+$$
+\frac{f_0}{f_1} = \frac{\mathrm{qf}(\beta; n-1, m-1)}{\mathrm{qf}(1 - \alpha; n-1, m-1)}
+$$
+
+É mais difícil notar, porém:
+
+* $n$ cresce se $\alpha$ ou $\beta$ diminuem,
+* $n$ cresce se $f_1$ se aproxima de $f_0$.
+
+## Exemplo {.smaller}
+
+::: {.callout-warning}
+### **Resistência à tração do concreto**
+Considere a comparação entre os concretos fabricados com cimentos das duas marcas diferentes. Os dados relativos às cargas de ruptura (em $\text{kg}/\text{cm}^2$) resultantes dos ensaios realizados são os seguintes:
+
+|         |    |    |    |    |    |    |    |    |    |    |    |    |
+|---------|----|----|----|----|----|----|----|----|----|----|----|----|
+|Mistura 1|16.4|15.7|14.8|15.7|13.8|16.6|15.4|14.6|15.8|16.3|15.5|15.2|
+|Mistura 2|14.7|14.3|15.4|14.5|14.2|15.0|14.8|15.2|15.3|14.9|    |    |
+
+```{r}
+M1 <- c(16.4, 15.7, 14.8, 16.7, 13.8, 15.6, 16.4, 14.6, 15.8, 16.3, 15.5, 15.2)
+M2 <- c(14.7, 14.3, 15.4, 14.5, 14.2, 15.0, 14.8, 15.2, 15.3, 14.9)
+```
+
+Com base nesses dados, e supondo que ambas as v.a.'s são normais, teste a hipótese nula de que a variância da Mistura 1 é igual ou menor que a variância da Mistura 2, ao nível de significância de 5%.
+:::
+
+$$
+\begin{cases}
+    H_0 : \sigma^2_1 / \sigma^2_2 \leqslant 1 \\
+    H_1 : \sigma^2_1 / \sigma^2_2 >         1
+\end{cases} \qquad
+\begin{cases}
+    S^2_1 = 0.646 \\
+    S^2_2 = 0.169 
+\end{cases} \qquad
+\begin{cases}
+    n = 12, m = 10 \\
+    \alpha = 0.05
+\end{cases}
+$$
+
+Com essas informações, chegamos num teste de hipótese que rejeita $H_0$ para $S^2_1 / S^2_2 > 3.102$, podemos calcular a probabilidade do erro tipo II tomando $f_1 = 2$.
+
+$$
+\beta = P(\sigma^2_1 / \sigma^2_2 < 3.102) = 0.740
+$$
+
+## Exemplo
+Fazendo a engenharia reversa nesse problema, é possível verificar a equação de cálculo da amostra encontrando $n$ e $m$, por meio de minimizar uma função de duas variáveis:
+
+:::: {.columns}
+::: {.column width="50%"}
+
+$$
+\small \left| \frac{f_0}{f_1} - \frac{\mathrm{qf}(\beta; n-1, m-1)}{\mathrm{qf}(1 - \alpha; n-1, m-1)} \right|
+$$
+
+$$
+n = 6, \; m = 20
+$$
+
+:::
+::: {.column width="50%"}
+
+```{r}
+#| echo: true
+fun <- function(nm) {
+    qf(0.740, nm[1]-1, nm[2]-1) /
+    qf(0.95, nm[1]-1, nm[2]-1)
+}
+
+optim(
+    par = c(2,2),
+    fn = \(nm) abs(1/2 - fun(nm))
+)$par
+```
+
+:::
+::::
+
+## Exemplo
+O resultado da optimização sobre o tamanho da amostra não bateu com os dados amostrais, isso se da pois existem infinitas soluções para $n$ e $m$, se quisermos tamanhos de amostras mais equilibrados, podemos tomar $n = m$.
+
+:::: {.columns}
+::: {.column width="50%"}
+
+$$
+\small \left| \frac{f_0}{f_1} - \frac{\mathrm{qf}(\beta; n-1, n-1)}{\mathrm{qf}(1 - \alpha; n-1, n-1)} \right|
+$$
+
+$$
+n = m = 11
+$$
+
+:::
+::: {.column width="50%"}
+
+```{r}
+#| echo: true
+fun2 <- function(n) {
+    qf(0.740, n-1, n-1) /
+    qf(0.95, n-1, n-1)
+}
+
+optimise(
+    f = \(n) abs(1/2 - fun2(n)),
+    interval = c(2, 1e6)
+)$minimum
+```
+
+:::
+::::
+
+## Exemplo
+Também é possível a visualização das possíveis soluções da equação. 
+
+```{r}
+#| echo: true
+#| output-location: slide
+#| fig-height: 6
+expand.grid(seq(1.1, 31, by = 0.1), seq(1.1, 31, by = 0.1)) |> 
+    mutate(
+        f = map2_dbl(Var1, Var2, \(Var1, Var2) fun(c(Var1, Var2))),
+        solução = abs(1/2 - f)^0.75
+    ) |> 
+    ggplot(aes(Var1, Var2, fill = solução)) +
+    geom_tile() +
+    scale_fill_viridis_c(option = "E", direction = -1, guide = "none") +
+    labs(
+        x = "n", y = "m",
+        title = "Solução gráfica pra os pares (n, m) do exemplo"
+    )
+```
+
