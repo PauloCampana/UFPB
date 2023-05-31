@@ -11,7 +11,15 @@ title: Tamanho da amostra em modelos estatísticos
 author: Paulo R. S. Campana
 ---
 
-# Teste de Hipótese
+## Tamanho da amostra em modelos estatísticos
+
+A coleta de dados pode ser a parte mais custosa de uma pesquisa estatística, quantas observações deverá conter uma amostra?
+
+Essa pergunta é melhor respondida quando se tem espectativas do que a pesquisa quer comprovar e com qual nível de rigor.
+
+Podemos fixar as probabilidades dos erros tipo I e II e definir um efeito mínimo do teste para obter uma estimativa do tamanho da amostra necessário para se obter uma conclusão. 
+
+# Teste z
 
 ```{r}
 library(dplyr)
@@ -188,6 +196,8 @@ ggplot() +
     )
 ```
 
+# Teste t
+
 ## Teste t
 A relação de tamanho da amostra pode ser derivada de maneira similar ao teste Z, porém, não é possível isolar a variável $n$, então os resultados são obtidos apenas de maneira numérica.
 
@@ -230,6 +240,8 @@ optimize(
 
 :::
 ::::
+
+# Teste de variância
 
 ## Teste de variância
 Suponha um teste de hipótese em relação a variância populacional de uma amostra aleatória que segue distribuição normal, com as seguintes hipóteses:
@@ -312,6 +324,8 @@ $$
 
 * $n$ cresce se $\alpha$ ou $\beta$ diminuem,
 * $n$ cresce se $\sigma^2_1$ se aproxima de $\sigma^2_0$.
+
+# Teste F
 
 ## Teste F
 Suponha um teste de hipótese em relação a razão de variâncias populacionais sobre duas amostras aleatórias de tamanho $n$ e $m$ que seguem distribuição normal, com as seguintes hipóteses:
@@ -510,6 +524,7 @@ Também é possível a visualização das possíveis soluções da equação.
 #| echo: true
 #| output-location: slide
 #| fig-height: 6
+#| fig-align: center
 expand.grid(seq(1.1, 31, by = 0.1), seq(1.1, 31, by = 0.1)) |> 
     mutate(
         f = map2_dbl(Var1, Var2, \(Var1, Var2) fun(c(Var1, Var2))),
