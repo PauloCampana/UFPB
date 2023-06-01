@@ -20,7 +20,7 @@ O código fonte desta prova está disponível no [Github](https://github.com/Pau
 
 https://github.com/PauloCampana/UFPB/blob/main/P4/numérico/prova4/prova4.qmd
 
-A função `PVI` definida a seguir, cria uma tabela das iterações dos métodos de Euler e Runge-Kutta para solução de problemas de valor inicial, aqui, o método de Euler é representado como `ordem = 1`, pois o mesmo é um caso específico dos métodos de Runge-Kutta.
+A função `PVI` que implementei a seguir, cria uma tabela das iterações dos métodos de Euler e Runge-Kutta para solução de problemas de valor inicial, aqui, o método de Euler é representado como `ordem = 1`, pois o mesmo é um caso específico dos métodos de Runge-Kutta.
 
 ```{r}
 #| warning: false
