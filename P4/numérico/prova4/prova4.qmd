@@ -1,0 +1,146 @@
+---
+format: pdf
+lang: pt
+title: Avaliação 4
+subtitle: Solução numérica para EDOs
+author: Paulo Ricardo Seganfredo Campana
+date: 2023-06-01
+date-format: long
+callout-icon: false
+monofont: "Ubuntu Mono"
+monofontoptions: Scale=1
+df-print: kable
+knitr: 
+  opts_chunk: 
+    collapse: true
+    comment: "#"
+---     
+
+O código fonte desta prova está disponível no [Github](https://github.com/PauloCampana/UFPB/blob/main/P4/numérico/prova4/prova4.qmd)
+
+https://github.com/PauloCampana/UFPB/blob/main/P4/numérico/prova4/prova4.qmd
+
+A função `PVI` definida a seguir, cria uma tabela das iterações dos métodos de Euler e Runge-Kutta para solução de problemas de valor inicial, aqui, o método de Euler é representado como `ordem = 1`, pois o mesmo é um caso específico dos métodos de Runge-Kutta.
+
+```{r}
+#| warning: false
+library(dplyr)
+PVI <- function(EDO, ordem, inicial, objetivo, h) {
+    ac <- case_when(
+        ordem == 1 ~ list(c(  0,   0, 0), c(  1,   0,   0,   0)),
+        ordem == 2 ~ list(c(1/2,   0, 0), c(1/2, 1/2,   0,   0)),
+        ordem == 3 ~ list(c(1/2,   1, 0), c(1/6, 2/3, 1/6,   0)),
+        ordem == 4 ~ list(c(1/2, 1/2, 1), c(1/6, 1/3, 1/3, 1/6)),
+    )
+    a <- ac[[1]]
+    c <- ac[[2]]
+    x <- seq(inicial[1], objetivo, by = h)
+    y <- inicial[2]
+    for(n in 1:(length(x) - 1)) {
+        K    <- EDO(x[n]           , y[n]                  )
+        K[2] <- EDO(x[n] + h * a[1], y[n] + h * a[1] * K[1])
+        K[3] <- EDO(x[n] + h * a[2], y[n] + h * a[2] * K[2])
+        K[4] <- EDO(x[n] + h * a[3], y[n] + h * a[3] * K[3])
+        y[n+1] <- y[n] + h * sum(c * K)
+    }
+    data.frame(n = seq_along(x) - 1, x, y)
+}
+```
+
+{{< pagebreak >}}
+
+::: {.callout-warning}
+
+# **Questão 1.**
+
+1) Usando os métodos de Euler e Runge-Kutta de 3ª ordem com $h = 0.2$ calcule $y(1)$ sabendo que $y(x)$ é solução de
+
+$$
+\begin{cases}
+    2x + yy' = y^2 \\
+    y(0) = 1
+\end{cases}
+$$
+
+Sabendo que a solução exata do PVI acima é $\sqrt{2x + 1}$ calcule para os dois métodos o erro absoluto cometido na aproximação de $y(1)$.
+
+:::
+
+Isolando $y'$ na EDO temos: 
+
+$$
+2x + yy' = y^2 \qquad \implies \qquad y' = y - \dfrac{2x}{y}
+$$
+
+```{r}
+EDO1 <- function(x, y) y - 2*x / y
+```
+
+::: {layout-ncol=2}
+
+```{r}
+#| tbl-cap: Método de Euler
+PVI1_ordem_1 <- PVI(
+    EDO1, 
+    ordem = 1,
+    inicial = c(0,1), 
+    objetivo = 1, 
+    h = 0.2
+)
+PVI1_ordem_1
+```
+
+```{r}
+#| tbl-cap: Runge-Kutta de 3ª ordem
+PVI1_ordem_3 <- PVI(
+    EDO1, 
+    ordem = 3,
+    inicial = c(0,1),
+    objetivo = 1, 
+    h = 0.2
+)
+PVI1_ordem_3
+```
+
+:::
+
+{{< pagebreak >}}
+
+Sendo $\sqrt{2x + 1}$ a solução exata da EDO, temos que $y(1) = \sqrt 3$, com isso podemos comparar os erros absolutos dos dois métodos.
+
+::: {layout-ncol=2}
+
+```{r}
+abs(sqrt(3) - PVI1_ordem_1[6,"y"])
+```
+
+```{r}
+abs(sqrt(3) - PVI1_ordem_3[6,"y"])
+```
+
+:::
+
+O método de Euler apresenta um erro absoluto de 9% enquanto o Runge-Kutta de 3ª ordem tem erro de meio porcento.
+
+::: {.callout-warning}
+
+# **Questão 2.**
+
+Seja $P(t)$ o número de indivíduos de uma certa população medido em anos. Se a taxa de nascimentos é constante $b$ e a taxa de mortalidade $d$ é proporcional ao tamanho da população, então o crescimento da população é dado pela equação logística 
+
+$$
+\dfrac{d P(t)}{dt} = b P(t) - k (P(t))^2
+$$
+
+Onde $d = k P(t)$. Suponha que $P(0) = 50976, \; b = 2.9 \times 10^{-2}$ e $k = 1.4 \times 10^{-7}$. Encontre a população estimada depois de 5 anos utilizando Runge-Kutta de ordem 4.
+
+:::
+
+Portanto, desejamos obter $y(5)$ a partir da EDO $y' = (2.9 \times 10^{-2}) y - (1.4 \times 10^{-7}) y^2$ e condição inicial $y(0) = 50976$, seja $h = 0.5$:
+
+```{r}
+EDO2 <- function(x, y) 2.9e-2 * y - 1.4e-7 * y^2
+PVI(EDO2, ordem = 4, inicial = c(0,50976), objetivo = 5, h = 0.5) 
+```
+
+Temos que a população estimada depois de 5 anos é de 56751 habitantes.
