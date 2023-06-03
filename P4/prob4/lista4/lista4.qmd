@@ -20,7 +20,7 @@ date-format: long
 # 1.
 Seja ($A_n$) sequência de eventos em ($\Omega, \mathcal F, \text{P}$). $\forall n$, defina $X_n = \mathbb 1_{A_n}$ (indicadora de $A_n$).
 
-Mostre que $\p{A_n} \longrightarrow 0 \Longleftrightarrow X_n \overset{\text{P}} \longrightarrow 0$.
+Mostre que $\p{A_n} \longrightarrow 0$ se, e somente se, $X_n \overset{\text{P}} \longrightarrow 0$.
 
 \begin{align*}
     X_n \overset{\text{P}} \longrightarrow 0 
@@ -39,28 +39,39 @@ Seja ($X_n$) sequência de variáveis aleatórias tal que $\E{X_n} = \alpha$ par
 Seja $\varepsilon > 0$ qualquer: 
 
 \begin{align*}
-    \p{|X_n - \E{X_n}| \geq \varepsilon} &\leq \frac{1}{\varepsilon^2} \Var{X_n} \\
-    \limseq{\p{|X_n - \alpha| \geq \varepsilon}} &\leq \limseq{\frac{1}{\varepsilon^2}} \Var{X_n} \\
-    \limseq{\p{|X_n - \alpha| \geq \varepsilon}} &\leq 0 \\ 
-    \limseq{\p{|X_n - \alpha| \geq \varepsilon}} &= 0 \\ 
-    X_n \overset{\text{P}} \longrightarrow \alpha
+             &\p{|X_n - \E{X_n}| \geq \varepsilon} \leq \frac{1}{\varepsilon^2} \Var{X_n} \\
+    \implies &\limseq{\p{|X_n - \alpha| \geq \varepsilon}} \leq \limseq{\frac{1}{\varepsilon^2}} \Var{X_n} \\
+    \implies &\limseq{\p{|X_n - \alpha| \geq \varepsilon}} \leq 0 \\ 
+    \implies &\limseq{\p{|X_n - \alpha| \geq \varepsilon}} = 0
 \end{align*}
+
+$\limseq{\p{|X_n - \alpha| \geq \varepsilon}} = 0$, portanto $X_n \overset{\text{P}} \longrightarrow \alpha$.
 
 # 3.
 Seja $X, X_1, X_2, X_3, \dots$ sequência de variáveis aleatórias tal que $X_n = \dfrac{n}{n+1} X$, para todo $n$.
 
-Mostre que a sequência converge em média quadrática para zero se $\E{X^2} < \infty$, mas não em caso
+Mostre que a sequência converge em média quadrática para $X$ se $\E{X^2} < \infty$, mas não em caso
 contrário.
 
+::: {layout-ncol=2}
+
 \begin{align*}
-    X_n \overset{r = 2} \longrightarrow 0
-    &\implies \limseq{\E{|X_n - 0|^2}} = 0 \\
-    &\implies \limseq{\E{X_n^2}} = 0 \\
-    &\implies \limseq{\dfrac{n^2}{(n+1)^2} \E{X^2}} = 0 \\
-    &\implies \E{X^2} = 0
+      &\ \E{|X_n - X|^2} \\
+    = &\ \E{ \left| \dfrac{n}{n+1}X - X \right|^2} \\
+    = &\ \E{ \left|\dfrac{-1}{n+1}X \right|^2} \\
+    = &\ \dfrac{1}{(n+1)^2} \E{X^2}
 \end{align*}
 
-$X_n \overset{r = 2} \longrightarrow 0$ apenas quando $\E{X^2} = 0$.
+\begin{align*}
+    &\ X_n \overset{r = 2} \longrightarrow 0 \\
+    \Longleftrightarrow &\ \limseq{\E{|X_n - X|^2}} = 0 \\
+    \Longleftrightarrow &\ \limseq{\dfrac{1}{(n+1)^2} \E{X^2}} = 0 \\
+    \Longleftrightarrow &\ \E{X^2} < \infty
+\end{align*}
+
+:::
+
+$X_n \overset{r = 2} \longrightarrow 0$ apenas quando $\E{X^2} < \infty$.
 
 {{< pagebreak >}}
 
@@ -80,11 +91,12 @@ $$
 Pelo lema de Borel-Cantelli, $\p{\lim \sup [X_n = n]} = 0$
 
 \begin{align*}
-    \p{\lim \sup [X_n = n]} = 0
-    &\implies \p{\lim \sup [X_n > \varepsilon]} = 0 \\
-    &\implies \p{\lim \sup [|X_n - 0| > \varepsilon]} = 0 \\
-    &\implies X_n \overset{\text{q.c.}} \longrightarrow 0
+             &\p{\lim \sup [X_n = n]} = 0 \\
+    \implies &\p{\lim \sup [X_n > \varepsilon]} = 0 \\
+    \implies &\p{\lim \sup [|X_n - 0| > \varepsilon]} = 0
 \end{align*}
+
+$\p{\lim \sup [|X_n - 0| > \varepsilon]} = 0$, portanto $X_n \overset{\text{q.c.}} \longrightarrow 0$.
 
 {{< pagebreak >}}
 
@@ -111,8 +123,8 @@ $Y_n \overset{\text{P}} \longrightarrow 0$.
 \begin{align*}
     &\limseq{\p{|Y_n - 0| > \varepsilon}} \\
     &= \limseq{\p{Y_n > \varepsilon}} \\
-    &= \limseq{(1- \varepsilon)^n} \\
-    &= 0
+    &= \limseq{(1 - \varepsilon)^n} \\
+    &= 0, \qquad \text{pois } (1 - \varepsilon) < 1
 \end{align*}
 :::
 
@@ -155,18 +167,26 @@ Se $X_n$ não converge em probabilidade para 0, então $\displaystyle \sum_{n = 
     &\implies \sum_{n = 1}^\infty \p{|X_n| > \varepsilon} \longrightarrow \infty 
 \end{align*}
 
-Pois séries de sequências que não convergem para 0 divergem.
+Pois série de uma sequência que não converge para 0 diverge.
 
 ## b) 
+
 Se as variáveis aleatórias são independentes e $X_n \overset{\text{q.c.}} \longrightarrow 0$, então, para todo $\varepsilon > 0$, temos que $\displaystyle \sum_{n = 1}^\infty \p{|X_n| > \varepsilon} < \infty$
+
+Considerando os evento $A_n$ independentes e usando a negação do lema de Borel-Cantelli:
+
+$$
+\sum_{n=1}^\infty \p{A_n} \; \text{diverge} \implies \p{\lim \sup A_n} = 1 
+$$
+$$
+\p{\lim \sup A_n} \neq 1 \implies \sum_{n=1}^\infty \p{A_n} \; \text{converge}
+$$
 
 \begin{align*}
     X_n \overset{\text{q.c.}} \longrightarrow 0 
-    &\implies \p{\lim \sup [|X_n| > \varepsilon]} = 0 \\
-    &\implies \sum_{n = 1}^\infty \p{|X_n| > \varepsilon} < \infty
+    &\implies \p{\lim \sup [|X_n - 0| > \varepsilon]} = 0 \\
+    &\implies \sum_{n=1}^\infty \p{|X_n| > \varepsilon} < \infty
 \end{align*}
-
-Pois são independentes e pelo lema de Borel-Cantelli.
 
 {{< pagebreak >}}
 
@@ -175,17 +195,25 @@ Seja ($X_n$) sequência de variáveis aleatórias independentes tal que $X_n \si
 
 Mostre que $X_n \overset{\text{P}} \longrightarrow 0$ porém $X_n$ não converge para zero q.c.
 
+::: {layout-ncol=2}
+
 \begin{align*}      
-    \sum_{n = 1}^\infty \p{|X_n| > \varepsilon} 
-    &= \sum_{n = 1}^\infty 1 - \p{X_n \leq \varepsilon} \\
-    &= \sum_{n = 1}^\infty 1 - F(\varepsilon) \\
-    &= \sum_{n = 1}^\infty 1 - (1 - 1/n) \\
-    &= \sum_{n = 1}^\infty 1/n \longrightarrow \infty \\
-    &\implies \p{\lim \sup [|X_n| > \varepsilon]} = 1 \neq 0 \\
-    &\implies X_n \overset{\text{q.c.}} \nrightarrow 0
+      &\ \limseq{\p{|X_n - 0| > \varepsilon}} \\
+    = &\ \limseq{\p{X_n = 1}} \\
+    = &\ \limseq{1/n} = 0 \\
+    \implies &\ \limseq{\p{|X_n - 0| > \varepsilon}} = 0 \\
+    \implies &\ X_n \overset{\text{P}} \longrightarrow 0 \\
 \end{align*}
 
-Pois são independentes e pelo lema de Borel-Cantelli.
+\begin{align*}      
+      &\ \sum_{n = 1}^\infty \p{|X_n - 0| > \varepsilon} \\
+    = &\ \sum_{n = 1}^\infty \p{X_n = 1} \\
+    = &\ \sum_{n = 1}^\infty 1/n \longrightarrow \infty \\
+    \implies &\ \p{\lim \sup [|X_n| > \varepsilon]} = 1 \neq 0 \\
+    \implies &\ X_n \overset{\text{q.c.}} \nrightarrow 0
+\end{align*}
+
+:::
 
 # 9.
 Seja ($X_n$) sequência de variáveis aleatórias, sendo $X_n \sim \text{Unif}(a, b_n), \forall n$. Se $b_n \longrightarrow a$ quando $n \to \infty$, mostre que $X_n \overset{\text{D}} \longrightarrow a$.
@@ -201,9 +229,10 @@ Seja ($X_n$) sequência de variáveis aleatórias, sendo $X_n \sim \text{Unif}(a
         0, & \text{se} \; x < a \\
         1, & \text{se} \; x \geq a
     \end{array} \right. \\
-    &= F_a(x) \\
-    &\implies X_n \overset{\text{D}} \longrightarrow a
+    &= F_a(x)
 \end{align*}
+
+$\limseq{F_{X_n}(x)} = F_a(x)$, portanto $X_n \overset{\text{D}} \longrightarrow a$.
 
 {{< pagebreak >}}
 
@@ -214,16 +243,16 @@ Seja ($\Omega, \; \mathcal F, \; \text{P}$), em que $\Omega = (0, 1], \; \mathca
 Mostre que $X_n \overset{\text{q.c.}} \longrightarrow 0$.
 
 \begin{align*}
-    \p{\lim \sup [|Xn| > \varepsilon]} 
+    \p{\lim \sup [|Xn - 0| > \varepsilon]} 
     &= \p{\lim \sup [n \mathbb 1_{(0,1/n^2]} > \varepsilon]} \\
     &= \p{\lim \sup [\mathbb 1_{(0,1/n^2]} > \varepsilon / n]} \\
     &= \p{\lim \sup [\mathbb 1_{(0,1/n^2]} = 1]} \\
     &= \p{\lim \sup (0,1/n^2]} \\
     &= \p{(0,0]} \\
-    \p{\lim \sup [|Xn| > \varepsilon]} &= 0 \\
-    &\implies X_n \overset{\text{q.c.}} \longrightarrow 0
+    &= 0 
 \end{align*}
 
+$\p{\lim \sup [|Xn - 0| > \varepsilon]} = 0$, portanto $X_n \overset{\text{q.c.}} \longrightarrow 0$.
 
 ## b)
 Para que valores de $r$ temos que $X_n \overset{\text{r}} \longrightarrow 0$?
@@ -279,5 +308,7 @@ em que $\lambda > 0$. Mostre que $X_n \overset{\text{D}} \longrightarrow X$, sen
     &= F_X(x) \\
     &\implies X_n \overset{\text{D}} \longrightarrow X
 \end{align*}
+
+$\limseq{F_{X_n}(x)} = F_X(x)$, portanto $X_n \overset{\text{D}} \longrightarrow X$.
 
 Pois $\displaystyle \lim_{n \to \infty} \left( 1 + \dfrac{a}{n} \right)^{bn} = e^{ab}$.
