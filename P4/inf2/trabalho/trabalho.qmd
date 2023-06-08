@@ -1,10 +1,10 @@
 ---
 format: pdf
 lang: pt
-title: asd
-subtitle: asd
+title: Trabalho de Inferência II
+subtitle: Testes de hipótese
 author: Paulo Ricardo Seganfredo Campana
-date: 2023-06-08
+date: 2023-06-13
 date-format: long
 callout-icon: false
 df-print: kable
@@ -17,17 +17,43 @@ knitr:
     comment: "#"
 ---
 
+O arquivo `test.R` que está definido a função `testar()` pode ser encontrado no [Github](https://github.com/PauloCampana/UFPB/blob/main/P4/inf2/trabalho/test.R)
+
+https://github.com/PauloCampana/UFPB/blob/main/P4/inf2/trabalho/test.R
+
 ```{r}
-#| echo: false
 #| warning: false
+library(dplyr)
+library(broom)
+library(knitr)
 source("test.R")
+t.test <- function(...) {
+    stats::t.test(...) |> 
+        tidy() |> 
+        select(-method) |> 
+        kable(digits = 3)
+}
+var.test <- function(...) {
+    stats::var.test(...) |> 
+        tidy() |> 
+        select(-method) |> 
+        kable(digits = 3)
+}
+chisq.test <- function(...) {
+    stats::chisq.test(...) |>
+        tidy() |> 
+        kable(digits = 3)
+}
+anova <- function(...) {
+    stats::anova(...) |> 
+        tidy() |> 
+        kable(digits = 3)
+}
 ```
 
-# Capítulo 10
-
-## Exemplos
-
 {{< pagebreak >}}
+
+# Capítulo 10
 
 ::: {.callout-note}
 ### **Exemplo 10.1, 10.2, 10.4, 10.5 e 10.7: Está correta a afirmação do fabricante?**
@@ -39,18 +65,19 @@ Consideremos uma companhia que produz cabos náuticos de determinado tipo. O fab
 # H1: µ <  90
 testar(
     c(m = 88.4, v = 10^2, n = 20),
-    tetha0 = 90,
+    mu0 = 90,
     região_crítica = "menor"
 )
 ```
 
+\vspace{-6pt}
 Supondo sigma desconhecido, S = 10
 
 ```{r}
 #| echo: false
 testar(
     c(m = 88.4, v = 10^2, n = 20),
-    tetha0 = 90, 
+    mu0 = 90, 
     região_crítica = "menor", tipo = "t"
 )
 ```
@@ -63,7 +90,7 @@ Suponha agora que o verdadeiro valor da média populacional é 89 kg, ou seja, u
 :::
 
 ```{r}
-# poder = P(X < xcrit)
+# poder = P(X < xcrit; µ = 89)
 pnorm(86.322, 89, sqrt(10^2 / 20))
 ```
 
@@ -81,7 +108,7 @@ Suponha que após submeter à prova as 25 baterias foi encontrada, para a duraç
 # H1: µ = 150
 testar(
     c(m = 167.4, v = 40^2, n = 25),
-    tetha0 = 180, 
+    mu0 = 180, 
     região_crítica = "menor"
 )
 ```
@@ -100,7 +127,7 @@ Um produto químico tem seu teor de pureza distribuído conforme uma normal com 
 # H0: µ > 0.72
 testar(
     c(m = 0.73, v = 0.02^2, n = 16),
-    tetha0 = 0.72, 
+    mu0 = 0.72, 
     região_crítica = "maior"
 )
 ```
@@ -116,7 +143,7 @@ Determinemos o poder do teste para rejeitar corretamente a hipótese nula $H_0: 
 #| echo: false
 testar(
     c(m = 0.73, v = 0.02^2, n = 16),
-    tetha0 = 0.72, alpha = 0.01,
+    mu0 = 0.72, alpha = 0.01,
     região_crítica = "maior"
 )
 ```
@@ -124,7 +151,7 @@ testar(
 ```{r}
 # H0: µ = 0.72
 # H1: µ = 0.725
-# poder = P(X > xcrit)
+# poder = P(X > xcrit; µ = 0.725)
 pnorm(0.732, 0.725, sqrt(0.02^2 / 16), lower.tail = FALSE)
 ```
 
@@ -135,9 +162,9 @@ pnorm(0.732, 0.725, sqrt(0.02^2 / 16), lower.tail = FALSE)
 As especificações dos pentes de memória RAM para computadores fabricados pela Companhia Boa Memória indicam que a porcentagem de pentes defeituosos não excede 5%. Uma amostra de 100 desses pentes apresentou 7 defeituosos.
 Com base nesse resultado, podemos afirmar que as especificações estão incorretas?
 
-a) Qual a decisão a ser tomada, ao nível de significância de 0,01?
+a) Qual a decisão a ser tomada, ao nível de significância de 0.01?
 b) Qual o nível crítico do teste?
-c) Qual o poder do teste, se p = 0,12?
+c) Qual o poder do teste, se p = 0.12?
 :::
 
 ```{r}
@@ -145,7 +172,7 @@ c) Qual o poder do teste, se p = 0,12?
 # H1: p >  0.05
 testar(
     c(m = 0.07, v = 0.05 * 0.95, n = 100),
-    tetha0 = 0.05, alpha = 0.01, 
+    mu0 = 0.05, alpha = 0.01, 
     região_crítica = "maior"
 )
 ```
@@ -153,13 +180,11 @@ testar(
 Não rejeita a hipótese nula de que a porcentagem de pentes de memória RAM defeituosos não excedem 5%, pois o p-valor = 0.179 é maior que o ponto de corte tomado como $\alpha$ = 0.01.
 
 ```{r}
-# poder = P(X > xcrit)
-pnorm(0.101, 0.12, sqrt(0.12 * 0.88 / 100), lower.tail = FALSE)
+# poder = P(X > xcrit; p = 0.12)
+pnorm(0.101, 0.12, sqrt(0.12 * (1 - 0.12) / 100), lower.tail = FALSE)
 ```
 
 {{< pagebreak >}}
-
-## Exercícios
 
 ::: {.callout-note}
 ### **R 10.1: Velocidade média na estrada**
@@ -172,11 +197,11 @@ b) Qual o nível crítico?
 ```{r}
 # H0: µ <= 100 km/h
 # H1: µ >  100 km/h
-R101 <- c(73, 68, 73, 61, 70, 78, 63, 64, 74, 62)
-R101 <- 120 / (R101 / 60)
+R1 <- c(73, 68, 73, 61, 70, 78, 63, 64, 74, 62)
+R1 <- 120 / (R1 / 60)
 testar(
-    c(m = mean(R101), v = var(R101), n = length(R101)),
-    tetha0 = 100, 
+    c(m = mean(R1), v = var(R1), n = length(R1)),
+    mu0 = 100, 
     região_crítica = "maior", tipo = "t"
 )
 ```
@@ -221,6 +246,7 @@ $$
 $$
 
 $$
+\implies
 \begin{cases}
     \dfrac{15.884}{\sqrt n} = 2 \\
     \bar x_c = 52 - \dfrac{6.579}{\sqrt n}
@@ -247,22 +273,20 @@ c) Se na realidade $p$ = 0.55, qual seria a probabilidade de ser cometido o Erro
 # H1: p >  0.5
 testar(
     c(m = 0.51, v = 0.5 * 0.5, n = 1000),
-    tetha0 = 0.5, região_crítica = "maior"
+    mu0 = 0.5, região_crítica = "maior"
 )
 ```
 
 Não rejeita a hipótese nula de que a proporção de eleitores do candidato $A$ é menor ou igual a 0.5, pois o p-valor = 0.264 é maior que o ponto de corte tomado como $\alpha$ = 0.05.
 
 ```{r}
-# beta = P(X < xcrit)
-pnorm(0.526, 0.55, sqrt(0.55 * 0.45 / 1000))
+# beta = P(X < xcrit; p = 0.55)
+pnorm(0.526, 0.55, sqrt(0.55 * (1 - 0.55) / 1000))
 ```
 
 {{< pagebreak >}}
 
 # Capítulo 11
-
-## Exemplos
 
 ::: {.callout-note}
 ### **Exemplo 11.1: Comparação de dois catalisadores**
@@ -273,7 +297,7 @@ Supondo que: os desvios padrões populacionais são conhecidos e iguais a 1.5% e
 
 ```{r}
 # H0: µx >= µy
-# H1: µx < µy
+# H1: µx <  µy
 testar(
     c(m = 80.5 - 81.3, v = (1.5^2/8 + 3.8^2/10) * (8 + 10), n = 8 + 10),
     região_crítica = "menor"
@@ -308,10 +332,15 @@ Podemos rejeitar a hipótese nula de que o teor médio de enxofre no carvão pro
 ### **Exemplo 11.3: Resistência à tração do concreto**
 Considere a comparação entre os concretos fabricados com cimentos das duas marcas diferentes. Os dados relativos às cargas de ruptura (em $\text{kg}/\text{cm}^2$) resultantes dos ensaios realizados são os seguintes:
 
-|         |    |    |    |    |    |    |    |    |    |    |    |    |
-|---------|----|----|----|----|----|----|----|----|----|----|----|----|
-|Mistura 1|15.4|15.7|14.8|15.7|14.8|15.6|15.4|14.6|15.8|15.3|15.5|15.2|
-|Mistura 2|14.7|14.3|15.4|14.5|14.2|15.0|14.8|15.2|15.3|14.9|    |    |
+```{r}
+#| echo: false
+mistura1 <- c(15.4, 15.7, 14.8, 15.7, 14.8, 15.6, 15.4, 14.6, 15.8, 15.3, 15.5, 15.2)
+mistura2 <- c(14.7, 14.3, 15.4, 14.5, 14.2, 15.0, 14.8, 15.2, 15.3, 14.9)
+kable(t(tibble(
+    `Mistura1` = mistura1,
+    `Mistura2` = c(mistura2, NA, NA),
+)))
+```
 
 Com base nesses dados, e supondo que ambas as v.a.'s são normais:
 
@@ -322,19 +351,10 @@ b) Qual é o p-valor neste caso?
 ```{r}
 # H0: µx  = µy
 # H1: µx != µy
-M1 <- c(15.4, 15.7, 14.8, 15.7, 14.8, 15.6, 15.4, 14.6, 15.8, 15.3, 15.5, 15.2)
-M2 <- c(14.7, 14.3, 15.4, 14.5, 14.2, 15.0, 14.8, 15.2, 15.3, 14.9)
-µ1 <- mean(M1); var1 <- var(M1); n1 <- length(M1)
-µ2 <- mean(M2); var2 <- var(M2); n2 <- length(M2)
-testar(c(
-        m = µ1 - µ2,
-        v = ((n1-1) * var1 + (n2-1) * var2) / (n1+n2-2) * (1/n1 + 1/n2) * (n1+n2), 
-        n = n1 + n2
-    ), tipo = "t"
-)
+t.test(mistura1, mistura2)
 ```
 
-Podemos rejeitar a hipótese nula de que as cargas de ruptura das amostras de concreto são identicas, pois o p-valor = 0.010 é menor que o ponto de corte tomado como $\alpha$ = 0.05.
+Podemos rejeitar a hipótese nula de que as cargas de ruptura das amostras de concreto são identicas, pois o p-valor = 0.011 é menor que o ponto de corte tomado como $\alpha$ = 0.05.
 
 {{< pagebreak >}}
 
@@ -368,11 +388,9 @@ Seja $\hat p_1$ = 0.08 e $\hat p_2$ = 0.12, portanto $\hat p$ = 0.1
 ```{r}
 # H0: p1 >= p2
 # H1: p1 <  p2
-testar(c(
-        m = 0.08 - 0.12,
-        v = 0.1 * (1 - 0.1) * (1/50 + 1/50) * (50 + 50),
-        n = 50 + 50
-    ), região_crítica = "menor",
+testar(
+    c(m = 0.08 - 0.12, v = 0.1 * (1 - 0.1) * (1/50 + 1/50) * (50 + 50), n = 50 + 50),
+    região_crítica = "menor",
 )
 ```
 
@@ -384,10 +402,13 @@ Não rejeita a hipótese nula de que a proporção de peças não conformes prod
 ### **Exemplo 11.6: Resistência à tração do concreto**
 Examinemos mais uma vez a comparação entre os concretos fabricados com cimentos das duas marcas, que foi vista no Exemplo 11.3. As cargas de ruptura obtidas experimentalmente são: 
 
-|         |    |    |    |    |    |    |    |    |    |    |    |    |
-|---------|----|----|----|----|----|----|----|----|----|----|----|----|
-|Mistura 1|15.4|15.7|14.8|15.7|14.8|15.6|15.4|14.6|15.8|15.3|15.5|15.2|
-|Mistura 2|14.7|14.3|15.4|14.5|14.2|15.0|14.8|15.2|15.3|14.9|    |    |
+```{r}
+#| echo: false
+kable(t(tibble(
+    `Mistura1` = mistura1,
+    `Mistura2` = c(mistura2, NA, NA),
+)))
+```
 
 Com base nesses dados, e supondo que ambas as v.a.'s são normais, teste a hipótese nula de variâncias iguais contra a hipótese alternativa de variâncias diferentes, ao nível de significância de 5%.
 :::
@@ -396,10 +417,10 @@ Com base nesses dados, e supondo que ambas as v.a.'s são normais, teste a hipó
 #| warning: false
 # H0: σ1  = σ2
 # H1: σ1 != σ2
-var.test(M1, M2) |> broom::tidy() |> select(-method)
+var.test(mistura1, mistura2)
 ```
 
-Não rejeita a hipótese nula de que a variância das cargas de ruptura das amostras de concreto são identicas, pois o p-valor = 0.885 é maior que o ponto de corte tomado como $\alpha$ = 0.05.
+Não rejeita a hipótese nula de que a variância das cargas de ruptura das amostras de concreto são identicas, pois o p-valor = 0.886 é maior que o ponto de corte tomado como $\alpha$ = 0.05.
 
 {{< pagebreak >}}
 
@@ -407,11 +428,21 @@ Não rejeita a hipótese nula de que a variância das cargas de ruptura das amos
 ### **Exemplo 11.7: Comparando três catalisadores**
 Um engenheiro químico deseja comparar três catalisadores analisando o tempo de reação de um determinado processo químico em cada um deles. Para isso, ele realiza 12 ensaios utilizando o catalisador A, 16 ensaios com o catalisador B e 16 com o catalisador C. Os tempos de reação (em minutos) observados nesses ensaios são apresentados a seguir:
 
-| |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|-|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|
-|A|48|51|45|53|46|62|44|53|36|40|50|40|  |  |  |  |
-|B|42|60|47|54|59|53|46|54|36|56|40|54|41|46|47|58|
-|C|47|40|32|36|45|36|39|50|28|52|32|36|41|39|42|28|
+```{r}
+#| echo: false
+A <- c(48,51,45,53,46,62,44,53,36,40,50,40)
+B <- c(42,60,47,54,59,53,46,54,36,56,40,54,41,46,47,58)
+C <- c(47,40,32,36,45,36,39,50,28,52,32,36,41,39,42,28)
+E7 <- data.frame(
+    tempo = c(A, B, C),
+    catalisador = c(rep("A", length(A)), rep("B", length(B)), rep("C", length(C)))
+)
+kable(t(tibble(
+    A = c(A,NA,NA,NA,NA),
+    B,
+    C
+)))
+```
 
 Teste as hipóteses de médias iguais contra médias diferentes ao nível de significância $\alpha$ = 5%.
 :::
@@ -419,14 +450,7 @@ Teste as hipóteses de médias iguais contra médias diferentes ao nível de sig
 ```{r}
 # H0: µ1 = µ2 = µ3
 # H1: µ1 != µ2 ou µ1 != µ3 ou µ2 != µ3
-A <- c(48,51,45,53,46,62,44,53,36,40,50,40)
-B <- c(42,60,47,54,59,53,46,54,36,56,40,54,41,46,47,58)
-C <- c(47,40,32,36,45,36,39,50,28,52,32,36,41,39,42,28)
-E117 <- data.frame(
-    tempo = c(A, B, C),
-    catalisador = c(rep("A", length(A)), rep("B", length(B)), rep("C", length(C)))
-)
-lm(tempo ~ catalisador, E117) |> anova() |> broom::tidy()
+lm(tempo ~ catalisador, E7) |> anova()
 ```
 
 Podemos rejeitar a hipótese nula de que os tempos de reação dos catalisadores são iguais, pois o p-valor = 4.375e-4 é menor que o ponto de corte tomado como $\alpha$ = 0.05.
@@ -443,20 +467,20 @@ $$
 :::
 
 ```{r}
-E118 <- function(i, j, alpha = 0.05) {
-    Yi <- E117$tempo[E117$catalisador == i]
-    Yj <- E117$tempo[E117$catalisador == j]
+LSD <- function(i, j, alpha = 0.05) {
+    Yi <- E7$tempo[E7$catalisador == i]
+    Yj <- E7$tempo[E7$catalisador == j]
     esquerda <- abs(mean(Yi) - mean(Yj))
     direita <- qt(1 - alpha/2, df = 44 - 3) *
       sqrt(52.48 * (1/length(Yi) + 1/length(Yj)))    
     esquerda > direita
 }
-grid <- data.frame(grupos = c("AB", "AC", "BC"))
-grid$LSD <- sapply(
-    grid$grupos,
-    \(g) E118(substr(g, 1,1), substr(g, 2,2))
+E8 <- data.frame(grupos = c("AB", "AC", "BC"))
+E8$LSD <- sapply(
+    E8$grupos,
+    \(g) LSD(substr(g, 1,1), substr(g, 2,2))
 )
-grid
+E8
 ```
 
 Ou seja, só ocorre diferença significativa entre os grupo A e C, e B e C
@@ -469,13 +493,13 @@ Uma revista especializada decide comparar três marcas de carro (A, B, e C) da m
 
 ```{r}
 #| echo: false
-E119 <- as.table(rbind(
+E9 <- as.table(rbind(
     c(68,31,20),
     c(20,30,85),
     c(40,81,43),
     c(22,38,22)
 ))
-dimnames(E119) <- list(
+dimnames(E9) <- list(
     `Item relevante` = c(
         "Maior capacidade do porta malas",
         "Estética e acabamento",
@@ -484,14 +508,14 @@ dimnames(E119) <- list(
     ),
     `Marca do carro` = c("A", "B", "C")
 )
-knitr::kable(E119)
+kable(E9)
 ```
 :::
 
 ```{r}
 # H0: marca de carro e item mais relevante independentes
 # H1: marca de carro e item mais relevante dependentes
-chisq.test(E119) |> broom::tidy()
+chisq.test(E9)
 ```
 
 Podemos rejeitar a hipótese nula de que não há alguma relação entre a marca do carro e o item considerado mais relevante pelo usuário, pois o p-valor = 1.68e-21 é menor que o ponto de corte tomado como $\alpha$ = 0.05.
@@ -504,7 +528,7 @@ A tabela a seguir apresenta a distribuição, por dia da semana, dos acidentes d
 
 ```{r}
 #| echo: false
-E1110 <- c(
+E10 <- c(
     segunda = 2416,
     terça = 2417,
     quarta = 2442,
@@ -513,7 +537,7 @@ E1110 <- c(
     sabado = 2191,
     domingo = 1355
 )
-knitr::kable(t(E1110))
+kable(t(E10))
 ```
 
 Podemos afirmar, ao nível de significância de 5%, que os acidentes ocorrem com a mesma frequência em todos os dias da semana?
@@ -522,7 +546,8 @@ Podemos afirmar, ao nível de significância de 5%, que os acidentes ocorrem com
 ```{r}
 # H0: acidentes ocorrem com a mesma frequência
 # H1: acidentes ocorrem com a diferentes frequências
-chisq.test(E1110, p = rep(1/7, 7)) |> broom::tidy()
+probs <- rep(1/7, 7)
+chisq.test(E10, p = probs)
 ```
 
 Podemos rejeitar a hipótese nula de que os acidentes ocorrem com a mesma frequência em todos os dias da semana, pois o p-valor = 9.78e-100 é menor que o ponto de corte tomado como $\alpha$ = 0.05.
@@ -535,11 +560,12 @@ Os dados a seguir mostram o número de defeitos encontrados em 350 chapas de aç
 
 ```{r}
 #| echo: false
-E1111 <- tibble(
-    `Número de defeitos` = 0:7,
-    `Número de chapas` = c(83, 124, 73, 40, 20, 6, 3, 1)
-)
-knitr::kable(t(E1111))
+defeitos <- 0:7
+chapas <- c(83, 124, 73, 40, 20, 6, 3, 1)
+kable(t(tibble(
+    `Número de defeitos` = defeitos,
+    `Número de chapas` = chapas
+)))
 ```
 
 Testar, ao nível de significância de 5%, se o número de defeitos por metro quadrado segue uma distribuição de Poisson. Qual é o p-valor do teste?
@@ -549,16 +575,341 @@ Testar, ao nível de significância de 5%, se o número de defeitos por metro qu
 #| warning: false
 # H0: número de defeitos segue distribuição Poisson
 # H1: número de defeitos não segue distribuição Poisson
-lambda <- sum(E1111[[1]] * E1111[[2]]) / sum(E1111[[2]])
+lambda <- sum(defeitos * chapas) / sum(chapas)
 probs <- c(dpois(0:7, lambda), 1 - ppois(7, lambda))
 
-chisq.test(c(E1111[[2]], 0), p = probs) |> broom::tidy()
+chisq.test(c(chapas, 0), p = probs)
 ```
 
 Não rejeita a hipótese nula de que o número de defeitos por metro quadrado segue uma distribuição de Poisson, pois o p-valor = 0.328 é maior que o ponto de corte tomado como $\alpha$ = 0.05.
 
 {{< pagebreak >}}
 
-## Exercícios
+::: {.callout-note}
+### **R 11.1: Comparação entre os graus de dificuldade de duas provas de Estatística**
+Um professor aplicou provas de Estatística a duas turmas no mesmo dia. Os resultados obtidos foram os seguintes:
+ 
+```{r}
+#| echo: false
+manhã <- c(2.5,3.5,4.5,5.0,5.5,5.5,6.0,6.5,7.0,7.5,7.5,7.5,7.5,8.0,8.0,8.5,9.0,9.0,10.0)
+tarde <- c(3.5,3.5,4.0,4.5,5.0,5.0,5.5,5.5,6.0,6.5,6.5,7.0,7.0,7.0,7.0,7.5,7.5,8.0,9.0,9.5)
+kable(t(tibble(
+    M = c(manhã, NA),
+    T = tarde
+)))
+```
 
-asd
+Depois de aplicadas as provas, alguns alunos da Tarde alegaram que a prova da Turma da Manhã tinha sido mais fácil e que, por isso, a Turma da Tarde havia sido prejudicada.
+
+a) Teste a hipótese nula de variâncias iguais contra a hipótese alternativa de variâncias diferentes.
+b) Teste a hipótese nula de médias iguais contra a hipótese alternativa de que a média da Turma da Manhã é maior que a da Turma da Tarde.
+:::
+
+```{r}
+#| warning: false
+# H0: σM  = σT 
+# H1: σM != σT 
+var.test(manhã, tarde)
+```
+
+Não rejeita a hipótese nula de que as variâncias das notas das duas provas são iguais, pois o p-valor = 0.516 é maior que o ponto de corte tomado como $\alpha$ = 0.05.
+
+```{r}
+# H0: µM = µT
+# H1: µM > µT
+t.test(manhã, tarde, alternative = "greater", var.equal = TRUE)
+```
+
+Não rejeita a hipótese nula de que a média das notas das duas provas são iguais, pois o p-valor = 0.194 é maior que o ponto de corte tomado como $\alpha$ = 0.05.
+
+{{< pagebreak >}}
+
+::: {.callout-note}
+### **R 11.2: Será que a taxa de inflação tende a ser mais baixa nos países mais ricos do que nos países mais pobres?** 
+Os diversos países do planeta foram divididos em dois grupos conforme o seu nível de renda per capita: Grupo A: renda per capita menor ou igual a 2.500 dólares, Grupo B: renda per capita acima de 2.500 dólares.
+
+Queremos comparar as taxas médias de inflação nesses dois grupos de países, por meio de um Teste de Hipótese.
+:::
+
+```{r}
+#| echo: false
+R2 <- tibble(
+    inflação = c(
+        107.38, 135.93, 124.4, 248.28, 198.4, 114.03, 297.04, 156.39, 111.48, 163.06, 
+        114.95, 130.16, 251.44, 116.03, 207.38, 148.1, 128.48, 121.54, 149.6, 145.46, 
+        117.5, 116.63, 129.8, 142.79, 111.72, 128.13, 150.87, 119.13, 110.48, 118.02, 
+        175.86, 112.67, 136.85, 230.43, 160.41, 231.6, 140.35, 113.75, 114.58, 330.05, 
+        113.34, 192.89, 111.1, 108.81, 128.05, 162.27, 199.72, 111.98, 127.14, 132.97,
+        108.99, 113.64, 104.85, 110.98, 114.89, 100.72, 80.25, 126.49, 116.89, 118.15, 
+        130.59, 114.52, 104.86, 108.77, 99.02, 113, 93.38, 112.71, 120.88, 111.03, 
+        108.27, 112.17, 97.83, 113.41, 110.22, 107.51, 109.06
+    ),
+    grupo = c(rep("A", 38), rep("B", 39))
+)
+```
+
+```{r}
+# H0: µA = µB
+# H1: µA > µB
+t.test(inflação ~ grupo, R2, alternative = "greater")
+```
+
+Podemos rejeitar a hipótese nula de que as taxas médias de inflação dos dois grupos de países são iguais, pois o p-valor = 0.004 é menor que o ponto de corte tomado como $\alpha$ = 0.05.
+
+{{< pagebreak >}}
+
+::: {.callout-note}
+### **R 11.3: Testando a independência em tabelas de contingência 2x2**
+Dadas duas variáveis aleatórias discretas X e Y, queremos aplicar o teste Qui-quadrado para testar $H_0$: "X e Y são independentes" contra $H_1$: "Existe dependência entre X e Y", com base na tabela de contingência a seguir:
+
+|X \textbackslash Y|$b_1$       |$b_2$       |Total       |
+|:----------------:|:----------:|:----------:|:----------:|
+|$a_1$             |$n_{11}$    |$n_{12}$    |$n_{1\circ}$|     
+|$a_2$             |$n_{21}$    |$n_{22}$    |$n_{2\circ}$|
+|Total             |$n_{\circ1}$|$n_{\circ2}$|$n$         |
+
+Para isso será usada a estatística de teste $\displaystyle \sum_{h=1}^H \sum_{k=1}^K \dfrac{(n_{hk} - e_{hk})^2}{e_{hk}}$, onde $e_{hk} = \dfrac{n_{h\circ} \times n_{\circ h}}{n}$, para todo par $(h,k)$, com o critério de decisão usual. Quais das seguintes afirmações estão corretas e quais não estão? Por quê? 
+
+a) Quanto mais próximo de zero estiver o valor da estatística de teste mais motivos se terá para rejeitar a hipótese de independência.
+b) Na expressão anterior $e_{hk}$ representa o número esperado de observações com X = $a_h$, e Y = $b_k$ dados os totais de linha e de coluna, se houver independência total entre X e Y.
+c) Como só há 1 grau de liberdade, uma vez fixados $n_{1\circ}, n_{2\circ}, n_{\circ1}$ e $n_{\circ2}$, na montagem de uma tabela como a anterior somente uma das quatro frequências $n$ pode variar livremente.
+d) Se $H_0$ é falsa, a probabilidade de que a estatística de teste seja inferior ao valor que se obtém da tabela do Qui-quadrado para 1 grau de liberdade e $\alpha$ = 0.05 é igual a 0.95.
+e) O procedimento usual de teste é adequado, qualquer que seja o tamanho $n$ da amostra.
+:::
+
+a) Não, pois para rejeitar $H_0$ com base na estatística do teste, a mesma deve ser alta
+b) Sim, $e_{hk}$ representa o valor de $n_{hk}$ esperado em $H_0$.
+c) Sim, pois escolhido uma frequência, as outras podem ser achadas sabendo os totais.
+d) Não, isso é verdadeiro considerando $H_0$ verdadeira.
+e) Não, para amostras muito pequenas o teste é pouco definitivo.
+
+{{< pagebreak >}}
+
+::: {.callout-note}
+### **R 11.4: Concurso público**
+Em um concurso público promovido por uma empresa estatal, os candidatos às vagas de Engenheiro Civil constituem a nossa população de interesse. Entre eles, os que se submeteram a uma preparação específica para o concurso constituem a subpopulação A, e os que não fizeram essa preparação constituem a subpopulação B. Sejam $p_A$, a probabilidade de aprovação para um candidato que se preparou e $p_B$ a probabilidade de aprovação para um candidato que não se preparou. Deseja-se testar $H_0: p_A = p_B$ contra $H_1: p_A > p_B$. Para isso, foram coletadas amostras aleatórias em ambas as subpopulações, e os resultados obtidos foram os seguintes:
+
+|Subpopulação|Tamanho|Aprovados|
+|:----------:|:-----:|:-------:|
+|A           |100    |34       | 
+|B           |200    |43       | 
+
+Se $n_A$ e $n_B$ são os tamanhos de amostra utilizados, e se $X_A$ e $X_B$, são as respectivas frequências de aprovados, pode ser usada, como alternativa ao que foi visto na teoria do capítulo, a estatística de teste $Z = \dfrac{\frac{X_A}{n_A} - \frac{X_b}{n_B}}{\frac{1}{2} \sqrt{\frac{1}{n_A} + \frac{1}{n_B}}}$.
+
+a) O que pode ser dito sobre a distribuição de probabilidade de Z sob $H_0$? Por quê?
+b) Qual a decisão a ser tomada ao nível de significância de 5% e o seu p-valor?
+:::
+
+sob $H_0$, $Z$ tem distribuição normal, pois os tamanhos das amostras são suficientemente grandes para essa distribuição assintótica se aproximar da distribuição normal.
+
+```{r}
+# H0: pA = pB 
+# H1: pA > pB 
+testar(c(
+        m = 34/100 - 43/200,
+        v = 1/4 * (1/100 + 1/200) * (100 + 200),
+        n = 100 + 200
+    ), região_crítica = "maior"
+)
+```
+
+Podemos rejeitar a hipótese nula de que a frequência de aprovados das duas subpopulações são iguais, pois o p-valor = 0.021 é menor que o ponto de corte tomado como $\alpha$ = 0.05.
+
+{{< pagebreak >}}
+
+::: {.callout-note}
+### **R 11.5: Tensão longitudinal de folhas de papel - ajuste de uma Normal**
+Suponha que a tensão longitudinal das folhas de papel de um determinado tipo produzidas por uma Companhia foi monitorada a cada 30 minutos, durante uma semana, sendo obtidos os resultados (N) apresentados na seguinte tabela de frequências.
+
+|Tensão longitudinal (N)|Frequência observada ($n_i$)|
+|:---------------------:|:--------------------------:|
+|250 $\vdash$ 260       |6                           |
+|260 $\vdash$ 270       |20                          |
+|270 $\vdash$ 280       |64                          |
+|280 $\vdash$ 290       |138                         |
+|290 $\vdash$ 300       |78                          |
+|300 $\vdash$ 310       |26                          |
+|310 $\vdash$ 320       |4                           |
+|Total                  |336                         |
+
+Seja $\bar x = 285.6$ e $s = 11$, Usando um teste de aderência Qui-quadrado, testar ao nível de significância de 1% se as observações podem ser consideradas provenientes de uma população Normalmente distribuída.
+:::
+
+```{r}
+#| warning: false
+# H0: tensão longitudinal segue distribuição normal
+# H1: tensão longitudinal não segue distribuição normal
+probs <- c(
+    pnorm(250, mean = 285.6, sd = 11),
+    sapply(seq(250, 310, by = 10),
+        \(x) pnorm(x + 10, mean = 285.6, sd = 11) - pnorm(x, mean = 285.6, sd = 11)
+    ),
+    1 - pnorm(320, mean = 285.6, sd = 11)
+)
+chisq.test(c(0, 6, 20, 64, 138, 78, 26, 4, 0), p = probs)
+```
+
+Temos 9 intervalos nesse teste qui-quadrado, e usamos os dados amostrais para estimar dois parâmetros da distribuição, portanto o teste terá 6 graus de liberdade, o quantil para decisão do teste será `qchisq(0.99, df = 6)` = 16.811.
+
+Não rejeita a hipótese nula de que a tensão longitudinal segue distribuição normal, pois a estatística do teste = 9.47 é menos extrema que o ponto de corte tomado como 16.811.
+
+{{< pagebreak >}}
+
+# Capítulo 8
+
+::: {.callout-note}
+### **Example 8.1**
+For college-bound seniors in 2009, SAT math scores are normally distributed with a mean of 515 and a standard deviation of 116. You suspect that seniors in the town of Sodor are much brighter than the country as a whole, so you decide to conduct a test. In a random sample of 25 seniors, you find the mean SAT math score to be 555. You assume that the standard deviation of math scores in Sodor is the same as the national standard deviation of $\sigma$ = 116. Is this sufficient evidence to conclude that Sodor seniors are smarter, or could a mean score of 555 be attributable to random variability?
+:::
+
+```{r}
+# H0: µ = 515
+# H1: µ > 515
+testar(
+    c(m = 555, v = 116^2, n = 25),
+    mu0 = 515, 
+    região_crítica = "maior"
+)
+```
+
+Podemos rejeitar a hipótese nula de que a média na nota de matemática do teste SAT na cidade de Sodor é igual a média nacional, pois o p-valor = 0.042 é menor que o ponto de corte tomado como $\alpha$ = 0.05.
+
+::: {.callout-note appearance="minimal"}
+Now, suppose that we are not willing to assume the variability of scores in Sodor is the same as the variability in national scores, We test the same hypotheses, but estimate the standard error from the data, using $s / \sqrt n$ instead of $\sigma / \sqrt n$. Suppose $s = 120$.
+:::
+
+```{r}
+#| echo: false
+testar(
+    c(m = 555, v = 120^2, n = 25),
+    mu0 = 515, 
+    região_crítica = "maior", tipo = "t"
+)
+```
+
+Não rejeita a hipótese nula de que a média na nota de matemática do teste SAT na cidade de Sodor é igual a média nacional, pois o p-valor = 0.054 é maior que o ponto de corte tomado como $\alpha$ = 0.05.
+
+{{< pagebreak >}}
+
+::: {.callout-note}
+### **Example 8.2**
+The coffee vending machine at work dispenses 7 oz of coffee in paper cups. The staff suspects that the machine is underfilling the cups. From a sample of n = 15 cups, they compute a mean of 6.6 oz and a standard deviation of 0.8 oz. Does this evidence support their suspicions? Assume that the coffee amounts dispensed by the machine are normally distributed.
+:::
+
+```{r}
+# H0: µ = 7
+# H1: µ < 7
+testar(
+    c(m = 6.6, v = 0.8^2, n = 15),
+    mu0 = 7, 
+    região_crítica = "menor", tipo = "t"
+)
+```
+
+Podemos rejeitar a hipótese nula de que a máquina de café dispensa em média 7 oz de café, pois o p-valor = 0.037 é menor que o ponto de corte tomado como $\alpha$ = 0.05.
+
+{{< pagebreak >}}
+
+::: {.callout-note}
+### **Example 8.3**
+About 13% of the population is left-handed. A biologist suspects that the scientific community is not like the general population in terms of handedness. He will conduct a study, and if the P-value from his test is less than 5%, he will conclude that the evidence supports his theory. He queries 200 scientists and finds that 36, or 18%, are left-handed. Does this data support the biologist's theory?
+:::
+
+Aproximando o teste de proporções pela distribuição normal temos:
+
+```{r}
+# H0: p  = 0.13
+# H1: p != 0.13
+testar(
+    c(m = 0.18, v = 0.13 * (1 - 0.13), n = 200),
+    mu0 = 0.13
+)
+```
+
+Ou utilizando um teste exato:
+
+```{r}
+2 * (1 - pbinom(36-1, size = 200, prob = 0.13))
+```
+
+Com o teste exato, não rejeita a hipótese nula de que a comunidade científica tem maior proporção de canhotos, pois o p-valor = 0.053 é maior que o ponto de corte tomado como $\alpha$ = 0.05. Porém, aproximando pela normal podemos ter um resultado diferente para esse teste.
+
+{{< pagebreak >}}
+
+::: {.callout-note}
+### **Example 8.11**
+A company claims that only 3% of people who use their facial lotion develops an allergic reaction (rash). You are a bit suspicious of their claims since you think a higher proportion of people at your college are allergic to this lotion. You query a random sample of 50 people and ask them to try the lotion. If more than three people develop the rash, you will send a nasty email to the company CEO. What is the probability that you make a type I error?
+:::
+
+```{r}
+# α = P(X > 3; p = 0.03)
+1 - pbinom(3, size = 50, prob = 0.03)
+```
+
+Temos a probabilidade do erro tipo I de 0.062.
+
+::: {.callout-note}
+### **Example 8.14**
+An analyst draws a random sample of size 8, $X_1, X_2, \dots, X_8$ from a distribution with pdf $f(x; \theta) = (\theta + 1)x^\theta$, $0 \leqslant x \leqslant 1$, $\theta > 0$. She wants to test $H_0$: $\theta = 2$ versus $H_A$: $\theta > 2$. As a decision rule, she records Y, the number of observations greater than or equal to 0.88. She rejects $H_0$ if $Y \geqslant 5$. What is the probability of a type I error?
+:::
+
+Sendo a regra de decisão $Y \geqslant 5$ em que $Y$ é a soma de ensaios de Bernoulli, $Y$ terá distribuição binomial de tamanho 8, resta saber a probabilidade de cara experimento.
+
+$$
+p = P(X_i \geqslant 8; \theta = 2) \int \limits_{0.88}^1 (\theta + 1)x^\theta dx = x^3 \Bigr|_{0.88}^1 = 1 - 0.88^3 = 0.318
+$$
+
+```{r}
+# α =     P(Y >= 5; p = 0.318)
+# α = 1 - P(Y <  5; p = 0.318)
+# α = 1 - P(Y <= 4; p = 0.318)
+1 - pbinom(4, size = 8, prob = 1-0.88^3)
+```
+
+Temos a probabilidade do erro tipo I de 0.073
+
+{{< pagebreak >}}
+
+::: {.callout-note}
+### **Example 8.20**
+Suppose $X_1, X_2, \dots, X_9$ is drawn from the exponential distribution with pdf $f(x; \lambda) = \lambda e^{-\lambda x}$. To test $H_0$: $\lambda = 8$ versus $H_A$: $\lambda = 10$
+:::
+
+$$
+L(\lambda) = \prod_{i=1}^9 \lambda e^{-\lambda X_i} = \lambda^9 e^{-\lambda \sum X_i}
+$$
+
+$$
+\lambda(X) = \dfrac{8^9 e^{-8 \sum X_i}}{10^9 e^{-10 \sum X_i}} = 0.8^9 e^{2 \sum X_i} < k \implies \sum_{i=1}^9 X_i < c
+$$
+
+Se $X_i$ tem distribuição exponencial de parâmetro $\lambda$, então $\displaystyle \sum_{i=1}^n X_i$ tem distribuição Gama de parâmetros $n$ e $\lambda$.
+
+$$
+\alpha = 0.05 = P \left( \sum_{i=1}^9 X_i < c; \lambda = 8 \right) \implies c = \mathrm{qgamma(0.05, 9, 8)} = 0.596
+$$
+
+Rejeitamos $H_0$ se $\displaystyle \sum_{i=1}^9 X_i < 0.596$.
+
+{{< pagebreak >}}
+
+::: {.callout-note}
+### **Example 8.21**
+Let $X_1, X_2, \dots X_n$ be $n$ independent Bernoulli trials with parameter $p$. Suppose we wish to test $H_0$: $p = 0.4$ versus $H_A$: $p = 0.5$.
+:::
+
+$$
+L(p) = \prod_{i=1}^n p^X_i (1-p)^{1-X_i} = p^{\sum X_i} (1-p)^{n - \sum X_i} = (1-p)^n \left( \dfrac{p}{1-p} \right)^{\sum X_i}
+$$
+
+$$
+\lambda(X) = \dfrac{(0.6)^n \left( \dfrac{2}{3} \right)^{\sum X_i}}{(0.5)^n \left( 1 \right)^{\sum X_i}} = 1.2^n (2/3)^{\sum X_i} < k \implies \sum_{i=1}^n X_i > c
+$$
+
+Se $X_i$ tem distribuição Bernoulli de parâmetro $p$, então $\displaystyle \sum_{i=1}^n X_i$ tem distribuição Binomial de parâmetros $n$ e $p$.
+
+$$
+\alpha = 0.05 = P \left( \sum_{i=1}^9 X_i > c; p = 0.4 \right) \implies c = \mathrm{qbinom(1 - 0.05, n, 0.4)}
+$$
+
+Para o caso $n = 10$ temos que $c = \mathrm{qbinom(1 - 0.05, 10, 0.4)} = 7$, portanto rejeita $H_0$ se $\displaystyle \sum_{i=1}^9 X_i > 7$.
