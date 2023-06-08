@@ -1,0 +1,210 @@
+---
+format: pdf
+lang: pt
+title: Segunda prova
+subtitle: Probabilidade IV
+author: Paulo Ricardo Seganfredo Campana
+date: 2023-06-05
+date-format: long
+include-in-header: 
+  text: \usepackage{centernot}
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+\def \limseq {{ \displaystyle \lim_{n \to \infty} }}
+\def \p #1{{ \text{P} \kern-2pt \left( #1 \right) }}
+\def \E #1{{ \text{E} \kern-2pt \left( #1 \right) }}
+\def \Var #1{{ \text{Var} \kern-2pt \left( #1 \right) }}
+:::
+
+# 1) 
+Seja $(X_n)_{n \geqslant 1}$ sequência de variáveis aleatórias tal que $X_n \sim \text{Bernoulli}(p_n)$, em que $p_n = \frac{1}{2^n}$, para todo $n$. Mostre que $X_n \overset p \longrightarrow 0$ (Dica: use a desigualdade básica de Chebyshev).
+
+$$
+\p{ | X - \E{X} | \geqslant k } \leqslant \dfrac{1}{k^2} \Var{X}
+$$
+
+Note que $\limseq p_n = 0$, portanto $\limseq \E{X_n} = \limseq \Var{X_n} = 0$
+
+\begin{align*}
+    \p{ \left| X_n - \dfrac{1}{2^n} \right| \geqslant k } &\leqslant \dfrac{1}{k^2} \Var{X_n} \\
+    \limseq \p{ \left| X_n - \dfrac{1}{2^n} \right| \geqslant k } &\leqslant \limseq \dfrac{1}{k^2} \Var{X_n} \\
+    \limseq \p{ | X_n - 0 | \geqslant k } &\leqslant 0 \\
+    \limseq \p{ | X_n - 0 | > \varepsilon } &= 0
+\end{align*}
+
+$\limseq \p{ | X_n - 0 | > \varepsilon } = 0$, portanto $X_n \overset p \longrightarrow 0$.
+
+{{< pagebreak >}}
+
+# 2) 
+Seja $(X_n)_{n \geqslant 1}$ sequência de variáveis aleatórias i.i.d. com distribuição $\mathcal U (0, b)$. Sejam $(V_n)_{n \geqslant 1}$ e $(W_n)_{n \geqslant 1}$ sequências de variáveis aleatórias definidas por $V_n = \min(X_1, \dots, X_n)$ e $W_n = \max(X_1, \dots, X_n)$, para todo $n$. Mostre que $V_n \overset p \longrightarrow 0$ e $W_n \overset p \longrightarrow b$.
+
+$F_X(x) = \dfrac{x}{b}$ para $x \in [0,b]$ por $X$ ter distribuição uniforme.
+
+$X_n, V_n$ e $W_n$ tem suporte $[0,b]$, são V.A.s positivas.
+
+::: {layout-ncol=2}
+$$
+F_{V_n}(v) = 1 - (1 - F_X(v))^n = 1 - \left(1 - \dfrac{v}{b} \right)^n
+$$
+
+$$
+F_{W_n}(w) = (F_X(w))^n = \left( \dfrac{w}{b} \right)^n
+$$
+:::
+
+Seja $\varepsilon \in (0,b)$.
+
+::: {layout="[50,-15,35]"}
+\begin{align*}
+    &\p{ | V_n - 0 | > \varepsilon } \\
+    &= \p{ V_n > \varepsilon} \\
+    &= 1 - F_{V_n}(\varepsilon) \\
+    &= \left(1 - \dfrac{\varepsilon}{b} \right)^n
+\end{align*}
+
+\begin{align*}
+    &\p{ | W_n - b | > \varepsilon } \\
+    &= \underbrace{\p{ W_n > b + \varepsilon }}_{b + \varepsilon \; \text{fora do suporte}} + \p{ W_n < b - \varepsilon } \\
+    &= F_{W_n}(b - \varepsilon) \\
+    &= \left( \dfrac{b - \varepsilon}{b} \right)^n \\
+    &= \left( 1 - \dfrac{\varepsilon}{b} \right)^n \\
+\end{align*}
+:::
+
+$\varepsilon \in (0,b) \implies \dfrac{\varepsilon}{b} \in (0,1) \implies \left( 1 - \dfrac{\varepsilon}{b} \right) \in (0,1)$, então:
+
+::: {layout-ncol=2}
+\begin{align*}
+    &\limseq \p{ | V_n - 0 | > \varepsilon } \\
+    &= \limseq \left(1 - \dfrac{\varepsilon}{b} \right)^n \\
+    &= 0
+\end{align*}
+
+\begin{align*}
+    &\limseq \p{ | W_n - b | > \varepsilon } \\
+    &= \limseq \left( 1 - \dfrac{\varepsilon}{b} \right)^n \\
+    &= 0
+\end{align*}
+:::
+
+$\limseq \p{ | V_n - 0 | > \varepsilon } = \limseq \p{ | W_n - b | > \varepsilon } = 0$, portanto $V_n \overset p \longrightarrow 0$ e $W_n \overset p \longrightarrow b$.
+
+{{< pagebreak >}}
+
+# 3)
+Seja $(X_n)_{n \geqslant 1}$ sequência tal que $\p{X_n = 0} = 1 - \dfrac{1}{n^2}$ e $\p{X_n = n^2} = \dfrac{1}{n^2}$. Mostre que, para $r \geqslant 1$, $X_n$ não converge na $r$-ésima média para zero.
+
+$X_n$ tem suporte $\lbrace 0,1 \rbrace, \lbrace 0,4 \rbrace, \lbrace 0,9 \rbrace, \dots$, são V.A.s positivas.
+
+::: {layout-ncol=2}
+\begin{align*}
+    &\E{ | X_n - 0 |^r } \\
+    &= \E{ X_n^r } \\
+    &= 0^r \cdot \p{ X_n = 0 } + (n^2)^r \cdot \p{ X_n = n^2 } \\
+    &= n^{2r} \dfrac{1}{n^2} \\
+    &= n^{2r-2} \\
+\end{align*}
+
+\begin{align*}
+    &X_n \overset r \longrightarrow 0 \\
+    &\Longleftrightarrow \limseq \E{ | X_n - 0 |^r } = 0\\
+    &\Longleftrightarrow \limseq n^{2r-2} = 0\\
+    &\Longleftrightarrow 2r-2 < 0\\
+    &\Longleftrightarrow r < 1\\
+\end{align*}
+:::
+
+\begin{align*}
+    X_n \overset r \longrightarrow 0 &\Longleftrightarrow r < 1 \\
+    X_n \overset r \nrightarrow 0    &\Longleftrightarrow r \geqslant 1
+\end{align*}
+
+Ou seja, para $r \geqslant 1$, $X_n$ não converge em $r$-ésima média
+
+{{< pagebreak >}}
+
+# 4)
+Seja $(X_n)_{n \geqslant 1}$ sequência de variáveis aleatórias independentes tais que $\p{X_n = 1} = \frac{1}{n}$, $\p{X_n = 0} = 1 - \frac{1}{n}$, para todo $n$. Mostre que $X_n \overset p \longrightarrow 0$, mas $X_n$ não converge quase certamente para zero. É certo que $X_n \overset D \longrightarrow 0$?
+
+$X_n$ tem suporte $\lbrace 0,1 \rbrace$, então $[|X_n| > \varepsilon] = [X_n = 1]$, para $\varepsilon > 0$.
+
+::: {layout-ncol=2}
+\begin{align*}
+    &\limseq \p{ | X_n - 0 | > \varepsilon} \\
+    &= \limseq \p{ X_n = 1 } \\
+    &= \limseq \dfrac{1}{n} \\
+    &= 0
+\end{align*}
+
+\begin{align*}
+    &\sum_{n=1}^\infty \p{ | X_n - 0 | > \varepsilon} \\
+    = &\sum_{n=1}^\infty \p{ X_n = 1 } \\
+    = &\sum_{n=1}^\infty \dfrac{1}{n} \longrightarrow \infty \\
+    \implies &\p{\lim \sup [| X_n - 0 | > \varepsilon]} = 1
+\end{align*}
+:::
+
+::: {layout-ncol=2}
+\begin{align*}
+    &\limseq \p{ | X_n - 0 | > \varepsilon} = 0 \\
+    &\implies X_n \overset p \longrightarrow 0 
+\end{align*}
+
+\begin{align*}
+    &\p{\lim \sup [| X_n - 0 | > \varepsilon]} \neq 0 \\
+    &\implies X_n \overset{\text{q.c.}}{\nrightarrow} 0
+\end{align*}
+:::
+
+$X_n$ converge para 0 em probabilidade mas não quase certamente.
+
+$X_n$ também converge em distribuição, pois convergência em probabilidade implica em convergência em distribuição.
+
+<!--
+
+Seja $C$ V.A. constante tal que $\p{C = 0} = 1$, $C$ e $X_n$ terão distribuições acumuladas seguintes:
+
+::: {layout-ncol=2}
+$$
+F_C(c) = 
+\begin{cases}
+    0, \; \text{se} \; c < 0 \\
+    1, \; \text{se} \; c \geqslant 0
+\end{cases}
+$$
+
+$$
+F_{X_n}(x) =
+\begin{cases}
+    0, \qquad\;\;\;\; \text{se} \; \quad\;\;\; x < 0 \\
+    1 - 1/n,       \; \text{se} \; 0 \leqslant x < 1 \\
+    1, \qquad\;\;\;\; \text{se} \; 1 \leqslant x
+\end{cases}
+$$
+:::
+
+$$
+\limseq F_{X_n}(x) = 
+\limseq \begin{cases}
+    0, \qquad\;\;\;\; \text{se} \; \quad\;\;\; x < 0 \\
+    1 - 1/n,       \; \text{se} \; 0 \leqslant x < 1 \\
+    1, \qquad\;\;\;\; \text{se} \; 1 \leqslant x
+\end{cases} =
+\begin{cases}
+    0, \; \text{se} \; \quad\;\;\; x < 0 \\
+    1, \; \text{se} \; 0 \leqslant x < 1 \\
+    1, \; \text{se} \; 1 \leqslant x
+\end{cases} =
+\begin{cases}
+    0, \; \text{se} \; x < 0 \\
+    1, \; \text{se} \; x \geqslant 0
+\end{cases}
+$$
+
+$\limseq F_{X_n}(x) = F_C(x)$, portanto $X_n \overset D \longrightarrow C$, ou seja, $X_n \overset D \longrightarrow 0$.
+
+-->
