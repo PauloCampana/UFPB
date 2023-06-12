@@ -23,32 +23,7 @@ https://github.com/PauloCampana/UFPB/blob/main/P4/inf2/trabalho/test.R
 
 ```{r}
 #| warning: false
-library(dplyr)
-library(broom)
-library(knitr)
 source("test.R")
-t.test <- function(...) {
-    stats::t.test(...) |> 
-        tidy() |> 
-        select(-method) |> 
-        kable(digits = 3)
-}
-var.test <- function(...) {
-    stats::var.test(...) |> 
-        tidy() |> 
-        select(-method) |> 
-        kable(digits = 3)
-}
-chisq.test <- function(...) {
-    stats::chisq.test(...) |>
-        tidy() |> 
-        kable(digits = 3)
-}
-anova <- function(...) {
-    stats::anova(...) |> 
-        tidy() |> 
-        kable(digits = 3)
-}
 ```
 
 {{< pagebreak >}}

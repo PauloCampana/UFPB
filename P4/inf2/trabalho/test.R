@@ -1,3 +1,30 @@
+library(dplyr)
+library(broom)
+library(knitr)
+
+t.test <- function(...) {
+    stats::t.test(...) |>
+        tidy() |>
+        select(-method) |>
+        kable(digits = 3)
+}
+var.test <- function(...) {
+    stats::var.test(...) |>
+        tidy() |>
+        select(-method) |>
+        kable(digits = 3)
+}
+chisq.test <- function(...) {
+    stats::chisq.test(...) |>
+        tidy() |>
+        kable(digits = 3)
+}
+anova <- function(...) {
+    stats::anova(...) |>
+        tidy() |>
+        kable(digits = 3)
+}
+
 testar <- function(
         x, mu0 = 0, alpha = 0.05,
         região_crítica = "bilateral", tipo = "z"
