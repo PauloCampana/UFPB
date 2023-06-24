@@ -1,0 +1,202 @@
+---
+format: pdf
+lang: pt
+title: Atividade 6
+subtitle: Função característica. Lei dos grandes números. Teorema central do limite.
+author: Paulo Ricardo Seganfredo Campana
+date: 2023-06-12
+date-format: long
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+\def \limseq #1{{ \displaystyle \lim_{n \to \infty} #1 }}
+\def \p #1{{ \text{P} \kern-2pt \left( #1 \right) }}
+\def \E #1{{ \text{E} \kern-2pt \left( #1 \right) }}
+\def \Var #1{{ \text{Var} \kern-2pt \left( #1 \right) }}
+:::
+
+###### 1) Seja $X$ variável aleatória com função característica $\varphi_X$. Definimos $Y = aX + b$, $a, b \in \mathbb R$, $a \neq 0$. Mostre que a função característica de Y é dada por $\varphi_Y(t) = e^{itb} \varphi_X(at)$, $t \in \mathbb R$.
+\begin{align*}
+    \varphi_y(t)
+    &= \E{e^{itY}} \\
+    &= \E{e^{it(aX + b)}} \\
+    &= \E{e^{itaX} e^{itb}} \\
+    &= e^{itb} \E{e^{i(ta)X}} \\
+    &= e^{itb} \varphi_X(at)
+\end{align*}
+
+---
+
+###### 3) Considere uma sequência de variáveis independentes tais que $X_n \sim \text{Exp}(2^{n/2})$, $n \geqslant 1$. Verifique se vale a lei fraca dos grandes números.
+
+Para valer a Lei fraca de Chebyshev precisamos que as V.A.s sejam independentes e uniformemente limitadas
+
+::: {layout-ncol=2}
+$$
+\exists c \in \mathbb R \; | \; \Var{X_n} \leqslant c, \forall n
+$$
+
+$$
+\Var{X_n} = \dfrac{1}{2^{n/2}} = \left( \sqrt 2 \right)^{-n}
+$$
+:::
+
+A sequência $\left( \sqrt 2 \right)^{-n}$ é limitada, pois converge para 0. Então vale a Lei fraca dos grandes números.
+
+{{< pagebreak >}}
+
+###### 2) Obtenha a função característica das seguintes distribuições.
+
+a) $X \sim \text{Binomial}(n, p)$. \qquad\qquad\qquad\qquad\qquad b) $X \sim \text{Exp}(\lambda)$.
+
+::: {layout-ncol=2}
+\begin{align*}
+    \varphi(t)
+    &= \E{e^{itX}} \\
+    &= \sum_{x = 1}^n e^{itx} \binom{n}{x} p^x (1-p)^{n-x} \\
+    &= \sum_{x = 1}^n \binom{n}{x} (pe^{it})^x (1-p)^{n-x} \\
+    &= (pe^{it} + 1 - p)^n
+\end{align*}
+
+\begin{align*}
+    \varphi(t)
+    &= \E{e^{itX}} \\
+    &= \int \limits_0^\infty e^{itx} \lambda e^{-\lambda x} dx \\
+    &= \lambda \int \limits_0^\infty e^{-x (\lambda - it)} dx \\
+    &= \dfrac{\lambda}{(\lambda - it)} 
+    \int \limits_0^\infty (\lambda - it) e^{-x (\lambda - it)} dx \\
+    &= \dfrac{\lambda}{(\lambda - it)} \\ 
+\end{align*}
+::: 
+
+c) $X \sim \mathcal N (\mu, \sigma^2)$. Seja $z = \frac{x - \mu}{\sigma} \implies x = \sigma z + \mu$
+
+::: {layout-ncol=2}
+\begin{align*}
+    \varphi(t)
+    &= \E{e^{itX}} \\
+    &= \int \limits_{-\infty}^\infty e^{itx} \dfrac{1}{\sqrt{2 \pi \sigma^2}} 
+    \exp \left\lbrace \dfrac{-(x - \mu)^2}{2\sigma^2} \right\rbrace dx \\
+    &= \dfrac{1}{\sqrt{2 \pi}} \int \limits_{-\infty}^\infty e^{it(\sigma z + \mu)}
+    \exp \left\lbrace \dfrac{-z^2}{2} \right\rbrace dz \\
+    &= \dfrac{e^{it\mu}}{\sqrt{2 \pi}} \int \limits_{-\infty}^\infty
+    \exp \left\lbrace \dfrac{-z^2}{2} + it\sigma z \right\rbrace dz
+\end{align*}
+
+\begin{align*}
+    &= \dfrac{e^{it\mu}}{\sqrt{2 \pi}} \int \limits_{-\infty}^\infty
+    \exp \left\lbrace -\dfrac{1}{2} \left( z - it \sigma \right)^2 + \dfrac{(it\sigma)^2}{2} \right\rbrace dz \\
+    &= \dfrac{e^{it\mu} e^{-t\frac{\sigma^2}{2}}}{\sqrt{2 \pi}} \int \limits_{-\infty}^\infty
+    \exp \left\lbrace -\dfrac{1}{2} \left( z - it \sigma \right )^2 \right\rbrace dz \\
+    &= \dfrac{e^{it\mu} e^{-t\frac{\sigma^2}{2}}}{\sqrt{2 \pi}} \int \limits_{-\infty}^\infty
+    \exp \left\lbrace -\dfrac{1}{2} u^2 \right\rbrace du \\
+    &= \exp \left\lbrace it\mu -t\frac{\sigma^2}{2} \right\rbrace
+\end{align*}
+:::
+
+{{< pagebreak >}}
+
+###### 4) Seja $(X_n)_{n \geqslant 1}$ sequência de variáveis aleatórias independentes tais que
+$$
+\p{X_n = n} = \dfrac{1}{n^2} \;\; \text{e} \;\; 
+\p{X_n = 0} = 1 - \dfrac{1}{n^2}, \;\; \text{para todo} \; n.
+$$
+Se $S_n = \sum_{j=1}^n X_j$, verifique que
+$$
+\dfrac{S_n - H_n}{n} \overset p \longrightarrow 0, 
+$$
+em que $H_n = \sum_{j=1}^n \frac{1}{j}$ é o $n$-ésimo número harmônico.
+
+Comparando com a Lei fraca dos grandes números: $\dfrac{S_n - \E{S_n}}{n} \overset p \longrightarrow 0$ vemos que para provar $\dfrac{S_n - H_n}{n} \overset p \longrightarrow 0$, basta verificar que vale a Lei fraca e que $\E{S_n} = H_n$.
+
+\begin{align*}
+    \E{X_n} &= 0 \left(1 - \dfrac{1}{n^2} \right) + n \dfrac{1}{n^2} = 1/n \\
+    \E{X_n^2} &= 0^2 \left(1 - \dfrac{1}{n^2} \right) + n^2 \dfrac{1}{n^2} = 1 \\
+    \Var{X_n} &= 1 - \dfrac{1}{n^2}
+\end{align*}
+
+$\Var{X_n}$ é limitado.
+
+$$
+\E{S_n} = \E{\sum_{j=1}^n X_j} = \sum_{j=1}^n \E{X_j} = \sum_{j=1}^n \dfrac{1}{j} = H_n
+$$
+
+Portanto vale a Lei fraca dos grandes números e $\dfrac{S_n - H_n}{n} \overset p \longrightarrow 0$.
+
+{{< pagebreak >}}
+
+###### 5) Seja $(X_j)_{j \geqslant 1}$ sequência de variáveis aleatórias independentes tais que
+$$
+\p{X_j = -\alpha^j} = \p{X_j = \alpha^j} = 1/2, \;\; \text{para todo} \; j,
+$$
+em que $\alpha$ é uma constante, $0 < \alpha < 1$. Prove que $\frac{S_n}{n} \overset p \longrightarrow 0$.
+
+\begin{align*}
+    \E{X_j} &= -\alpha^j \dfrac{1}{2} + \alpha^j \dfrac{1}{2} = 0 \\
+    \E{X_j^2} &= \alpha^{2j} \dfrac{1}{2} + \alpha^{2j} \dfrac{1}{2} = \alpha^{2j} \\
+    \Var{X_j} &= \alpha^{2j} \; \text{(limitado)}.
+\end{align*}
+
+$$
+\E{S_n} = \E{\sum_{j=1}^n X_j} = \sum_{j=1}^n \E{X_j} = \sum_{j=1}^n 0 = 0
+$$
+
+Então pela Lei fraca dos grandes números, $\dfrac{S_n - \E{S_n}}{n} = \dfrac{S_n}{n} \overset p \longrightarrow 0$.
+
+{{< pagebreak >}}
+
+###### 6) Seja $(X_n)_{n \geqslant 1}$ sequência de variáveis aleatórias i.i.d. com distribuição $\text{Poisson}(\lambda)$.
+
+a) Sendo $\bar X_n$ a média amostral, verifique que $\sqrt{\dfrac{n}{\lambda}} (\bar X_n - \lambda) \overset D \longrightarrow \mathcal N(0,1)$.
+b) Determine $c$ tal que $\dfrac{1}{n} \sum_{j=1}^n X_j^2 \longrightarrow c$ quase certamente.
+
+São V.A.s i.i.d., então pelo teorema central do limite, temos que
+
+$$
+\dfrac{S_n - \E{S_n}}{\sqrt{\Var{S_n}}} = 
+\dfrac{\bar X_n - \E{X_n}}{\sqrt{\Var{X_n} / n}} = 
+\dfrac{\bar X_n - \lambda}{\sqrt{\lambda / n}} =
+\sqrt{\dfrac{n}{\lambda}} (\bar X_n - \lambda) 
+\overset D \longrightarrow \mathcal N(0,1)
+$$
+
+Seja a V.A. em questão $X_j^2$, Utilizando a segunda lei forte de Kolmogorov para V.A.s i.i.d. com esperanças finitas, e definindo $S_n = \sum_{j=1}^n X_j^2$:
+
+$$
+\dfrac{1}{n} S_n \overset{\text{q.c.}} \longrightarrow \mu
+$$
+$$
+\dfrac{1}{n} \sum_{j=1}^n X_j^2 \overset{\text{q.c.}} \longrightarrow \E{X_j^2}
+$$
+$$
+\E{X_j^2} = \Var{X_j} + \E{X_j}^2 = \lambda + \lambda^2
+$$
+
+Então $c = \lambda + \lambda^2$.
+
+{{< pagebreak >}}
+
+###### 7) Seja $(X_n){n \geqslant 1}$ sequência de variáveis aleatórias i.i.d. seguindo o modelo Bernoulli com parâmetro $p = 0.4$. Use o TCL para determinar o valor aproximado de $\displaystyle \p{\sum_{j=1}^{100} X_j = 50}$.
+
+Pelo TCL de Moivre-Laplace, temos que:
+
+\begin{align*}
+    \dfrac{S_n - np}{\sqrt{np (1-p)}} &\sim \mathcal N(0,1) \\
+    \dfrac{S_n - 40}{\sqrt{24}} &\sim \mathcal N(0,1) \sim Z 
+\end{align*}
+
+Utilizando uma correção de continuidade:
+
+\begin{align*}
+    \p{\sum_{j=1}^{100} X_j = 50}
+    &= \p{50 - \frac{1}{2} \leqslant S_n \leqslant 50 + \frac{1}{2}} \\
+    &= \p{\dfrac{50 - \frac{1}{2} - 40}{\sqrt{24}} \leqslant \dfrac{S_n - 40}{\sqrt{24}} \leqslant \dfrac{50 + \frac{1}{2} - 40}{\sqrt{24}}} \\ 
+    &= \p{\dfrac{10 - \frac{1}{2}}{\sqrt{24}} \leqslant Z \leqslant \dfrac{10 + \frac{1}{2}}{\sqrt{24}}} \\
+    &= \Phi \left( \dfrac{10 + \frac{1}{2}}{\sqrt{24}} \right) -
+       \Phi \left( \dfrac{10 - \frac{1}{2}}{\sqrt{24}} \right) \\
+    &= 0.01019538
+\end{align*}
+
+Enquanto o resultado exato pela distribuição binomial é 0.01033751.
