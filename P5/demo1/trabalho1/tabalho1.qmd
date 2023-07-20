@@ -1,0 +1,32 @@
+---
+format: pdf
+lang: pt
+title: Trabalho 1
+subtitle: Grande fome da Irlanda
+author: Paulo Ricardo Seganfredo Campana
+date: 2023-07-20
+date-format: long
+callout-icon: false
+bibliography: bib.bibtex
+citation-location: margin
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+:::
+
+|    A República da Irlanda é hoje um dos países mais ricos do mundo, tem um PIB muito parecido com o do Estado de São Paulo porém com população 6 vezes menor, são atuais 7,1 milhões de habitantes, e por incrível que pareça, essa população é menor do que o país tinha a quase 200 anos atrás! Isso se da devido a chamada "Grande fome da Irlanda", que ocorreu na decada de 1840, reduzindo a população por falta de comida e emigração em massa.
+
+::: {.column-margin}
+![População da Irlanda ao longo dos anos (1821-2011)](pop.png)
+:::
+
+::: {.column-margin}
+![Batata infectada pela praga *Phytophthora infestans*](batata.png)
+:::
+
+|    Durante o século XVIII, o país teve um crescimento populacional relativamente alto devido a introdução do cultivo da batata, oriunda da America do Sul, a batata podia render muito mais calorias por metro quadrado plantado do que o trigo e era mais resistente as temperaturas da região, porém a Irlanda se tornou altamente dependente delas para alimentação. em 1845 uma praga se espalhou pela Europa e em apenas um ano, infectou quase todas as batatas e tomates do país. [@youtube]
+
+|    Pelo menos 1 milhão de habitantes dos 8 milhões da decada de 1840 morreram de inanição e desnutrição, e mais outro milhão emigraram para outros países, [@irl] especialmente para os Estados Unidos, que hoje em dia 10% da população se diz descendente de Irlandeses. Nas últimas decadas porém, a Irlanda tem tido um dos maiores crescimentos populacionais e econômicos no continente Europeu.
+
