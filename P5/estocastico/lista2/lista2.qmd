@@ -1,0 +1,102 @@
+---
+format: pdf
+lang: pt
+title: Atividade 2
+subtitle: Cadeias de Markov
+author: Paulo Ricardo Seganfredo Campana
+date: 2023-07-25
+date-format: long
+callout-icon: false
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+\def \p #1{{ \text{P} \kern-2pt \left( #1 \right) }}
+\def \pc #1#2{{ \text{P} \kern-2pt \left( #1 \; \big\rvert \; #2 \right) }}
+:::
+
+::: {.callout-note}
+# 1) Considere o exemplo da cadeia de Markov com dois estados. Se $X_n, n \geqslant 0$, é tal cadeia, calcule \newline a) $\pc{X_1 = 0}{X_0 = 0, X_2 = 0}$; \newline b) $\p{X_1 \neq X_2}$.
+
+$$
+\pc{X_1 = 0}{X_0 = 0, X_2 = 0} =
+$$
+:::
+
+{{< pagebreak >}}
+
+::: {.callout-note}
+# 2) Seja $X_n, n \geqslant 0$, uma cadeia de Markov com função de transição P. \newline a) Mostre que se $\pi_n$ denota a distribuição da variável aleatória $X_n$, então, para $m \geqslant 1$, temos que \newline \vspace{+6pt} $\p{X_n = x_n, X_{n+1} = x_{n+1}, \cdots, X_{n+m} = x_{n+m}} = \pi_n(x_n) \p{x_n, x_{n+1}} \cdots \p{x_{n+m-1}, x_{n+m}}$.
+
+$$
+\p{X_n = x_n, X_{n+1} = x_{n+1}, \cdots, X_{n+m} = x_{n+m}} = 
+\p{\bigcap_{j=n}^{n+m} X_j = x_j} =
+$$
+$$
+\p{X_{n+m} = x_{n+m} \cap \bigcap_{j=n}^{n+m-1} X_j = x_j} =
+$$
+$$
+\pc{X_{n+m} = x_{n+m}}{\bigcap_{j=n}^{n+m-1} X_j = x_j} \cdot \p{\bigcap_{j=n}^{n+m-1} X_j = x_j} =
+$$
+$$
+\pc{X_{n+m} = x_{n+m}}{X_{n+m-1} = x_{n+m-1}} \cdot \p{\bigcap_{j=n}^{n+m-1} X_j = x_j} =
+$$
+$$
+\p{x_{n+m-1}, x_{n+m}} \cdot \p{\bigcap_{j=n}^{n+m-1} X_j = x_j} =
+$$
+$$
+\p{x_{n+m-1}, x_{n+m}} \cdot \p{x_{n+m-2}, x_{n+m-1}} \cdot \p{\bigcap_{j=n}^{n+m-2} X_j = x_j} =
+$$
+$$
+\prod_{i=1}^{m} \p{x_{n+m-i}, x_{n+m-i+1}} \cdot \p{\bigcap_{j=n}^{n+m-m} X_j = x_j} =
+$$
+$$
+\prod_{i=1}^{m} \p{x_{n+m-i}, x_{n+m-i+1}} \cdot \p{X_n = x_n} =
+$$
+$$
+\pi_n(x_n) \prod_{k=1}^{m} \p{x_{n+k-1}, x_{n+k}} =
+$$
+$$
+\pi_n(x_n) \p{x_{n}, x_{n+1}} \p{x_{n+1}, x_{n+2}} \cdots \p{x_{n+m-1}, x_{n+m}}
+$$
+:::
+
+{{< pagebreak >}}
+
+::: {.callout-note}
+# b) Use a parte a) para mostrar que \newline \vspace{+6pt} $\pc{X_1 = x_1}{X_2 = x_2, \cdots, X_n = x_n} = \pc{X_1 = x_1}{X_2 = x_2}$.
+
+$$
+\pc{X_1 = x_1}{X_2 = x_2, \cdots, X_n = x_n} = 
+\dfrac{\p{X_1 = x_1, X_2 = x_2, \cdots, X_n = x_n}}{\p{X_2 = x_2, \cdots, X_n = x_n}} =
+$$
+$$
+\dfrac{\pi_1(x_1) \p{x_1, x_2} \cdots \p{x_{n-1}, x_n}}{\pi_2(x_2) \p{x_2, x_3} \cdots \p{x_{n-1}, x_n}} =
+\dfrac{\pi_1(x_1) \p{x_1, x_2}}{\pi_2(x_2)} =
+$$
+$$
+\dfrac{\p{X_1 = x_1} \pc{X_2 = x_2}{X_1 = x_1}}{\p{X_2 = x_2}} = 
+\dfrac{\p{X_1 = x_1, X_2 = x_2}}{\p{X_2 = x_2}} = 
+\pc{X_1 = x_1}{X_2 = x_2} 
+$$
+:::
+
+::: {.callout-note}
+# 3) Seja $X_n, n \geqslant 0$, uma cadeia de Markov sobre o espaço de estados $\mathcal S$. Para $y \in \mathcal S$ fixo, expresse $\p{X_1 = y}$ em termos da distribuição inicial $\pi_0(x) = \p{X_0 = x}$ e a
+função de transição $\p{x, y} = \pc{X_1 = y}{X_0 = x}$.
+
+$$
+\p{X_1 = y} =
+\p{[X_1 = y] \cap \Omega} =
+\p{[X_1 = y] \cap \bigcup_{x \in \mathcal S} [X_0 = x]} =
+$$
+$$
+\p{\bigcup_{x \in \mathcal S} [X_1 = y \cap X_0 = x]} =
+\sum_{x \in \mathcal S} \p{[X_1 = y \cap X_0 = x]} =
+$$
+$$
+\sum_{x \in \mathcal S} \pc{X_1 = y}{X_0 = x} \p{X_0 = x} =
+\sum_{x \in \mathcal S} \p{x,y} \pi_0(x)
+$$
+:::
