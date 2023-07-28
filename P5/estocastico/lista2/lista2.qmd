@@ -7,20 +7,42 @@ author: Paulo Ricardo Seganfredo Campana
 date: 2023-07-25
 date-format: long
 callout-icon: false
+highlight-style: github
 ---
 
 ::: hidden
 \pagestyle{empty}
 \thispagestyle{empty}
-\def \p #1{{ \text{P} \kern-2pt \left( #1 \right) }}
-\def \pc #1#2{{ \text{P} \kern-2pt \left( #1 \; \big\rvert \; #2 \right) }}
+\newcommand{\p}[1]{\mathrm{P} \kern-2pt \left( #1 \right)}
+\newcommand{\pc}[2]{\mathrm{P} \kern-2pt \left( #1 \; \big\rvert \; #2 \right)}
 :::
 
 ::: {.callout-note}
-# 1) Considere o exemplo da cadeia de Markov com dois estados. Se $X_n, n \geqslant 0$, é tal cadeia, calcule \newline a) $\pc{X_1 = 0}{X_0 = 0, X_2 = 0}$; \newline b) $\p{X_1 \neq X_2}$.
+# 1) Considere o exemplo da cadeia de Markov com dois estados. Se $X_n, n \geqslant 0$, é tal cadeia, calcule \newline a) $\pc{X_1 = 0}{X_0 = 0, X_2 = 0}$.
 
 $$
-\pc{X_1 = 0}{X_0 = 0, X_2 = 0} =
+\pc{X_1 = 0}{X_0 = 0, X_2 = 0} = 
+\dfrac{\p{X_0 = 0, X_1 = 0, X_2 = 0}}{\p{X_0 = 0, X_2 = 0}} =
+$$
+$$
+\dfrac{\pi_0(0) \p{0, 0} \p{0, 0}}{\pi_0(0) \p{0, 0} \p{0, 0} + \pi_0(0) + \p{0, 1} \p{1, 0}} =
+\dfrac{(1 - p)^2}{(1 - p)^2 + pq}
+$$
+:::
+
+::: {.callout-note}
+# b) $\p{X_1 \neq X_2}$.
+
+$$
+\p{X_1 \neq X_2} = 
+\p{X_1 = 0, X_2 = 1} + \p{X_1 = 1, X_2 = 0} =
+$$
+$$
+\pi_1(0) \p{0,1} + \pi_1(1) \p{1,0} =
+\pi_1(0) (p - q) + q =
+$$
+$$
+((1 - p - q) \pi_0(0) + q) (p - q) + q
 $$
 :::
 
@@ -29,50 +51,49 @@ $$
 ::: {.callout-note}
 # 2) Seja $X_n, n \geqslant 0$, uma cadeia de Markov com função de transição P. \newline a) Mostre que se $\pi_n$ denota a distribuição da variável aleatória $X_n$, então, para $m \geqslant 1$, temos que \newline \vspace{+6pt} $\p{X_n = x_n, X_{n+1} = x_{n+1}, \cdots, X_{n+m} = x_{n+m}} = \pi_n(x_n) \p{x_n, x_{n+1}} \cdots \p{x_{n+m-1}, x_{n+m}}$.
 
+Seja a notação $[X_0 = x_0, \cdots, X_j = x_j] \implies [X = x]_{0, \cdots, j}$
+
 $$
-\p{X_n = x_n, X_{n+1} = x_{n+1}, \cdots, X_{n+m} = x_{n+m}} = 
-\p{\bigcap_{j=n}^{n+m} X_j = x_j} =
-$$
-$$
-\p{X_{n+m} = x_{n+m} \cap \bigcap_{j=n}^{n+m-1} X_j = x_j} =
+\p{[X = x]_{n, \cdots, n + m}} =
 $$
 $$
-\pc{X_{n+m} = x_{n+m}}{\bigcap_{j=n}^{n+m-1} X_j = x_j} \cdot \p{\bigcap_{j=n}^{n+m-1} X_j = x_j} =
+\p{X_{n + m} = x_{n + m}, [X = x]_{n, \cdots, n + m - 1}} =
 $$
 $$
-\pc{X_{n+m} = x_{n+m}}{X_{n+m-1} = x_{n+m-1}} \cdot \p{\bigcap_{j=n}^{n+m-1} X_j = x_j} =
+\pc{X_{n + m} = x_{n + m}}{[X = x]_{n, \cdots, n + m - 1}} \p{[X = x]_{n, \cdots, n + m - 1}} =
 $$
 $$
-\p{x_{n+m-1}, x_{n+m}} \cdot \p{\bigcap_{j=n}^{n+m-1} X_j = x_j} =
+\pc{X_{n + m} = x_{n + m}}{X_{n + m-1} = x_{n + m-1}} \p{[X = x]_{n, \cdots, n + m - 1}} =
 $$
 $$
-\p{x_{n+m-1}, x_{n+m}} \cdot \p{x_{n+m-2}, x_{n+m-1}} \cdot \p{\bigcap_{j=n}^{n+m-2} X_j = x_j} =
+\p{x_{n + m-1}, x_{n + m}} \p{[X = x]_{n, \cdots, n + m - 1}}
+$$
+
+Aplicando $m$ vezes a relação
+
+$$
+\p{[X = x]_{n, \cdots, n + m}} = \p{[X = x]_{n, \cdots, n + m - 1}} \p{x_{n + m - 1}, x_{n + m}}
+$$
+
+Temos que:
+
+$$
+\p{[X = x]_{n, \cdots, n}} \p{x_n, x_{n + 1}} \cdots \p{x_{n + m - 1}, x_{n + m}} =
 $$
 $$
-\prod_{i=1}^{m} \p{x_{n+m-i}, x_{n+m-i+1}} \cdot \p{\bigcap_{j=n}^{n+m-m} X_j = x_j} =
-$$
-$$
-\prod_{i=1}^{m} \p{x_{n+m-i}, x_{n+m-i+1}} \cdot \p{X_n = x_n} =
-$$
-$$
-\pi_n(x_n) \prod_{k=1}^{m} \p{x_{n+k-1}, x_{n+k}} =
-$$
-$$
-\pi_n(x_n) \p{x_{n}, x_{n+1}} \p{x_{n+1}, x_{n+2}} \cdots \p{x_{n+m-1}, x_{n+m}}
+\pi_n(x_n) \p{x_n, x_{n + 1}} \cdots \p{x_{n + m-1}, x_{n + m}}
 $$
 :::
-
-{{< pagebreak >}}
 
 ::: {.callout-note}
 # b) Use a parte a) para mostrar que \newline \vspace{+6pt} $\pc{X_1 = x_1}{X_2 = x_2, \cdots, X_n = x_n} = \pc{X_1 = x_1}{X_2 = x_2}$.
 
 $$
-\pc{X_1 = x_1}{X_2 = x_2, \cdots, X_n = x_n} = 
-\dfrac{\p{X_1 = x_1, X_2 = x_2, \cdots, X_n = x_n}}{\p{X_2 = x_2, \cdots, X_n = x_n}} =
+\pc{X_1 = x_1}{[X = x]_{2, \cdots, n}} = 
+\dfrac{\p{[X = x]_{1, \cdots, n}}}{\p{[X = x]_{2, \cdots, n}}} =
 $$
 $$
-\dfrac{\pi_1(x_1) \p{x_1, x_2} \cdots \p{x_{n-1}, x_n}}{\pi_2(x_2) \p{x_2, x_3} \cdots \p{x_{n-1}, x_n}} =
+\dfrac{\pi_1(x_1) \p{x_1, x_2} \p{x_2, x_3} \cdots \p{x_{n-1}, x_n}}{\pi_2(x_2) \p{x_2, x_3} \cdots \p{x_{n-1}, x_n}} =
 \dfrac{\pi_1(x_1) \p{x_1, x_2}}{\pi_2(x_2)} =
 $$
 $$
@@ -82,9 +103,10 @@ $$
 $$
 :::
 
+{{< pagebreak >}}
+
 ::: {.callout-note}
-# 3) Seja $X_n, n \geqslant 0$, uma cadeia de Markov sobre o espaço de estados $\mathcal S$. Para $y \in \mathcal S$ fixo, expresse $\p{X_1 = y}$ em termos da distribuição inicial $\pi_0(x) = \p{X_0 = x}$ e a
-função de transição $\p{x, y} = \pc{X_1 = y}{X_0 = x}$.
+# 3) Seja $X_n, n \geqslant 0$, uma cadeia de Markov sobre o espaço de estados $\mathcal S$. Para $y \in \mathcal S$ fixo, expresse $\p{X_1 = y}$ em termos da distribuição inicial $\pi_0(x) = \p{X_0 = x}$ e a função de transição $\p{x, y} = \pc{X_1 = y}{X_0 = x}$.
 
 $$
 \p{X_1 = y} =
@@ -97,6 +119,186 @@ $$
 $$
 $$
 \sum_{x \in \mathcal S} \pc{X_1 = y}{X_0 = x} \p{X_0 = x} =
-\sum_{x \in \mathcal S} \p{x,y} \pi_0(x)
+\sum_{x \in \mathcal S} \pi_0(x) \p{x,y} 
 $$
+:::
+
+::: {.callout-note}
+# 4) Considere a cadeia de Markov de dois estados, com $p = 1/2$ e $q = 1/3$. Suponha que $X_0 \sim \text{Bernoulli}(3/5)$, em que $\p{X_0 = 1} = 3/5$. Use o resultado do exercício 3 para obter a distribuição de $X_1$. Veja se a sua resposta é coerente com o visto na aula.
+
+$$
+\p{X_1 = y} =
+\sum_{x \in \mathcal S} \pi_0(x) \p{x,y}  =
+\pi_0(0) \p{0,y} + \pi_0(1) \p{1,y} =
+$$
+$$
+\dfrac{2}{5} 
+\begin{cases} 
+    1/2, \; \text{se} \; y = 0  \\
+    1/2, \; \text{se} \; y = 1
+\end{cases}
++ \dfrac{3}{5}
+\begin{cases} 
+    1/3, \; \text{se} \; y = 0  \\
+    2/3, \; \text{se} \; y = 1
+\end{cases} =
+\begin{cases} 
+    2/5, \; \text{se} \; y = 0  \\
+    3/5, \; \text{se} \; y = 1
+\end{cases}
+$$
+
+Conferindo com o resultado $\p{X_1 = 0} = (1 - p - q) \pi_0(0) + q$.
+
+$$
+\p{X_1 = 0} =
+\dfrac{1}{6} \dfrac{2}{5} + \dfrac{1}{3} =
+\dfrac{2}{5}
+$$
+:::
+
+{{< pagebreak >}}
+
+::: {.callout-note}
+# 5) Suponha que temos duas caixas (A e B) e $2d$ bolas, das quais $d$ bolas são pretas e as outras $d$ são vermelhas. Inicialmente, $d$ bolas são colocadas na caixa A, e as restantes são colocadas na caixa B. Em cada ensaio duas bolas são selecionadas ao acaso, uma da caixa A e a outra da caixa B, e as bolas selecionadas são colocadas nas caixas opostas. Seja $X_0$ a variável aleatória que representa o número de bolas pretas inicialmente na caixa A, e seja $X_n, n \geqslant 1$, a variável aleatória que representa o número de bolas pretas na caixa A depois do n-ésimo ensaio. Achar a função de transição da cadeia de Markov $X_n, n \geqslant 0$.
+
+* Seja $A_p, A_v, B_p, B_v$ as quantidades de bolas de certa cor em certa caixa.
+* A quantidade total de bolas numa caixa e de bolas de uma cor é constante.
+    * $A_p + A_v = d$ 
+    * $B_p + B_v = d$
+    * $A_p + B_p = d$ 
+    * $A_v + B_v = d$ 
+* $A_p$ é a variável de interesse, $A_p = X_n$.
+* A cada etapa, $A_p$ só pode aumentar em 1, diminuir em 1 ou permanecer o mesma.
+    * Aumentar: se é escolhido bola vermelha de A e uma preta de B.
+    * Diminuir: se é escolhido bola preta de A e bola vermelha de B.
+    * Permanecer: se é escolhido bolas de cores iguais de A e B.
+* Os eventos de escolha são independentes.
+
+$$
+\p{\text{Aumentar}} =
+\p{A_v} \p{B_p} =
+$$
+$$
+\dfrac{A_v}{A_v + A_p} \dfrac{B_p}{B_v + B_p} =
+\dfrac{d - A_p}{d} \dfrac{d - A_p}{d} = 
+\left( \dfrac{d - A_p}{d} \right)^2 =
+\left( 1 - \dfrac{X_n}{d} \right)^2 
+$$
+
+$$
+\p{\text{Diminuir}} =
+\p{A_p} \p{B_v} =
+$$
+$$
+\dfrac{A_p}{A_v + A_p} \dfrac{B_v}{B_v + B_p} =
+\dfrac{A_p}{d} \dfrac{d - A_v}{d} =
+\left( \dfrac{A_p}{d} \right)^2 =
+\left( \dfrac{X_n}{d} \right)^2 
+$$
+
+$$
+\p{\text{permanecer}} =
+1 - \p{\text{Aumentar}} - \p{\text{Diminuir}} =
+$$
+$$
+1 - \left( 1 - \dfrac{X_n}{d} \right)^2 - \left( \dfrac{X_n}{d} \right)^2 =
+\dfrac{2 X_n}{d} \left( 1 - \dfrac{X_n}{d} \right)
+$$
+
+$$
+\p{x,y} =
+\begin{cases}
+     \left( 1 - \frac{x}{d} \right)^2 \hspace{+8pt} , \; \text{se} \; y = x + 1 \\
+     \left( \frac{x}{d} \right)^2     \hspace{+27pt}, \; \text{se} \; y = x - 1 \\
+     \frac{2 x}{d} \left( 1 - \frac{x}{d} \right)   , \; \text{se} \; y = x     \\
+    0                                 \hspace{+45pt}, \; \text{caso contrário}  \\
+\end{cases}
+$$
+:::
+
+{{< pagebreak >}}
+
+::: {.callout-note}
+# 6) Considere a *fila modificada* em que, se há clientes na fila aguardando para serem atendidos no início de cada período, tem-se uma probabilidade $p$ de que um cliente seja atendido nesse período e probabilidade $1 - p$ de que ninguém seja atendido naquele período. Obtenha a função de transição para essa cadeia de Markov.
+
+Seja $X_n$ uma fila comum e $Y_n$ uma fila em que os clientes nunca são atendidos, elas tem função de transição:
+
+$$
+\p{x,y}_X =
+\begin{cases}
+    f(y) \hspace{38pt}, \; \text{se} \; x = 0 \\
+    f(y - x - 1)      , \; \text{se} \; x > 0
+\end{cases}
+\quad \text{e} \quad
+\p{x,y}_Y =
+\begin{cases}
+    f(y) \hspace{19pt}, \; \text{se} \; x = 0 \\
+    f(y - x)          , \; \text{se} \; x > 0
+\end{cases}
+$$
+
+A cadeia de Markov de interesse $Z_n$ é justamente uma cadeia em que alterna entre as cadeias $X_n$ e $Y_n$ com probabilidade $p$, então:
+
+$$
+Z_n = 
+\begin{cases}
+    X_n    , \; \text{com probabilidade} \; p \\
+    Y_n \; , \; \text{com probabilidade} \; 1 - p
+\end{cases}
+$$
+$$
+\p{x,y}_Y =
+\begin{cases}
+    f(y) \hspace{130pt}             , \; \text{se} \; x = 0 \\
+    p f(y - x - 1) + (1-p) f(y - x) , \; \text{se} \; x > 0
+\end{cases}
+$$
+:::
+
+::: {.callout-note}
+# 7) O seguinte script simula a ruina do jogador sobre o espaço de estados $\mathcal S = \lbrace 0,1,2,\cdots,d \rbrace$: \newline A variável `vec` retorna os valores da cadeia $X_n, n \geqslant 0$, enquanto que a variável `cont` retorna o valor da etapa $n \geqslant 1$ para o qual a cadeia atinge o estado absorvente $x = 0$ ou $x = d$. O valor `p` determina a probabilidade do jogador ganhar uma determinada aposta. \newline Adaptar o script anterior para simular o *passeio aleatório simples*.
+
+```{r}
+# Ruina do jogador
+set.seed(75898)
+start <- 20 # capital inicial
+d <- 60
+p <- 0.5
+gain <- start
+vec <- c(start)
+cont <- 0
+while (0 < gain && gain < d) {
+    cont <- cont + 1
+    gain <- gain + sample(c(-1, 1), size = 1, prob = c(1 - p, p))
+    vec <- c(vec, gain)
+}
+```
+
+```{r}
+# Passeio aleatório simples
+set.seed(75898)
+pos <- 0 # posição inicial
+p <- 0.4
+q <- 0.4
+r <- 0.2
+stopifnot(p + q + r == 1)
+vec <- c(pos)
+cont <- 0
+while (cont < 500) {
+    cont <- cont + 1
+    pos <- pos + sample(c(1, -1, 0), size = 1, prob = c(p, q, r))
+    vec <- c(vec, pos)
+}
+```
+
+```{r}
+#| echo: false
+library(ggplot2)
+data.frame(n = 0:cont, Posição = vec) |> 
+    ggplot(aes(x = n, y = Posição)) +
+    geom_line(color = "#4582ec") +
+    geom_abline(slope = 0, intercept = 0, color = "#00000060") +
+    theme_bw()
+```
 :::
