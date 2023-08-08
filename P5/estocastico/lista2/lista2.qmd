@@ -4,7 +4,7 @@ lang: pt
 title: Atividade 2
 subtitle: Cadeias de Markov
 author: Paulo Ricardo Seganfredo Campana
-date: 2023-07-25
+date: 2023-07-29
 date-format: long
 callout-icon: false
 highlight-style: github
@@ -248,7 +248,7 @@ Z_n =
 \end{cases}
 $$
 $$
-\p{x,y}_Y =
+\p{x,y}_Z =
 \begin{cases}
     f(y) \hspace{130pt}             , \; \text{se} \; x = 0 \\
     p f(y - x - 1) + (1-p) f(y - x) , \; \text{se} \; x > 0
@@ -279,13 +279,14 @@ while (0 < gain && gain < d) {
 # Passeio aleatório simples
 set.seed(75898)
 pos <- 0 # posição inicial
+d <- 15
 p <- 0.4
 q <- 0.4
 r <- 0.2
 stopifnot(p + q + r == 1)
 vec <- c(pos)
 cont <- 0
-while (cont < 500) {
+while (-d < pos && pos < d) {
     cont <- cont + 1
     pos <- pos + sample(c(1, -1, 0), size = 1, prob = c(p, q, r))
     vec <- c(vec, pos)
