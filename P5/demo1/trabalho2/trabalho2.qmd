@@ -1,0 +1,34 @@
+---
+format: pdf
+lang: pt
+title: Trabalho 2
+subtitle: Censo Demográfico 2022
+author: Paulo Ricardo Seganfredo Campana
+date: 2023-08-08
+date-format: long
+callout-icon: false
+bibliography: bib.bibtex
+citation-location: margin
+geometry: 
+  - left=1in
+  - right=2.5in
+  - top=1in
+  - bottom=1in
+  - marginparsep=.25in
+  - marginparwidth=1.75in
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+:::
+
+|    Com o final da coleta de dados do Censo Demográfico 2022 ocorrendo em Fevereiro deste ano, estamos recebendo agora os resultados finais, com informações sobre a quantidade populacional e domicilar disponibilizadas no mês de Junho e sobre comunidades Quilombolas e Indígenas nos meses de Julho e Agosto [@calendario]. 
+
+|    O indicador que me chamou atenção foi a quantidade de domicílios do país, que teve um aumento de 34% com relação ao último Censo de 2010, em contraste com a população do país, que aumentou em apenas 6,5% no mesmo período. 
+
+|    Como diz a matéria [@domicilio], parte desse aumento é sobre as categorias de domicílos vagos e de uso ocasional, que, embora atualmente compõem 20% do total de domicílios Brasileiros, os mesmos tiveram crescimento de 80% relativo a 2010. Porém a maior parte do crescimento é de origem dos domicílios permanentementes. 
+
+|    Uma das causas desse aumento se dá pela mudança da estrutura familiar desde a última decada, com a redução da fecundidade junto com o envelhecimento da população Brasileira, as famílias tem em média menos filhos, que contribui para diminuição do número de pessoas por domicílio, também contribui para essa estatística o grande crescimento do número de mães solos e casais sem filhos.
+
+|    Outra notícia interessante é que, para o mês de Setembro no dia 6, O IBGE disponibilizará os resultados do Censo Demográfico das características de idade e sexo [@setembro], que servem de base para vários indicadores como as pirâmides etárias e explicam a transição demográfica que vemos presenciando.
