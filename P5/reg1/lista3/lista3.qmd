@@ -1,0 +1,118 @@
+---
+format: pdf
+lang: pt
+title: Atividade 3
+subtitle: Estimando os parâmetros
+author: Paulo Ricardo Seganfredo Campana
+date: 2023-08-04
+date-format: long
+callout-icon: false
+crossref:
+    tbl-title: ""
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+:::
+
+```{r}
+#| echo: false
+#| warning: false
+library(tidyverse)
+library(broom)
+library(knitr)
+
+print_fit <- function(fit) {
+    tidy(fit) |>
+        mutate(across(
+            -c(term, p.value),
+            \(x) round(x, 3)
+        )) |> 
+        kable(
+            digits = Inf,
+            col.names = c("Termo", "Estimativa", "Erro padrão", "Estatística", "p-valor"),
+            caption = "Termos do modelo de regressão linear"
+        )
+}
+
+print_anova <- function(anova) {
+    tidy(anova) |>
+        mutate(across(
+            -c(term, p.value),
+            \(x) round(x, 3)
+        )) |> 
+        mutate(across(
+            c(statistic, p.value),
+            \(x) case_when(is.na(x) ~ "", .default = as.character(round(x, 11)))
+        )) |> 
+        kable(
+            digits = Inf,
+            col.names = c("Termo", "gl", "SS", "MS", "Estatística", "p-valor"),
+            caption = "Análise de variância"
+        )
+}
+```
+
+::: {.callout-note}
+# Questão 1. Considere os dados sobre massa muscular e da idade de mulheres adultas.
+
+```{r}
+idade <- c(
+    71, 64, 43, 67, 56, 73, 68, 56, 76,
+    65, 45, 58, 45, 53, 49, 78, 73, 68
+)
+massamuscular <- c(
+    82,  91, 100, 68,  87,  73, 78, 80, 65,
+    84, 116,  76, 97, 100, 105, 77, 73, 78
+)
+```
+
+a) Considerando o modelo de regressão linear simples ajustado para explicar a massa muscular em função da idade de mulheres adultas, o que é possível afirmar sobre a significância da regressão? Escreva uma análise desse resultado.
+b) Se uma mulher tem 70 anos de idade qual a massa muscular esperada para ela, estimada a partir do modelo proposto? Construa um intervalo de 95% de confiança para o parâmetro estimado.
+c) Construa um intervalo de 95% de confiança para a massa muscular de uma mulher tem 65 anos. Com base neste intervalo, é possível afirmar que a massa muscular dessa mulher tenha o valor de 60? Justifique comentando o resultado.
+:::
+
+{{< pagebreak >}}
+
+```{r}
+#| echo: false
+fit <- lm(massamuscular ~ idade)
+print_fit(fit)
+print_anova(anova(fit))
+```
+
+A significância da regressão linear pode ser verificada pela análise de variância, que para o caso da regressão linear simples, o resultado coincide com o teste de hipótese para o coeficiente $\beta$. Para o conjunto de dados, o teste mostra que a regressão é significativa, com p-valor 0,000015.
+
+```{r}
+#| echo: false
+predict(
+    fit,
+    newdata = data.frame(idade = 70),
+    interval = "confidence"
+) |> as_tibble() |> 
+    mutate(idade = 70, .before = fit) |> 
+    kable(
+        digits = 3,
+        col.names = c("Idade", "Massa muscular", "IC inferior", "IC superior"),
+        caption = "Massa muscular esperada"
+    )
+```
+
+```{r}
+#| echo: false
+predict(
+    fit,
+    newdata = data.frame(idade = 65),
+    interval = "prediction"
+) |> as_tibble() |> 
+    mutate(idade = 65, .before = fit) |> 
+    kable(
+        digits = 3,
+        col.names = c("Idade", "Massa muscular", "IC inferior", "IC superior"),
+        caption = "Massa muscular prevista"
+    )
+```
+
+O primeiro intervalo de confiânça refere ao valor esperado da massa muscular, enquanto o segundo intervalo é sobre predição de uma observação, a afirmação de massa muscular com valor de 60 não está dentro no intervalo de predição baseado em uma mulher de 65 anos, é possível mas não provável.
+
