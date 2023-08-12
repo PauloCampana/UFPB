@@ -1,0 +1,167 @@
+---
+format: pdf
+lang: pt
+title: Atividade 4
+subtitle: Dados sobre o consumo de combustível
+author: Paulo Ricardo Seganfredo Campana
+date: 2023-08-11
+date-format: long
+callout-icon: false
+crossref:
+    tbl-title: ""
+highlight-style: github
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+:::
+
+```{r}
+#| echo: false
+#| warning: false
+library(tidyverse)
+library(broom)
+library(knitr)
+options(digits = 5)
+
+print_fit <- function(fit) {
+    tidy(fit) |>
+        mutate(across(
+            -c(term, p.value),
+            \(x) round(x, 3)
+        )) |> 
+        kable(
+            digits = Inf,
+            col.names = c("Termo", "Estimativa", "Erro padrão", "Estatística", "p-valor"),
+            caption = "Termos do modelo de regressão linear"
+        )
+}
+
+print_anova <- function(anova) {
+    tidy(anova) |>
+        mutate(across(
+            -c(term, p.value),
+            \(x) round(x, 3)
+        )) |> 
+        mutate(across(
+            c(statistic, p.value),
+            \(x) case_when(is.na(x) ~ "", .default = as.character(round(x, 11)))
+        )) |> 
+        kable(
+            digits = Inf,
+            col.names = c("Termo", "gl", "SS", "MS", "Estatística", "p-valor"),
+            caption = "Análise de variância"
+        )
+}
+```
+
+::: {.callout-note}
+# Os dados da Tabela B.3 do livro do Montgomery podem ser encontrados no pacote `MPV` do `R` como o nome `table.b3`. Estes dados consistem de 32 obsevações sobre sobre o consumo de combustível de diferentes automóveis, com variáveis sobre o desempenho da quilometragem da gasolina e características físicas e/ou de performance. Considerando estes dados e fixando o nível de significância em 5%, responda as questões abaixo:
+
+a) Estime um modelo de regressão linear que relaciona o consumo de combustível em milhas/galão, $y$, com o volume de deslocamento do motor (cilindrada), $x1$ (in$^3$). Expresse o modelo estimado e interprete os parâmetros destes modelos.
+\vspace{+6pt}
+b) Construa a tabela ANOVA para o modelo estimado e explique cada um dos resultados da tabela e conclua sobre a significância da regressão.
+\vspace{+6pt}
+c) Qual o percentual da variabilidade total do consumo de combustível é explicado por esse modelo?
+\vspace{+6pt}
+d) Construa um intervalo de confiança para o consumo médio de combustível se a cilindrada é de 275 in$^3$.
+\vspace{+6pt}
+e) Suponha que desejamos prever o consumo de combustível obtidos de carros com 275 in$^3$ cilindradas. Qual a estimativa pontual para este consumo? Calcule o intervalo de predição para o consumo de combustível, com 95% de confiança.
+\vspace{+6pt}
+f) Compare os dois intervalos obtidos em (d) e (e). Explique a diferença entre eles. Qual deles é o maior, e por quê?
+\vspace{+6pt}
+g) Ajuste agora um modelo de regressão linear que relaciona a variável consumo de combustível em milhas/galão, $y$, com o peso do carro, $x10$.
+\vspace{+6pt}
+h) Considere agora o modelo de regressão linear que relaciona o consumo de combustível, $y$, com o comprimento total do veículo, $x8$, e o seu peso, $x10$. Baseado na comparação dos dois modelos, qual das variáveis regressoras podemos concluir que é a melhor? Justifique, apresentando os resultados.
+:::
+
+{{< pagebreak >}}
+
+```{r}
+#| output: false
+data <- MPV::table.b3
+fit1 <- lm(y ~ x1, data)
+summary(fit1)
+```
+```{r}
+#| echo: false
+print_fit(fit1)
+```
+
+Temos um modelo de regressão linear expresso pela reta $\hat y = 33.723 - 0.047 \times x1$, isso significa que, para cada polegada cúbica extra na cilindrada do motor, o consumo de combustível cai em 0.047 milhas por galão (veículos de maior cilindrada são menos eficientes). O intercepto não tem interpretação pois não temos observações com cilindrada 0.
+
+```{r}
+#| output: false
+anova(fit1)
+```
+```{r}
+#| echo: false
+print_anova(anova(fit1))
+```
+
+A tabela ANOVA nos mostra a contribuição das variáveis da regressão na variação do consumo de combustível, a soma dos quadrados explicada pela cilindrada é de 955.72, enquanto pelos resíduos é 281.82, o teste $F$ mostra que a regressão é significante, com p-valor muito baixo.
+
+```{r}
+#| collapse: true
+summary(fit1)$r.squared
+```
+
+O coeficiente de determinação $R^2$ traz a informação sobre o quanto da variância do consumo de combustível é explicada pelo modelo, nesse caso 77%, enquanto o resto é explicada pelos resíduos.
+
+{{< pagebreak >}}
+
+```{r}
+#| output: false
+predict(fit1, newdata = data.frame(x1 = 275), interval = "confidence")
+predict(fit1, newdata = data.frame(x1 = 275), interval = "prediction")
+```
+```{r}
+#| echo: false
+#| layout-ncol: 2
+predict(
+    fit1,
+    newdata = data.frame(x1 = 275),
+    interval = "confidence"
+) |> kable(
+    col.names = c("Estimativa", "IC inferior", "IC superior"),
+    caption = "Consumo médio de combustível"
+)
+
+predict(
+    fit1,
+    newdata = data.frame(x1 = 275),
+    interval = "prediction"
+) |> kable(
+    col.names = c("Estimativa", "IC inferior", "IC superior"),
+    caption = "Consumo de combustível previsto"
+)
+```
+
+O primeiro intervalo de confiança é sobre o valor esperado para o consumo de combustível de um carro com 275 in$^3$ cilindradas segundo o modelo, enquanto o segundo intervalo refere aos possíveis valores previstos do consumo de combustível para uma observação com 95% de confiança.
+
+O intervalo de predição é maior, pois é um intervalo para a variável aleatória $Y$ enquanto o primeiro intervalo é sobre a média da mesma, $\bar Y$.
+
+```{r}
+#| output: false
+fit2 <- lm(y ~ x10, data)
+summary(fit2)
+```
+```{r}
+#| echo: false
+print_fit(fit2)
+```
+
+```{r}
+#| output: false
+fit3 <- lm(y ~ x8 + x10, data)
+summary(fit3)
+```
+```{r}
+#| echo: false
+print_fit(fit3)
+```
+
+A variável $x10$ referente ao peso do veículo é mais significativa, pois o teste de hipótese mostra menos evidencias em relação ao seu coeficiente ser igual a 0.

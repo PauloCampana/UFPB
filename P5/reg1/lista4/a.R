@@ -1,0 +1,1 @@
+install.packages(c("arrow", "BiocManager", "bslib", "cpp11", "dbplyr", "deSolve", "digest", "downlit", "dslabs", "ellipse", "fs", "future", "gargle", "geojson", "gert", "h2o", "haven", "htmltools", "igraph", "jsonlite", "leaflet.providers", "lme4", "maptools", "MatrixModels", "modeldata", "openssl", "pkgload", "progressr", "promises", "purrr"))
