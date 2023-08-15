@@ -1,0 +1,84 @@
+---
+format: pdf
+lang: pt
+geometry: 
+  - left=1.25in
+  - right=1.25in
+  - top=1in
+  - bottom=1in
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+:::
+
+![]("includes/ufpb.png"){height=100 fig-align=center}
+
+\sffamily
+\begin{center}
+    UNIVERSIDADE FEDERAL DA PARAÍBA \\
+    CENTRO DE CIÊNCIAS EXATAS E DA NATUREZA \\
+    DEPARTAMENTO DE ESTATÍSTICA \\
+    DISCIPLINA: DEMOGRAFIA I \\
+    \vfill
+    \Large{INCLUIR TÍTULO DO RELATÓRIO E PERÍODO DE ANÁLISE DOS DADOS}
+    \vfill
+\end{center}
+
+**Docente:** \newline
+Everlane Suane de Araújo da Silva \newline
+**Discente** \newline
+Paulo Ricardo Seganfredo Campana - 20210044220
+
+\vfill
+
+\begin{center}
+    \textbf{João Pessoa - PB} \\
+    \textbf{Setembro, 2023}
+\end{center}
+
+\newpage
+
+\rmfamily
+Título do relatório 
+
+ĸ \hfill Everlane Suane A. Silva^[Docente do Departamento de Estatística da Universidade Federal da Paraíba (UFPB); Pesquisadora do Laboratório de Estudos Demográficos (LED) do Departamento de Estatística da UFPB.] 
+
+ĸ \hfill Paulo Ricardo S. Campana^[Discente do curso de bacharelado em Estatística da UFPB.]
+
+## RESUMO
+Apresenta de forma resumida a proposta investigativa descrita no trabalho. É elaborado de forma clara e objetiva em um único parágrafo com cerca de 250 a 300 palavras e espaçamento simples.
+
+No resumo sistematizamos as ideias principais de todas as sessões do documento.
+
+Palavras-chave: identifique no máximo 3 palavras que resume as ideias principais tratadasno texto.
+
+## INTRODUÇÃO
+O texto da introdução deverá conter os seguintes elementos de preferência seguindo essa ordem em forma textual.
+
+1º momento: apresentação do tema
+
+2º momento: um resumo dos objetivos do seu trabalho
+
+3º momento: um resumo da metodologia.
+
+4º momento: como o trabalho está estruturado
+
+Normalmente a introdução é uma das últimas coisas que se faz em qualquer trabalho.
+
+## PROCEDIMENTO METODOLÓGICO
+Exposição e descrição da metodologia adotada, técnicas e/ou procedimentos de análise, instrumentos, e outros itens referentes ao desenvolvimento do estudo.
+
+\newpage
+
+## RESULTADOS E DISCUSSÃO
+Exposição e discussão, de forma objetiva, enfatizando os resultados mais relevantes, que poderão ser exemplificados por meio de gráficos, tabelas, figuras, associados a argumentações teóricas (se for o caso). As atividades desenvolvidas no período devem ser destacadas e confrontados com aquelas propostas no plano original, justificando-se, caso seja pertinente, as limitações ocorridas e/ou as alterações realizadas. As discussões devem ser situadas e fundamentadas no contexto da abordagem teórica pertinente.
+
+## CONCLUSÃO
+Exposição com base nos resultados obtidos, evitando-se a simples repetição do que já foi apresentado nas discussões. Na elaboração desta seção, convém retomar os objetivos de modo a evidenciar se foram ou não alcançados, apresentando os possíveis desdobramentos do estudo.
+
+## REFERÊNCIAS
+Usar a ABNT NBR 6023
+
+Este modelo segue as orientações da Pró-Reitoria de Pesquisa (PROPESQ)
