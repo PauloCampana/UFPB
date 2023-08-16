@@ -4,10 +4,12 @@ lang: pt
 title: Atividade 3
 subtitle: Cadeias de Markov
 author: Paulo Ricardo Seganfredo Campana
-date: 2023-08-10
+date: 2023-08-15
 date-format: long
 callout-icon: false
 highlight-style: github
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
 ---
 
 ::: hidden
@@ -23,30 +25,26 @@ highlight-style: github
 
 ```{r}
 simular <- function(n, transição, inicial) {
-    stopifnot(
-        n == as.integer(n), n >= 0,
-        nrow(transição) == ncol(transição),
-        all(rowSums(transição) == 1), sum(inicial) == 1
-    )
-    X0 <- sample(names(inicial), size = 1, prob = inicial)
-    X <- X0
-    if(n == 0) return(X) 
-    for(i in 1:n) {
-        j <- X[i]
+    X <- sample(names(inicial), size = 1, prob = inicial)
+    for(i in 2:n) {
+        j <- X[i - 1]
         p <- transição[j, ]
-        X[i + 1] <- sample(names(p), size = 1, prob = p)
+        X[i] <- sample(names(p), size = 1, prob = p)
     }
-    X |> as.numeric()
+    as.numeric(X)
 }
-expm <- function(x, n) {
-    stopifnot(
-        n == as.integer(n), n >= 1,
-        ncol(x) == nrow(x)
-    )
-    list(x) |> 
-        replicate(n = n) |> 
-        Reduce(f = "%*%")
-}
+
+P <- rbind(
+    c(0.2, 0.3, 0.5),
+    c(1/3, 1/3, 1/3),
+    c(0.8, 0.1, 0.1)
+)
+pi0 <- c(0.4, 0.3, 0.3)
+
+colnames(P) <- rownames(P) <- 0:2
+names(pi0) <- 0:2
+
+simular(100, P, pi0)
 ```
 :::
 
@@ -77,8 +75,7 @@ for (i in 1:11) {
         P[i,i + 1] <- 0.4
     }
 }
-colnames(P) <- 0:10
-rownames(P) <- 0:10
+colnames(P) <- rownames(P) <- 0:10
 
 x <- 0:10
 ```
@@ -102,12 +99,8 @@ x <- 0:10
 |         10|0   |0   |0   |0   |0   |0   |0   |0   |0   |0   |1   |
 
 ```{r}
-#| output: false
-t(pi0) %*% expm(P, 5) %*% x
-```
-```{r}
-#| echo: false
-as.numeric(t(pi0) %*% expm(P, 5) %*% x)
+P5 <- P %*% P %*% P %*% P %*% P
+t(pi0) %*% P5 %*% x
 ```
 :::
 
@@ -135,8 +128,7 @@ P <- rbind(
     c(0.4, 0.3, 0.2, 0  , 0.1),
     c(0.3, 0.3, 0.2, 0.2, 0  )
 )
-colnames(P) <- 1:5
-rownames(P) <- 1:5
+colnames(P) <- rownames(P) <- 1:5
 ```
 
 |       $x$|    1|   2|   3|   4|    5|
@@ -152,8 +144,8 @@ rownames(P) <- 1:5
 |          5| 0.3| 0.3| 0.2| 0.2|   0|
 
 ```{r}
-P2 <- expm(P, 2)
-P3 <- expm(P, 3)
+P2 <- P %*% P
+P3 <- P %*% P %*% P
 
 sum(sapply(
     1:5,
@@ -175,36 +167,76 @@ P <- rbind(
     c(1/4, 1/4, 1/4, 1/4),
     c(1/4, 0  , 1/4, 1/2)
 )
-colnames(P) <- letters[1:4]
-rownames(P) <- letters[1:4]
+colnames(P) <- rownames(P) <- letters[1:4]
+
+P2 <- rbind(
+    c(0, 3, 1, 1),
+    c(3, 0, 1, 0),
+    c(1, 1, 1, 1),
+    c(1, 0, 1, 2)
+)
+colnames(P2) <- rownames(P2) <- letters[1:4]
 ```
 
-|$\mathbf P$|    a|    b|    c|    d|
-|----------:|----:|----:|----:|----:|
-|          a|    0|  0.6|  0.2|  0.2|
-|          b| 0.75|    0| 0.25|    0|
-|          c| 0.25| 0.25| 0.25| 0.25|
-|          d| 0.25|    0| 0.25|  0.5|
+::: {layout-ncol=2}
+|$\mathbf P$|a    |b    |c    |d    |
+|----------:|:----|:----|:----|:----|
+|          a|0    |0.6  |0.2  |0.2  |
+|          b|0.75 |0    |0.25 |0    |
+|          c|0.25 |0.25 |0.25 |0.25 |
+|          d|0.25 |0    |0.25 |0.5  |
+
+|$\mathbf P^*$|a  |b  |c  |d  |
+|------------:|:--|:--|:--|:--|
+|            a|0  |3  |1  |1  |
+|            b|3  |0  |1  |0  |
+|            c|1  |1  |1  |1  |
+|            d|1  |0  |1  |2  |
+:::
+
+O segundo grafo pode ser obtido multiplicado as probabilidades de transição de cada linha da matriz por um denominador comum, sendo assim, agora o grafo não representa mais probabilidades e sim pesos. 
+:::
 
 ```{r}
 #| echo: false
 #| warning: false
-#| fig-height: 5.6
+#| fig-height: 6
+#| layout-ncol: 2
 library(diagram)
+par(mar = c(0,0,0,0))
 plotmat(
     t(P),
     curve = 0.025,
-    relsize = 0.85,
+    relsize = 0.89,
+    lwd = 3,
     box.col = "#f0f5fd",
     shadow.size = 0,
-    self.lwd = 2,
+    self.lwd = 3,
     self.cex = 0.75,
     self.shiftx = -0.1,
     self.shifty = 0.1,
-    self.arrpos = 2
+    self.arrpos = 2,
+    cex = 1.5,
+    box.cex = 2
+)
+
+plotmat(
+    t(P2),
+    curve = 0,
+    relsize = 0.89,
+    lwd = 3,
+    box.col = "#f0f5fd",
+    shadow.size = 0,
+    self.lwd = 3,
+    self.cex = 0.75,
+    self.shiftx = -0.1,
+    self.shifty = 0.1,
+    self.arrpos = 5,
+    cex = 1.5,
+    box.cex = 2,
+    arr.type = "none"
 )
 ```
-:::
 
 {{< pagebreak >}}
 
