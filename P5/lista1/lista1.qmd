@@ -1,0 +1,239 @@
+---
+format: pdf
+lang: pt
+title: Lista 1
+subtitle: Probabilidade I
+author: Paulo Campana
+callout-icon: false
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+\newcommand{\p}[2][]{\mathrm{P}{#1} \kern-2pt \left( #2 \right)}
+\newcommand{\pc}[2]{\mathrm{P} \kern-2pt \left( #1 \; \big\rvert \; #2 \right)}
+:::
+
+
+
+
+
+::: callout-note
+# 27. Em uma sala, 10 pessoas estão usando emblemas numerados de 1 até 10. Três pessoas são escolhidas ao acaso e convidadas a saírem da sala simultaneamente. O número de seu emblema é anotado. \newline a) Qual é a probabilidade de que o menor número do emblema seja 5? \newline b) Qual é a probabilidade de que o maior número do emblema seja 5?
+
+Suponha que a primeira pessoa escolhida seja o 5, para que 5 seja o menor, a segunda e terceira pessoa escolhida terão que ser entre $\{ 6,7,8,9,10 \}$, a chance é de 5/9 da segunda pessoa estar entre 6 e 10, e a chance é de 4/8 para a terceira pessoa. Porém a suposição da primeira pessoa ser o 5 é arbitrária, ela poderia ser o segundo ou terceiro, então multiplicamos a probabilidade total por 3.
+
+$$
+3 \left( \dfrac{1}{10} \cdot \dfrac{5}{9} \cdot \dfrac{4}{8} \right) = \dfrac{1}{12}
+$$
+
+---
+
+De forma análoga, agora porém a segunda e terceira pessoa escolhida terão que ser entre $\{ 1,2,3,4 \}$, a chance é de 4/9 para a segunda pessoa e 3/8 para a terceira.
+
+$$
+3 \left( \dfrac{1}{10} \cdot \dfrac{4}{9} \cdot \dfrac{3}{8} \right) = \dfrac{1}{20}
+$$
+
+:::
+
+::: callout-note
+# 28. Uma montagem eletrônica é formada de dois subsistemas A e B. De ensaios anteriores as seguintes probabilidades são admitidas conhecidas: $\p{\text{A falhar}} = 0.20, \p{\text{A e B falhem}} = 0.15$ e $\p{\text{B falhe sozinho}} = 0.20$. Calcule as seguintes probabilidades: $\pc{\text{A falhe}}{\text{B tenha falhado}}$ e $\p{\text{A falhe sozinho}}$.
+
+$$
+\pc{\text{A falhe}}{\text{B tenha falhado}} =
+\dfrac{\p{\text{A falhe} \cap \text{B tenha falhado}}}{\p{\text{B tenha falhado}}} =
+$$
+$$
+\dfrac{\p{\text{A e B falhem}}}{\p{\text{A e B falhem}} + \p{\text{B falhe sozinho}}} =
+\dfrac{0.15}{0.15 + 0.2} = 
+\dfrac{3}{7}
+$$
+
+---
+
+$$
+\p{\text{A falhe sozinho}} = \p{\text{A falhar}} - \p{\text{A e B falhem}} = 0.20 - 0.15 = 0.05
+$$
+:::
+
+::: callout-note
+# 29. O Sport ganha com probabilidade 0.7 se chove e com 0.8 se não chove. Em setembro a probabilidade de chuva é de 0.3. O Sport ganhou uma partida em setembro, qual a probabilidade de ter chovido nesse dia?
+
+$\p{\text{ganhar}}$
+
+$= \p{(\text{chover} \cap \text{ganhar}) \cup (\text{não chover} \cap \text{ganhar})}$
+
+$= \p{\text{chover} \cap \text{ganhar}} + \p{\text{não chover} \cap \text{ganhar}}$
+
+$= \pc{\text{ganhar}}{\text{chover}} \p{\text{chover}} + \pc{\text{ganhar}}{\text{não chover}} \p{\text{não chover}}$
+
+$= 0.7 \cdot 0.3 + 0.8 \cdot 0.7$
+
+$= 0.77$
+
+$$
+\pc{\text{chover}}{\text{ganhar}} = 
+\dfrac{\p{\text{chover} \cap \text{ganhar}}}{\p{\text{ganhar}}} = 
+\dfrac{\pc{\text{ganhar}}{\text{chover}} \p{\text{chover}}}{\p{\text{ganhar}}} = 
+\dfrac{0.7 \cdot 0.3}{0.77} = 
+\dfrac{3}{11}
+$$ 
+
+:::
+
+::: callout-note
+# 30. Uma rede local de computadores é composta por um servidor e cinco clientes. Dos pedidos de um tipo de processamento cerca de 10% vem do cliente A, 15% do B, 15% do C, 40% do D e 20% do E. Caso o pedido não seja feito de forma adequada, o processamento apresentará erro. Usualmente ocorrem os seguintes percentuais de pedidos inadequados: 1% do cliente A, 2% do cliente B, 0.5% do cliente C, 2% do cliente D e 8% do cliente E. \newline a) Qual a probabilidade do sistema apresentar erro? \newline b) Sabendo-se que o processo apresentou erro calcule a probabilidade de que o processo tenha sido pedido pelo cliente E.
+
+|Cliente                              |A    |B    |C     |D    |E    |
+|:------------------------------------|:----|:----|:-----|:----|:----|
+|$\p{\text{cliente}}$                 |0.10 |0.15 |0.15  |0.40 |0.20 |
+|$\pc{\text{erro}}{\text{cliente}}$   |0.01 |0.02 |0.005 |0.02 |0.08 |
+
+$$
+\p{\text{erro}} =
+0.10 \cdot 0.01 + 0.15 \cdot 0.02 + 0.15 \cdot 0.005 + 0.40 \cdot 0.02 + 0.20 \cdot 0.08 = 
+0.02875
+$$
+
+---
+
+$$
+\pc{\text{cliente E}}{\text{erro}} =
+\dfrac{\p{\text{cliente E} \cap \text{erro}}}{\p{\text{erro}}} =
+$$
+$$
+\dfrac{\pc{\text{erro}}{\text{cliente E}} \p{\text{cliente E}}}{\p{\text{erro}}} =
+\dfrac{0.08 \cdot 0.20}{0.02875} = 0.5565217
+$$
+:::
+
+::: callout-note
+# 31. Nos cursos de Estatística 5% dos homens e 2% das mulheres estão acima dos pesos ideais. Um estudante é escolhido aleatoriamente. Sabe-se também que 60% dos estudantes são homens. Sorteando-se aleatoriamente um estudante, calcule a probabilidade de que ele: \newline a) esteja acima do peso; \newline b) seja mulher, sabendo que o mesmo está acima do peso.
+
+$\p{\text{acima do peso}}$
+
+$= \p{\text{acima do peso } \cap \text{ mulher}} + \p{\text{acima do peso } \cap \text{ homem}}$
+
+$= \pc{\text{acima do peso}}{\text{mulher}} \p{\text{mulher}} + \pc{\text{acima do peso}}{\text{homem}} \p{\text{homem}}$
+
+$= 0.02 \cdot 0.4 + 0.05 \cdot 0.6$
+
+$= 0.038$
+
+---
+
+$$
+\pc{\text{mulher}}{\text{acima do peso}} =
+\dfrac{\p{\text{mulher } \cap \text{ acima do peso}}}{\p{\text{acima do peso}}} =
+$$
+$$
+\dfrac{\pc{\text{acima do peso}}{\text{mulher}} \p{\text{mulher}}}{\p{\text{acima do peso}}} =
+\dfrac{0.02 \cdot 0.4}{0.038} =
+\dfrac{4}{19}
+$$
+:::
+
+::: callout-note
+# 32. Mostre que $\pc{A^c}{B} = 1 - \pc{A}{B}$.
+
+Escrevendo $B$ como uma união disjunta entre a parte de $B$ que tem interseção com $A$ e a parte que não tem interseção:
+
+$$
+B = (A \cap B) \cup (A^c \cap B)
+$$
+$$
+\p{B} = \p{(A \cap B) \cup (A^c \cap B)}
+$$
+$$
+\p{B} = \p{A \cap B} + \p{A^c \cap B}
+$$
+$$
+\p{A^c \cap B} = \p{B} - \p{A \cap B}
+$$
+
+Então:
+
+$$
+\pc{A^c}{B} =
+\dfrac{\p{A^c \cap B}}{\p{B}} =
+\dfrac{\p{B} - \p{A \cap B}}{\p{B}} =
+1 - \dfrac{\p{A \cap B}}{\p{B}} =
+1 - \pc{A}{B}
+$$
+:::
+
+::: callout-note
+# 33. Demonstre: Se $\pc{A}{B} > \p{A}$, então, $\pc{B}{A} > \p{B}$.
+
+\begin{align*}
+    \pc{A}{B} &> \p{A} \\
+    \dfrac{\p{A \cap B}}{\p{B}} &> \p{A} \\
+    \p{A \cap B} &> \p{A} \p{B} \\
+    \dfrac{\p{A \cap B}}{\p{A}} &> \p{B} \\
+    \pc{B}{A} &> \p{B} 
+\end{align*}
+:::
+
+::: callout-note
+# 34. Uma caixa contém $m$ bolas brancas e $n$ vermelhas. dois jogadores se alternam a retirar, ao acaso, uma bola da caixa. as retiradas são com reposição e vence quem retirar a primeira bola branca. Mostre que quem inicia o jogo tem vantagem.
+
+A probabilidade de ganhar em um certo turno é $\frac{m}{n+m}$, seja esse valor $x$, a probabilidade de não ganhar é então $1-x$.
+
+Na primeira retirada, o jogador 1 tem $x$ chance de ganhar, já na segunda retirada, o jogador 2 tem $(1 - x)x$ chance de ganhar, pois é necessário que o jogador 1 não ganhe na retirada anterior, e assim por diante.
+
+|Retirada| Jogador|chance de ganhar|
+|-------:|-------:|---------------:|
+|       1|       1|             $x$|
+|       2|       2|        $(1-x)x$|
+|       3|       1|      $(1-x)^2x$|
+|       4|       2|      $(1-x)^3x$|
+|       5|       1|      $(1-x)^4x$|
+|$\vdots$|$\vdots$|        $\vdots$|
+
+A probabilidade total do jogador 1 ganhar é $P1 = (1-x)^0x + (1-x)^2x + (1-x)^4x + \cdots$
+
+A probabilidade total do jogador 2 ganhar é $P2 = (1-x)^1x + (1-x)^3x + (1-x)^5x + \cdots$
+
+Note que $P2 = (1-x) P1$, como $x$ é uma probabilidade entre 0 e 1, $1-x$ também é entre 0 e 1, isso significa que $P2$ sempre é menor que $P1$ então o jogador 1 sempre terá vantagem.
+:::
+
+::: callout-note
+# 35. Demonstre que dois eventos com probabilidade positiva e disjuntos, nunca são independentes.
+
+Temos que $\p{A} > 0, \p{B} > 0$ (probabilidade positiva) e $A \cap B = \varnothing$ (disjuntos).
+
+Suponha que $A$ e $B$ sejam independentes:
+
+$$
+\p{A} = 
+\pc{A}{B} = 
+\dfrac{\p{A \cap B}}{\p{B}} = 
+\dfrac{\p{\varnothing}}{\p{B}} = 
+\dfrac{0}{\p{B}} = 
+0
+$$
+
+Porém $\p{A} > 0$, é uma contradição, então $A$ e $B$ não são independentes.
+:::
+
+::: callout-note
+# 36. Demonstre as seguintes relações: \newline a) $A \subset B \Longleftrightarrow A^c \supset B^c$; \newline b) $(A \cup B) \cup C = A \cup (B \cup C)$;
+
+TODO
+
+---
+
+$$
+(A \cup B) \cup C
+$$ 
+$$
+\{ x \;|\; (x \in A \vee x \in B) \vee x \in C \}
+$$ 
+$$
+\{ x \;|\; x \in A \vee (x \in B \vee x \in C) \}
+$$ 
+$$
+A \cup (B \cup C)
+$$
+:::
