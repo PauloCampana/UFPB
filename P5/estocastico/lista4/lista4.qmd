@@ -1,0 +1,253 @@
+---
+format: pdf
+lang: pt
+title: Atividade 4
+subtitle: Particionamento do espaço de estados
+author: Paulo Ricardo Seganfredo Campana
+date: 2023-08-21
+date-format: long
+callout-icon: false
+highlight-style: github
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+\newcommand{\p}[2][]{\mathrm{P}{#1} \kern-2pt \left( #2 \right)}
+\newcommand{\pc}[2]{\mathrm{P} \kern-2pt \left( #1 \; \big\rvert \; #2 \right)}
+\newcommand{\E}[1]{\mathrm{E} \kern-2pt \left[ #1 \right]}
+:::
+
+::: callout-note
+# 1) Considere a cadeia de Markov com espaço de estados $\mathcal S = \{ 0, 1, 2, 3, 4, 5, 6 \}$, e matriz de transição. \newline a) Particione o espaço de estados \newline b) Calcule $\rho_{0y}, \; y = 0, 1, \cdots, 6$.
+
+$$
+\begin{bmatrix}
+    1/2 & 0 & 1/8 & 1/4 & 1/8 &   0 &   0 \\
+      0 & 0 &   1 &   0 &   0 &   0 &   0 \\
+      0 & 0 &   0 &   1 &   0 &   0 &   0 \\
+      0 & 1 &   0 &   0 &   0 &   0 &   0 \\
+      0 & 0 &   0 &   0 & 1/2 &   0 & 1/2 \\
+      0 & 0 &   0 &   0 & 1/2 & 1/2 &   0 \\
+      0 & 0 &   0 &   0 &   0 & 1/2 & 1/2 
+\end{bmatrix}
+$$
+
+Os conjuntos de estados $\{ 1,2,3 \}$ e $\{ 4,5,6 \}$ só levam a outros estados dentro do seu conjunto, então $C_1 = \{ 1,2,3 \}$ e $C_2 = \{ 4,5,6 \}$.
+
+O estado 0 leva a sí mesmo e a estados dos conjuntos $C_1$ e $C_2$, então ele é transiente.
+
+$$
+\mathcal S_{\mathsf T} = \{ 0 \}, \quad 
+\mathcal S_{\mathsf R} = C_1 \cup C_2, \quad 
+C_1 =  \{ 1,2,3 \}, C_2 = \{ 4,5,6 \}
+$$
+
+---
+
+Como $\{ 1,2,3 \}$ e $\{ 4,5,6 \}$ pertencem a uma mesma classe de equivalência, $\rho_{0C_1} = \rho_{01} = \rho_{02} = \rho_{03}$ e $\rho_{0C_2} = \rho_{04} = \rho_{05} = \rho_{06}$, Além de que $\rho_{0C_2} = 1 - \rho_{0C_1}$ e $\rho_{00} = 1/2$.
+
+$$
+\rho_{xC} = \sum_{y \in C} \p{x,y} + \sum_{y \in \mathcal S_{\mathsf T}} \p{x,y} \rho_{yC}
+$$
+$$
+\rho_{0C_1} = \p{0,1} + \p{0,2} + \p{0,3} + \p{0,0} \rho_{0C_1}
+$$
+$$
+\rho_{0C_1} = 0 + 1/8 + 1/4 + 1/2 \cdot \rho_{0C_1}
+$$
+$$
+\rho_{0C_1} = 3/4, \quad \rho_{0C_2} = 1/4
+$$
+$$
+\rho_{00} = 1/2, \quad \rho_{01} = \rho_{02} = \rho_{03} = 3/4, \quad \rho_{04} = \rho_{05} = \rho_{06} = 1/4
+$$
+:::
+
+::: callout-note
+# 2) Considere uma cadeia de Markov com espaço de estados $\mathcal S = \{ 0, 1, 2, 3, 4, 5 \}$ e matriz de transição. \newline a) Particione o espaço de estados. \newline b) Calcule $\rho_{0y}, y = 1, \cdots, 5$.
+
+$$
+\begin{bmatrix}
+    1/3 &   0 & 1/3 &   0 &   0 & 1/3 \\
+      0 & 1/2 &   0 & 1/2 &   0 &   0 \\
+      0 & 1/2 & 1/2 &   0 &   0 &   0 \\
+      0 &   0 & 1/2 & 1/2 &   0 &   0 \\
+      0 &   0 &   0 &   0 & 2/3 & 1/3 \\
+      0 &   0 &   0 &   0 & 1/2 & 1/2
+\end{bmatrix}
+$$
+
+Os conjuntos de estados $\{ 1,2,3 \}$ e $\{ 4,5 \}$ só levam a outros estados dentro do seu conjunto, então $C_1 = \{ 1,2,3 \}$ e $C_2 = \{ 4,5 \}$.
+
+O estado 0 leva a sí mesmo e a estados dos conjuntos $C_1$ e $C_2$, então ele é transiente.
+
+$$
+\mathcal S_{\mathsf T} = \{ 0 \}, \quad
+\mathcal S_{\mathsf R} = C_1 \cup C_2, \quad
+C_1 =  \{ 1,2,3 \}, C_2 = \{ 4,5 \}
+$$
+
+---
+
+Como $\{ 1,2,3 \}$ e $\{ 4,5 \}$ pertencem a uma mesma classe de equivalência, $\rho_{0C_1} = \rho_{01} = \rho_{02} = \rho_{03}$ e $\rho_{0C_2} = \rho_{04} = \rho_{05}$, Além de que $\rho_{0C_2} = 1 - \rho_{0C_1}$ e $\rho_{00} = 1/3$.
+
+$$
+\rho_{xC} = \sum_{y \in C} \p{x,y} + \sum_{y \in \mathcal S_{\mathsf T}} \p{x,y} \rho_{yC}
+$$
+$$
+\rho_{0C_1} = \p{0,1} + \p{0,2} + \p{0,3} + \p{0,0} \rho_{0C_1}
+$$
+$$
+\rho_{0C_1} = 0 + 1/3 + 0 + 1/3 \cdot \rho_{0C_1}
+$$
+$$
+2/3 \cdot \rho_{0C_1} = 1/3
+$$
+$$
+\rho_{0C_1} = 1/2, \quad \rho_{0C_2} = 1/2
+$$
+$$
+\rho_{00} = 1/3, \quad
+\rho_{01} = \rho_{02} = \rho_{03} = 1/2, \quad
+\rho_{04} = \rho_{05} = 1/2
+$$
+:::
+
+{{< pagebreak >}}
+
+::: callout-note
+# 3) Implemente um loop Monte Carlo para estimar numericamente as probabilidades de absorção de um conjunto irredutível $C$ para as cadeias dos itens 1 e 2.
+
+```{r}
+simular_de_0 <- function(n, transição) {
+    X <- "0"
+    for(i in 2:n) {
+        j <- X[i - 1]
+        p <- transição[j, ]
+        X[i] <- sample(names(p), size = 1, prob = p)
+    }
+    as.numeric(X)
+}
+
+absorção <- function(C, transição) {
+    simular_de_0(50, transição) |>   # Simular até X50
+    replicate(n = 10000) |>          # 10000 vezes
+    apply(                           # para cada simulação
+        MARGIN = 2,
+        \(col) any(C %in% col[-1])   # TRUE se C está na cadeia
+    ) |>
+    mean()                           # proporção de TRUEs
+}
+```
+
+```{r}
+#| echo: false
+P1 <- rbind(
+    c(1/2, 0, 1/8, 1/4, 1/8,   0,   0),
+    c(  0, 0,   1,   0,   0,   0,   0),
+    c(  0, 0,   0,   1,   0,   0,   0),
+    c(  0, 1,   0,   0,   0,   0,   0),
+    c(  0, 0,   0,   0, 1/2,   0, 1/2),
+    c(  0, 0,   0,   0, 1/2, 1/2,   0),
+    c(  0, 0,   0,   0,   0, 1/2, 1/2)
+)
+colnames(P1) <- rownames(P1) <- 0:6
+
+P2 <- rbind(
+    c(1/3,   0, 1/3,   0,   0, 1/3),
+    c(  0, 1/2,   0, 1/2,   0,   0),
+    c(  0, 1/2, 1/2,   0,   0,   0),
+    c(  0,   0, 1/2, 1/2,   0,   0),
+    c(  0,   0,   0,   0, 2/3, 1/3),
+    c(  0,   0,   0,   0, 1/2, 1/2)
+)
+colnames(P2) <- rownames(P2) <- 0:5
+```
+
+```{r}
+#| collapse: true
+absorção(c(1,2,3), P1)
+absorção(c(4,5,6), P1)
+absorção(0, P1)
+
+absorção(c(1,2,3), P2)
+absorção(c(4,5), P2)
+absorção(0, P2)
+```
+:::
+
+::: callout-note
+# 4) Seja $y \in \mathcal S_{\mathsf T}$. Usando o fato de que $G(x, y) = \dfrac{\rho_{xy}}{1 - \rho_{yy}}$, mostre que $$ \sum_{n = 0}^\infty \p[^n]{x,y} \leqslant \sum_{n = 0}^\infty \p[^n]{y,y}, \quad \text{para todo } x \in \mathcal S $$
+
+$1 + G(y,y) \geqslant G(x,y)$ pois:
+
+$$
+1 + G(y,y) =
+1 + \dfrac{\rho_{yy}}{1 - \rho_{yy}} =
+\dfrac{1}{1 - \rho_{yy}} \geqslant
+\dfrac{\rho_{xy}}{1 - \rho_{yy}} =
+G(x,y)
+$$
+
+Então:
+
+$$
+\sum_{n = 0}^\infty \p[^n]{x,y} = 
+\p[^0]{x,y} + \sum_{n = 1}^\infty \p[^n]{x,y} =
+\p[^0]{x,y} + G(x,y) =
+$$
+$$
+\begin{cases}
+    1, \text{ se } x = y \\
+    0, \text{ se } x \neq y
+\end{cases} + G(x,y) =
+\begin{cases}
+    1 + G(y,y),           \text{ se } x = y \\
+    \quad\;\;\;\! G(x,y), \text{ se } x \neq y
+\end{cases} \leqslant 1 + G(y,y) =
+$$
+$$
+\p[^0]{y,y} + \sum_{n = 1}^\infty \p[^n]{y,y} = 
+\sum_{n = 0}^\infty \p[^n]{y,y}
+$$
+:::
+
+{{< pagebreak >}}
+
+::: callout-note
+# 5) Na videoaula 3 mostramos que $$ \p[_x]{T_y = 1} = \p{x,y} $$ $$ \p[_x]{T_y = n + 1} = \sum_{z \neq y} \p{x,z} \p[_z]{T_y = n}, \quad n \geqslant 1 $$ Aplique esse resultado para provar a seguinte igualdade: $$ \rho_{xy} = \p{x,y} + \sum_{z \neq y} \p{x,z} \rho_{zy} $$
+
+$$
+\rho_{xy} = 
+\p[_x]{T_y < \infty} = 
+\p[_x]{\bigcup_{n = 1}^\infty T_y = n} =
+\sum_{n = 1}^\infty \p[_x]{T_y = n}
+$$
+$$
+\sum_{n = 1}^\infty \sum_{z \neq y} \p{x,z} \p[_z]{T_y = n - 1} = 
+$$
+$$
+\sum_{z \neq y} \p{x,z} \sum_{n = 1}^\infty \p[_z]{T_y = n - 1} = 
+$$
+$$
+\sum_{z \neq y} \p{x,z} \p[_z]{\bigcup_{n = 1}^\infty T_y = n-1} 
+$$
+
+O caso $n = 1$ tem probabilidade 0, pois $T_y > 0$, então:
+
+$$
+\sum_{z \neq y} \p{x,z} \p[_z]{\bigcup_{n = 2}^\infty T_y = n-1} =
+$$
+$$
+\sum_{z \neq y} \p{x,z} \p[_z]{\bigcup_{n = 1}^\infty T_y = n} = 
+$$
+$$
+\sum_{z \neq y} \p{x,z} \p[_z]{T_y < \infty} =  
+$$
+$$
+\sum_{z \neq y} \p{x,z} \rho_{zy} 
+$$
+:::
