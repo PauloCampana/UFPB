@@ -14,9 +14,120 @@ callout-icon: false
 \newcommand{\pc}[2]{\mathrm{P} \kern-2pt \left( #1 \; \big\rvert \; #2 \right)}
 :::
 
+{{< pagebreak >}}
 
+<!--
+::: callout-note
+# 
+:::
 
+{{< pagebreak >}}
+-->
 
+::: callout-note
+# 23. A gaveta de um aluno de Probabilidade I possui 8 pares de meia sendo 5 brancas e 3 pretas. No cesto de roupa suja encontramos 3 pares brancas e 4 pares pretas. O aluno utilizou dois pares de meia durante a semana e posteriormente colocou-as no cesto de roupa suja. Em seguida, um par de meias é retirado do cesto para ser lavada. Qual a probabilidade do par de meias ser branca?
+
+São 4 casos possíveis:
+
+* Usar dois pares de meias brancas
+    * $\p{\text{BB}} = \dfrac{5}{8} \cdot \dfrac{4}{7} = \dfrac{20}{56}$
+    
+    * Serão 5 pares brancas e 4 pares pretas no cesto, $\pc{\text{Branca}}{\text{BB}} = \dfrac{5}{9}$
+
+* Usar dois pares de meias pretas
+    * $\p{\text{PP}} = \dfrac{3}{8} \cdot \dfrac{2}{7} = \dfrac{6}{56}$
+    
+    * Serão 3 pares brancas e 6 pares pretas no cesto, $\pc{\text{Branca}}{\text{PP}} = \dfrac{3}{9}$
+    
+* Usar uma par branca depois uma par preta
+    * $\p{\text{BP}} = \dfrac{5}{8} \cdot \dfrac{3}{7} = \dfrac{15}{56}$
+    
+    * Serão 4 pares brancas e 5 pares pretas no cesto, $\pc{\text{Branca}}{\text{BP}} = \dfrac{4}{9}$
+    
+* Usar uma par preta depois uma par branca
+    * $\p{\text{PB}} = \dfrac{3}{8} \cdot \dfrac{5}{7} = \dfrac{15}{56}$
+    
+    * Serão 4 pares brancas e 5 pares pretas no cesto, $\pc{\text{Branca}}{\text{PB}} = \dfrac{4}{9}$
+    
+Somando os produtos de probabilidade de ocorrer cada caso com a probabilidade interesse temos:
+
+$$
+\p{\text{Branca}} = 
+\dfrac{20}{56} \cdot \dfrac{5}{9} +
+\dfrac{6}{56}  \cdot \dfrac{3}{9} +
+\dfrac{15}{56} \cdot \dfrac{4}{9} +
+\dfrac{15}{56} \cdot \dfrac{4}{9} =
+\dfrac{17}{36}
+$$
+:::
+
+{{< pagebreak >}}
+
+::: callout-note
+# 24. Uma peça usada na fabricação de carros podem apresentar um certo defeito de fabricação. Suponha que 95% de todas as peças passem na inspeção inicial. Das 5% com falhas, 20% possuem defeitos tão sérios que devem ser descartadas. As peças restantes são enviados para correção, onde 40% não podem ser salvas e são descartadas. As outras 60% são corrigidas e, depois, passam na inspeção. \newline a) Qual a probabilidade de uma peça selecionada aleatoriamente passar na inspeção inicialmente ou após a correção? \newline b) Dado que a peça tenha passado na inspeção, qual é a probabilidade dela ter passado na inspeção inicial e não ter precisado de correção?
+
+```{mermaid}
+%%| fig-width: 6
+flowchart TB
+    A[Todas as peças 100%]-- 95% ---B[Passa inicialmente 95%]
+    A-- 5% ---C[Apresenta falhas 5%]
+    C-- 20% ---D[Defeitos sérios 1%]
+    C-- 80% ---E[Enviadas para correção 4%]
+    E-- 60% ---F[Corrigidas 2.4%]
+    E-- 40% ---G[Não podem ser salvas 1.6%]
+```
+
+$$
+\p{\text{Passou inspeção}} = 
+\p{\text{Passa inicialmente}} + \p{\text{Corrigidas}} = 
+95\% + 2.4\% = 
+97.4\%  
+$$
+
+---
+
+$$
+\pc{\text{Passa inicialmente}}{\text{Passou inspeção}} = 
+\dfrac{\p{\text{Passa inicialmente} \cap \text{Passou inspeção}}}{\p{\text{Passou inspeção}}} =
+$$
+$$
+\dfrac{95\%}{97.4\%} =
+97.535\%
+$$
+:::
+
+{{< pagebreak >}}
+
+::: callout-note
+# 25. Dentre 6 números positivos e 8 negativos, escolhem-se ao acaso (sem reposição) 4 números e multiplicam-se esses números. Qual será a probabilidade de que o produto seja um número positivo?
+
+Obter um número positivo a partir de 4 números é possível em 3 casos:
+
+* 4 números negativos
+    * $\p{\{----\}} = \dfrac{8}{14} \dfrac{7}{13} \dfrac{6}{12} \dfrac{5}{11} = \dfrac{70}{1001}$
+
+* 4 números positivos
+    * $\p{\{++++\}} = \dfrac{6}{14} \dfrac{5}{13} \dfrac{4}{12} \dfrac{3}{11} = \dfrac{15}{1001}$
+
+* 2 negativos e 2 positivos
+    * São 6 casos: $\{--++\}, \{-+-+\}, \{-++-\}, \{+--+\}, \{+-+-\}, \{++--\}$, como a ordem não importa e a quantidade de números positivos e negativos são iguais, eles terão a mesma probabilidade
+    * $6 \p{\{--++\}} = 6 \left( \dfrac{8}{14} \dfrac{7}{13} \dfrac{6}{12} \dfrac{5}{11} \right) = \dfrac{420}{1001}$
+    
+Somando as probabilidades, temos que $\p{\text{produto positivo}} = \dfrac{505}{1001}$
+
+:::
+
+::: callout-note
+# 26. Na elaboração de um algoritmo quantos códigos de quatro símbolos poderão ser formados se temos um total de seis símbolos: \newline a) Se nenhum símbolo puder ser repetido? \newline b) Qualquer símbolo puder ser repetido qualquer número de vezes?
+
+Temos 6 símbolos, precisamos escolher 4, a ordem importa.
+
+* Sem reposição: $6 \cdot 5 \cdot 4 \cdot 3 = 360$.
+
+* Com reposição: $6 \cdot 6 \cdot 6 \cdot 6 = 1296$.
+:::
+
+{{< pagebreak >}}
 
 ::: callout-note
 # 27. Em uma sala, 10 pessoas estão usando emblemas numerados de 1 até 10. Três pessoas são escolhidas ao acaso e convidadas a saírem da sala simultaneamente. O número de seu emblema é anotado. \newline a) Qual é a probabilidade de que o menor número do emblema seja 5? \newline b) Qual é a probabilidade de que o maior número do emblema seja 5?
@@ -53,24 +164,34 @@ $$
 ---
 
 $$
-\p{\text{A falhe sozinho}} = \p{\text{A falhar}} - \p{\text{A e B falhem}} = 0.20 - 0.15 = 0.05
+\p{\text{A falhe sozinho}} = 
+\p{\text{A falhar}} - \p{\text{A e B falhem}} = 
+0.20 - 0.15 = 
+0.05
 $$
 :::
+
+{{< pagebreak >}}
 
 ::: callout-note
 # 29. O Sport ganha com probabilidade 0.7 se chove e com 0.8 se não chove. Em setembro a probabilidade de chuva é de 0.3. O Sport ganhou uma partida em setembro, qual a probabilidade de ter chovido nesse dia?
 
-$\p{\text{ganhar}}$
+$\quad \p{\text{ganhar}}$
+\vspace{+6pt}
 
 $= \p{(\text{chover} \cap \text{ganhar}) \cup (\text{não chover} \cap \text{ganhar})}$
+\vspace{+6pt}
+\hfill União disjunta
 
 $= \p{\text{chover} \cap \text{ganhar}} + \p{\text{não chover} \cap \text{ganhar}}$
+\vspace{+6pt}
 
 $= \pc{\text{ganhar}}{\text{chover}} \p{\text{chover}} + \pc{\text{ganhar}}{\text{não chover}} \p{\text{não chover}}$
+\vspace{+6pt}
 
-$= 0.7 \cdot 0.3 + 0.8 \cdot 0.7$
+$= 0.7 \cdot 0.3 + 0.8 \cdot 0.7 = 0.77$
 
-$= 0.77$
+---
 
 $$
 \pc{\text{chover}}{\text{ganhar}} = 
@@ -79,7 +200,6 @@ $$
 \dfrac{0.7 \cdot 0.3}{0.77} = 
 \dfrac{3}{11}
 $$ 
-
 :::
 
 ::: callout-note
@@ -96,8 +216,6 @@ $$
 0.02875
 $$
 
----
-
 $$
 \pc{\text{cliente E}}{\text{erro}} =
 \dfrac{\p{\text{cliente E} \cap \text{erro}}}{\p{\text{erro}}} =
@@ -108,16 +226,26 @@ $$
 $$
 :::
 
+{{< pagebreak >}}
+
 ::: callout-note
 # 31. Nos cursos de Estatística 5% dos homens e 2% das mulheres estão acima dos pesos ideais. Um estudante é escolhido aleatoriamente. Sabe-se também que 60% dos estudantes são homens. Sorteando-se aleatoriamente um estudante, calcule a probabilidade de que ele: \newline a) esteja acima do peso; \newline b) seja mulher, sabendo que o mesmo está acima do peso.
 
-$\p{\text{acima do peso}}$
+$\quad \p{\text{acima do peso}}$
+\vspace{+6pt}
+
+$= \p{(\text{acima do peso } \cap \text{ mulher}) \cup (\text{acima do peso } \cap \text{ homem})}$
+\vspace{+6pt}
+\hfill União disjunta
 
 $= \p{\text{acima do peso } \cap \text{ mulher}} + \p{\text{acima do peso } \cap \text{ homem}}$
+\vspace{+6pt}
 
 $= \pc{\text{acima do peso}}{\text{mulher}} \p{\text{mulher}} + \pc{\text{acima do peso}}{\text{homem}} \p{\text{homem}}$
+\vspace{+6pt}
 
 $= 0.02 \cdot 0.4 + 0.05 \cdot 0.6$
+\vspace{+6pt}
 
 $= 0.038$
 
@@ -163,16 +291,24 @@ $$
 $$
 :::
 
+{{< pagebreak >}}
+
 ::: callout-note
 # 33. Demonstre: Se $\pc{A}{B} > \p{A}$, então, $\pc{B}{A} > \p{B}$.
 
-\begin{align*}
-    \pc{A}{B} &> \p{A} \\
-    \dfrac{\p{A \cap B}}{\p{B}} &> \p{A} \\
-    \p{A \cap B} &> \p{A} \p{B} \\
-    \dfrac{\p{A \cap B}}{\p{A}} &> \p{B} \\
-    \pc{B}{A} &> \p{B} 
-\end{align*}
+$\qquad \pc{A}{B} > \p{A}$ 
+\vspace{+6pt}
+
+$\Longleftrightarrow \; \dfrac{\p{A \cap B}}{\p{B}} > \p{A}$ 
+\vspace{+6pt}
+
+$\Longleftrightarrow \; \p{A \cap B} > \p{A} \p{B}$ 
+\vspace{+6pt}
+
+$\Longleftrightarrow \; \dfrac{\p{A \cap B}}{\p{A}} > \p{B}$ 
+\vspace{+6pt}
+
+$\Longleftrightarrow \; \pc{B}{A} > \p{B}$
 :::
 
 ::: callout-note
@@ -182,21 +318,23 @@ A probabilidade de ganhar em um certo turno é $\frac{m}{n+m}$, seja esse valor 
 
 Na primeira retirada, o jogador 1 tem $x$ chance de ganhar, já na segunda retirada, o jogador 2 tem $(1 - x)x$ chance de ganhar, pois é necessário que o jogador 1 não ganhe na retirada anterior, e assim por diante.
 
-|Retirada| Jogador|chance de ganhar|
-|-------:|-------:|---------------:|
-|       1|       1|             $x$|
-|       2|       2|        $(1-x)x$|
-|       3|       1|      $(1-x)^2x$|
-|       4|       2|      $(1-x)^3x$|
-|       5|       1|      $(1-x)^4x$|
-|$\vdots$|$\vdots$|        $\vdots$|
+|Retirada| Jogador|Probabilidade de ganhar|
+|-------:|-------:|----------------------:|
+|       1|       1|                    $x$|
+|       2|       2|               $(1-x)x$|
+|       3|       1|             $(1-x)^2x$|
+|       4|       2|             $(1-x)^3x$|
+|       5|       1|             $(1-x)^4x$|
+|$\vdots$|$\vdots$|               $\vdots$|
 
-A probabilidade total do jogador 1 ganhar é $P1 = (1-x)^0x + (1-x)^2x + (1-x)^4x + \cdots$
+A probabilidade total do jogador 1 ganhar é $P_1 = (1-x)^0x + (1-x)^2x + (1-x)^4x + \cdots$
 
-A probabilidade total do jogador 2 ganhar é $P2 = (1-x)^1x + (1-x)^3x + (1-x)^5x + \cdots$
+A probabilidade total do jogador 2 ganhar é $P_2 = (1-x)^1x + (1-x)^3x + (1-x)^5x + \cdots$
 
-Note que $P2 = (1-x) P1$, como $x$ é uma probabilidade entre 0 e 1, $1-x$ também é entre 0 e 1, isso significa que $P2$ sempre é menor que $P1$ então o jogador 1 sempre terá vantagem.
+Note que $P_2 = (1-x) P_1$, como $x$ é uma probabilidade entre 0 e 1, $1-x$ também é entre 0 e 1, isso significa que $P_2$ sempre é menor ou igual que $P_1$ então o primeiro jogador sempre terá vantagem.
 :::
+
+{{< pagebreak >}}
 
 ::: callout-note
 # 35. Demonstre que dois eventos com probabilidade positiva e disjuntos, nunca são independentes.
@@ -220,20 +358,38 @@ Porém $\p{A} > 0$, é uma contradição, então $A$ e $B$ não são independent
 ::: callout-note
 # 36. Demonstre as seguintes relações: \newline a) $A \subset B \Longleftrightarrow A^c \supset B^c$; \newline b) $(A \cup B) \cup C = A \cup (B \cup C)$;
 
-TODO
+$\qquad A \subset B$
+\vspace{+6pt}
+
+$\Longleftrightarrow \; \forall \omega \in A, \omega \in B$
+\vspace{+6pt} 
+\hfill Definição de subconjunto 
+
+$\Longleftrightarrow \; \forall \omega \notin B, \omega \notin A$ 
+\vspace{+6pt} 
+\hfill Negando a afirmação
+
+$\Longleftrightarrow \; \forall \omega \in B^c, \omega \in A^c$ 
+\vspace{+6pt}
+
+$\Longleftrightarrow \; B^c \subset A^c$ 
+\vspace{+6pt}
+
+$\Longleftrightarrow \; A^c \supset B^c$
 
 ---
 
-$$
-(A \cup B) \cup C
-$$ 
-$$
-\{ x \;|\; (x \in A \vee x \in B) \vee x \in C \}
-$$ 
-$$
-\{ x \;|\; x \in A \vee (x \in B \vee x \in C) \}
-$$ 
-$$
-A \cup (B \cup C)
-$$
+$\qquad (A \cup B) \cup C$ 
+\vspace{+6pt}
+
+$\Longleftrightarrow \; \{ \omega \;|\; (\omega \in A \vee \omega \in B) \vee \omega \in C \}$
+\vspace{+6pt} 
+\hfill Definição de união
+
+$\Longleftrightarrow \; \{ \omega \;|\; \omega \in A \vee (\omega \in B \vee \omega \in C) \}$
+\vspace{+6pt} 
+\hfill operador $\vee$, "ou" é associativo.
+
+$\Longleftrightarrow \; A \cup (B \cup C)$ 
+\vspace{+6pt}
 :::
