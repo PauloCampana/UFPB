@@ -2,8 +2,7 @@
 format: pdf
 lang: pt
 title: Lista 1
-subtitle: Probabilidade I
-author: Paulo Campana
+subtitle: Probabilidade I - 2023.1
 callout-icon: false
 ---
 
@@ -16,13 +15,106 @@ callout-icon: false
 
 {{< pagebreak >}}
 
-<!--
 ::: callout-note
-# 
+# 19. Uma válvula a vácuo pode provir de três fabricantes, com probabilidades $p_1 = 0.25$, $p_2 = 0.50$ e $p_3 = 0.25$. As probabilidades de que, durante determinado período de tempo, a válvula funcione bem são, respectivamente, 0.1, 0.2 e 0.4 para cada um dos fabricantes. Calcule a probabilidade de que uma válvula escolhida ao acaso funcione bem durante o período de tempo especificado.
+
+|Válvula                                |$V_1$|$V_2$|$V_3$|
+|:--------------------------------------|:----|:----|:----|
+|$\p{\text{válvula}}$                   |0.25 |0.50 |0.25 |
+|$\pc{\text{funcionar}}{\text{válvula}}$|0.10 |0.20 |0.40 |
+
+$\quad \p{\text{funcionar}}$
+\vspace{+6pt}
+
+$= \p{\text{funcionar} \cap V_1} + \p{\text{funcionar} \cap V_2} + \p{\text{funcionar} \cap V_3}$
+\vspace{+6pt}
+
+$= \pc{\text{funcionar}}{V_1} \p{V_1} + \pc{\text{funcionar}}{V_2} \p{V_2} + \pc{\text{funcionar}}{V_3} \p{V_3}$
+\vspace{+6pt}
+
+$= 0.10 \cdot 0.25 + 0.20 \cdot 0.50 + 0.40 \cdot 0.25$
+\vspace{+6pt}
+
+$= 0.225$
+:::
+
+::: callout-note
+# 20. Três jornais A, B e C são publicados em uma cidade e uma recente pesquisa entre os leitores indica o seguinte: 20% lêem A; 26% lêem B; 14% lêem C; 8% lêem A e B, 5% lêem A e C; 2% lêem A, B e C e 4% lêem B e C. Para um adulto escolhido ao acaso, calcule a probabilidade de que: \newline a) Ele não leia qualquer dos jornais. \newline b) Ele leia exatamente um dos jornais. \newline c) Ele leia pelo menos um dos jornais.
+
+![](img/q19.png){width=180 fig-align="center"}
+
+a) $1 - 0.09 - 0.16 - 0.07 - 0.06 - 0.02 - 0.03 - 0.02 = 0.55$
+b) $0.09 + 0.16 + 0.07 = 0.32$
+c) $0.09 + 0.16 + 0.07 + 0.06 + 0.02 + 0.03 + 0.02 = 0.55$
 :::
 
 {{< pagebreak >}}
--->
+
+::: callout-note
+# 21. Uma fábrica produz uma peça através de duas operações: Inicialmente a peça é moldada numa máquina $M$ e, em seguida, passa por uma de duas impressoras, $I_1$ ou $I_2$, sendo que 70% das peças são impressas em $I_1$. A probabilidade de uma peça apresentar defeito de moldagem é 0.03. Além disso, a probabilidade de surgir um defeito de impressão é de 0.05 para $I_1$ e de 0.02 para $I_2$. Note que os defeitos de moldagem e de impressão são independentes entre si. No final de um dia, retira-se daprodução total da fábrica uma peça ao acaso. \newline a) Qual a probabilidade da peça apresentar um defeito qualquer? \newline b) Supondo que a peça apresenta um defeito de impressão, qual a probabilidade de ter sido impressa em $I_1$.
+
+$\p{\text{defeito de moldagem}} = 0.03$
+
+|Impressora                                           |$I_1$|$I_2$|
+|:----------------------------------------------------|:----|:----|
+|$\p{\text{impressora}}$                              |0.70 |0.30 |
+|$\pc{\text{defeito de impressão}}{\text{impressora}}$|0.05 |0.02 |
+
+$\quad \p{\text{defeito}}$
+\vspace{+6pt}
+
+$= \p{\text{defeito de moldagem} \cup \text{defeito de impressão}}$ 
+\vspace{+6pt}
+\hfill União disjunta
+
+$= \p{\text{defeito de moldagem}} + \p{\text{defeito de impressão}}$
+\vspace{+6pt}
+
+$= 0.03 + \p{\text{defeito de impressão} \cap I_1} + \p{\text{defeito de impressão} \cap I_2}$
+\vspace{+6pt}
+
+$= 0.03 + \pc{\text{defeito de impressão}}{I_1} \p{I_1} + \pc{\text{defeito de impressão}}{I_2} \p{I_2}$
+\vspace{+6pt}
+
+$= 0.03 + 0.05 \cdot 0.70 + 0.02 \cdot 0.30$
+\vspace{+6pt}
+
+$= 0.071$
+
+---
+
+$$
+\quad \pc{I_1}{\text{defeito de impressão}} =
+\dfrac{\p{I_1 \cap \text{defeito de impressão}}}{\p{\text{defeito de impressão}}} =
+$$
+$$
+\dfrac{\pc{\text{defeito de impressão}}{I_1} \p{I_1}}{\p{\text{defeito de impressão}}} =
+\dfrac{0.05 \cdot 0.70}{0.041} = 
+\dfrac{35}{41}
+$$
+:::
+
+{{< pagebreak >}}
+
+::: callout-note
+# 22. Em uma seleção para uma vaga de estatístico de uma grande empresa verificou-se que dos 100 candidatos 40 tinham experiência anterior e 30 possuíam curso de especialização. Vinte dos candidatos possuíam tanto experiência profissional como também algum curso de especialização. Escolhendo um candidato ao acaso, qual a probabilidade de que: \newline a) Ele tenha experiência ou algum curso de especialização? \newline b) Ele tenha experiência ou algum curso de especialização, mas não ambos? \newline c) Ele tenha experiência anterior, dado que ele tenha algum curso de especialização? \newline d) Ele não tenha nem experiência anterior nem curso de especialização? \newline e) Os eventos ter experiência anterior e possuir curso de especialização são independentes?
+
+Seja os eventos $A$: experiência anterior e $B$: curso de especialização, desenhando o diagrama de Venn com as quantidades de elementos de cada evento fica claro o cálculo das probabilidades.
+
+![](img/q22.png){width=200 fig-align="center"}
+
+a) $\p{A \cup B} = \p{A} + \p{B} - \p{A \cap B} = 0.4 + 0.3 - 0.2 = 0.5$ 
+
+b) $\p{(A - A \cap B) \cup (B - A \cap B)} = 0.2 + 0.1 = 0.3$
+
+c) $\pc{A}{B} = \dfrac{\p{A \cap B}}{\p{B}} = \dfrac{0.2}{0.3} = \dfrac{2}{3}$
+
+d) $\p{(A \cup B)^c} = 0.5$
+
+e) não pois $\pc{A}{B} \neq \p{A}$
+:::
+
+{{< pagebreak >}}
 
 ::: callout-note
 # 23. A gaveta de um aluno de Probabilidade I possui 8 pares de meia sendo 5 brancas e 3 pretas. No cesto de roupa suja encontramos 3 pares brancas e 4 pares pretas. O aluno utilizou dois pares de meia durante a semana e posteriormente colocou-as no cesto de roupa suja. Em seguida, um par de meias é retirado do cesto para ser lavada. Qual a probabilidade do par de meias ser branca?
