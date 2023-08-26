@@ -6,6 +6,10 @@ geometry:
   - right=1.25in
   - top=1in
   - bottom=1in
+bibliography: includes/bib.bibtex
+fig-cap-location: top
+echo: false
+warning: false
 ---
 
 ::: hidden
@@ -15,16 +19,23 @@ geometry:
 
 ![]("includes/ufpb.png"){height=100 fig-align=center}
 
-\sffamily
+::: {layout-ncol=1}
+UNIVERSIDADE FEDERAL DA PARAÍBA 
+
+CENTRO DE CIÊNCIAS EXATAS E DA NATUREZA 
+
+DEPARTAMENTO DE ESTATÍSTICA 
+
+DISCIPLINA: DEMOGRAFIA I 
+:::
+
+\vfill
+
 \begin{center}
-    UNIVERSIDADE FEDERAL DA PARAÍBA \\
-    CENTRO DE CIÊNCIAS EXATAS E DA NATUREZA \\
-    DEPARTAMENTO DE ESTATÍSTICA \\
-    DISCIPLINA: DEMOGRAFIA I \\
-    \vfill
-    \Large{INCLUIR TÍTULO DO RELATÓRIO E PERÍODO DE ANÁLISE DOS DADOS}
-    \vfill
+\Large{Estrutura conciliada e projeção populacional do Rio de Janeiro para os dados de 2011-2020}
 \end{center}
+
+\vfill
 
 **Docente:** \newline
 Everlane Suane de Araújo da Silva \newline
@@ -33,52 +44,355 @@ Paulo Ricardo Seganfredo Campana - 20210044220
 
 \vfill
 
-\begin{center}
-    \textbf{João Pessoa - PB} \\
-    \textbf{Setembro, 2023}
-\end{center}
+::: {layout-ncol=1}
+João Pessoa - PB
+
+Setembro, 2023
+:::
 
 \newpage
 
-\rmfamily
-Título do relatório 
+Estrutura conciliada e projeção populacional do Rio de Janeiro para os dados de 2011-2020
 
 ĸ \hfill Everlane Suane A. Silva^[Docente do Departamento de Estatística da Universidade Federal da Paraíba (UFPB); Pesquisadora do Laboratório de Estudos Demográficos (LED) do Departamento de Estatística da UFPB.] 
 
 ĸ \hfill Paulo Ricardo S. Campana^[Discente do curso de bacharelado em Estatística da UFPB.]
 
 ## RESUMO
-Apresenta de forma resumida a proposta investigativa descrita no trabalho. É elaborado de forma clara e objetiva em um único parágrafo com cerca de 250 a 300 palavras e espaçamento simples.
+Neste relatório será apresentado uma análise em relação os índices demográficos e a população em geral do Estado do Rio de Janeiro, em específico sobre os índices de natalidade, mortalidade e taxa de crescimento populacional do período 2011 a 2020 e projeção da população do Estado para até 2030, com base nas contagens dos censos de 2000 e 2010. será explicado a metodologia e o passo a passo da obtenção dos índices e projeções com base nos conceitos vistos em aula e os materiais de referência @paes e slides da aula. Será abordado três métodos de projeção populacional: os modelos aritiméticos, geométricos e logísticos, suas comparações com as previsões do IBGE de 2018 para toda a população e separadamente para homens e mulheres. Os dados de população utilizados para esta análise foram obtidos da projeção de 2018 encontradas no site do IBGE e as informações sobre natalidade e mortalidade proveem do sistema TABNET do DATASUS, que organiza dados do Sistema de Informações sobre Nascidos Vivos e Sistema de Informações sobre Mortalidade. Por fim os resultados da pesquisa são apresentados por meio de gráficos e tabelas e discutimos sobre oque as tais estatísticas apresentadas no trabalho irão significar para o futuro da composição demográfica do Rio de Janeiro e seu impacto nas demais áreas.
 
-No resumo sistematizamos as ideias principais de todas as sessões do documento.
-
-Palavras-chave: identifique no máximo 3 palavras que resume as ideias principais tratadasno texto.
+Palavras-chave: Demografia, População, Projeção.
 
 ## INTRODUÇÃO
+<!--
 O texto da introdução deverá conter os seguintes elementos de preferência seguindo essa ordem em forma textual.
-
 1º momento: apresentação do tema
-
 2º momento: um resumo dos objetivos do seu trabalho
-
 3º momento: um resumo da metodologia.
-
 4º momento: como o trabalho está estruturado
-
 Normalmente a introdução é uma das últimas coisas que se faz em qualquer trabalho.
-
-## PROCEDIMENTO METODOLÓGICO
-Exposição e descrição da metodologia adotada, técnicas e/ou procedimentos de análise, instrumentos, e outros itens referentes ao desenvolvimento do estudo.
+-->
 
 \newpage
 
+## PROCEDIMENTO METODOLÓGICO
+A composição deste documento foi feita com uma mistura de "Markdown" e \LaTeX, as tabelas e gráficos foram criadas atravez da linguagem `R` e apresentadas pelo software livre de publicação científica "Quarto" de forma que todo conteúdo do relatório seja reproduzível.
+
+Na a @tbl-estrutura de estrutura concilidada da população, temos as variáveis de população, nascimentos e óbitos, para a construção dos índices das taxas brutas de natalidade e mortalidade é importante a normalização das quantidades totais de população, nascimentos e óbitos do período estudado para população, nascimentos e óbitos médios durante um ano, dividindo as quantidades totais pelo período de tempo de 10 anos. Tais medidas são referentes ao período de 1º de julho dos anos de 2011 a 2020 e foram obtidas pelo sistema TABNET, @datasus_nasc, @datasus_obti, com isso temos:
+
+### Taxa Bruta de Natalidade e Taxa Bruta de Mortalidade
+São dois indicadores altamente relacionados ao crescimento populacional, aqui representados na tabela em unidades por mil, é a razão entre a quantidade de nascimentos e óbitos e a quantidade total da população num período de um ano.
+
+::: {layout-ncol=2}
+$$
+\text{TBN} = \dfrac{\text{Nascimentos médios}}{\text{População média}}
+$$
+
+$$
+\text{TBM} = \dfrac{\text{Óbitos médios}}{\text{População média}}
+$$
+:::
+
+### Taxa de Crescimento Natural
+Juntando as Taxas Brutas de Natalidade e Mortalidade temos a Taxa de Crescimento Natural, que expressa a mudança populacional decorrida por causas internas e não por migração, pode ser calculada de maneira mais simples subtraindo a TBM da TBN, porém aqui ela é medida em unidades por cem. Pode ser interpretada como a quantidade relativa de mudança da população, com valores negativos indicando decrescimento.
+
+$$
+\text{TCN} = \dfrac{\text{Nascimentos médios - Óbitos médios}}{\text{População média}} = \text{TBN} - \text{TBM} 
+$$
+
+### Taxa de Crescimento Geométrico
+Comparado com a Taxa de Crescimento Natural, esta não mais atua em relação aos nascimentos e óbitos, mas sim a diferença dos totais populacionais durante o período de tempo estudado, uma boa estimativa da quantidade populacional do ano seguinte é adicionar a população atual a ela vezes essa taxa, como usada no modelo de projeção geométrico.
+
+$$
+\text{TCG} = \sqrt[10]{\dfrac{\text{Populção 2020}}{\text{População 2011}}} - 1
+$$
+
+\newpage 
+
+Para as projeções populacionais, usaremos os modelos aritimético, geométrico e logístico, que fazem diferentes suposições sobre o comportamento do crescimento populacional, foi utilizado as quantidades populacionais dos censos de 2000 e 2010 para estimação dos parâmetros dos modelos, exceto o modelo logístico, no qual é necessário 3 observações, foi então incluído a projeção da população de 2005, as projeções foram feitas começando do ano de 2010. Tais medidas são referentes ao período de 1º de julho e foram obtidas no site do @IBGE_proj.
+
+### Método Aritimético
+Supõe que o crescimento populacional é aditivo de ano em ano e constante, dado pelo parâmetro $r$ estimado na @eq-r-arit, pode-se então projetar a população pada um dado momento com a @eq-proj-arit.
+
+$$
+\hat r = \dfrac{P_1 - P_0}{t \cdot P_1 }
+$$ {#eq-r-arit}
+
+$$
+P_t = P_1 + (P_1 \cdot r) t
+$$ {#eq-proj-arit}
+
+### Método Geométrico
+Supõe que o crescimento populacional é multiplicativo de ano em ano e constante, dado pelo parâmetro $r$ estimado na @eq-r-geom, pode-se então projetar a população pada um dado momento com a @eq-proj-geom.
+
+$$
+\hat r = \exp \left[ \dfrac{1}{t} \ln \left( \dfrac{P_1}{P_0} \right) \right] - 1
+$$ {#eq-r-geom}
+
+$$
+P_t = P_1 \cdot (1 + r)^t
+$$ {#eq-proj-geom}
+
+### Método Logístico
+Não assume taxa de crescimento populacional constante, mas sim de que no futuro, a população atingirá um tamanho máximo $P_S$ em que o crescimento será nulo. é necessário estimar 3 parâmetros: $P_S$, $c$ e $k$, ter a quantidade populacional em 3 períodos de tempo equidistantes $P_0$, $P_1$ e $P_2$, e satisfazer a desigualdade $P_1^2 > P_0 \cdot P_2$, que, usando as populações de 2000, 2005 e 2010, é verdadeira. Assim, a projeção é dada pela @eq-proj-logi e as estimativas dos parâmetros pela @eq-par-logi.
+
+$$
+P_t = \dfrac{P_S}{1 + c \cdot e^{k t}}
+$$ {#eq-proj-logi}
+
+\newpage
+
+$$
+\hat{P_S} = \dfrac{2 P_0 P_1 P_2 - P_1^2 (P_0 + P_2)}{P_0 P_2 - P_1^2} \\
+$$
+$$
+\hat c = \dfrac{\hat{P_S} - P_0}{P_0} \\
+$$ {#eq-par-logi}
+$$
+\hat k = \dfrac{1}{t_2 - t_2} \ln \left( \dfrac{P_0 (\hat{P_S} - P_1)}{P_1 (\hat{P_s} - P_0)} \right)
+$$ 
+
 ## RESULTADOS E DISCUSSÃO
+
+```{r}
+#| label: tbl-estrutura
+#| tbl-cap: Estrutura conciliada da população, segundo os indicadores do crescimento demográfico no período 2011 - 2020, no Estado do Rio de Janeiro
+library(tidyverse)
+library(knitr)
+dados_indi <- read_csv("includes/dados_indi.csv")
+população <- dados_indi$população
+natalidade <- dados_indi$natalidade
+mortalidade <- dados_indi$mortalidade
+tibble(
+    nome = c(
+        "População 2011",
+        "População 2020",
+        "Incremento total",
+        "Óbitos entre 2011 e 2020",
+        "Nascimentos entre 2011 e 2020",
+        "Óbitos médios entre 2011 e 2020",
+        "Nascimentos médios entre 2011 e 2020",
+        "População média entre 2011 e 2020",
+        "Taxa Bruta de Natalidade (‰)",
+        "Taxa Bruta de Mortalidade (‰)",
+        "Taxa de Crescimento Natural (%)",
+        "Taxa de Crescimento Geométrico (%)"
+    ),
+    valor = c(
+        população[1],
+        população[10],
+        população[10] - população[1],
+        sum(mortalidade),                                 
+        sum(natalidade),
+        round(mean(mortalidade), 0),                      
+        round(mean(natalidade), 0),
+        round(mean(população), 0),
+        round(mean(natalidade) / mean(população) * 1000, 3), 
+        round(mean(mortalidade) / mean(população) * 1000, 3), 
+        round((mean(natalidade) - mean(mortalidade)) / mean(população) * 100, 3),
+        round(((população[10] / população[1])^0.1 - 1) * 100 , 3)
+    )
+) |> mutate(
+        valor = sub(",000", "", format(valor, big.mark = ".", decimal.mark = ","))
+    ) |> 
+    rename(
+        `População e indicadores de crescimento demográfico` = nome,
+        `Estrutura conciliatória` = valor
+    ) |> kable(align = "lr")
+```
+
+\vspace{-20pt}
+Fonte: IBGE/Diretoria de Pesquisas. Coordenação de População e Indicadores Sociais. Gerência de Estudos e Análises da Dinâmica Demográfica
+\vspace{-6pt}
+
+MS/SVS/DASIS - Sistema de Informações sobre Nascidos Vivos - SINASC
+\vspace{-6pt}
+
+MS/SVS/CGIAE - Sistema de Informações sobre Mortalidade - SIM
+
+Com a @tbl-estrutura, vemos que no período 2011-2020, houve um acréscimo de 771.046 habitantes, um aumento de cerca de 4,7% da população, o número de nascimentos foi um pouco menos que o dobro do número de óbitos e as Taxas de Crescimento Natural e Geométrico são similares, indicando um crescimento bastante linear.
+
+\newpage
+
+```{r}
+dados_proj <- read_csv("includes/dados_proj.csv")
+
+r_arit <- function(Pn, P0, t) {
+    (Pn - P0) / (Pn * t)
+}
+proj_arit <- function(P0, r, t) {
+    P0 * (1 + r * (t - 2010))
+}
+r_geom <- function(Pn, P0, t) {
+    exp(log(Pn / P0) / t) - 1
+}
+proj_geom <- function(P0, r, t) {
+    P0 * (1 + r)^(t - 2010)
+}
+PS_logi <- function(P0, P1, P2) {
+    (2 * P0 * P1 * P2 - P1^2 * (P0 + P2)) / (P0 * P2 - P1^2)
+}
+c_logi <- function(PS, P0) {
+    (PS - P0) / P0
+}
+k_logi <- function(P0, P1, PS, t1, t2) {
+    log((P0 * (PS - P1)) / (P1 * (PS - P0))) / (t2 - t1)
+}
+proj_logi <- function(PS, c, k, t) {
+    PS / (1 + c * exp(k * (t - 2000)))
+}
+
+total_r1 <- r_arit(dados_proj$total[11], dados_proj$total[1], t = 10)
+total_r2 <- r_geom(dados_proj$total[11], dados_proj$total[1], t = 10)
+total_PS <- PS_logi(dados_proj$total[1], dados_proj$total[6], dados_proj$total[11])
+total_c <- c_logi(total_PS, dados_proj$total[1]) 
+total_k <- k_logi(dados_proj$total[1], dados_proj$total[6], total_PS, t1 = 2005, t2 = 2010) 
+
+homens_r1 <- r_arit(dados_proj$homens[11], dados_proj$homens[1], t = 10)
+homens_r2 <- r_geom(dados_proj$homens[11], dados_proj$homens[1], t = 10)
+homens_PS <- PS_logi(dados_proj$homens[1], dados_proj$homens[6], dados_proj$homens[11])
+homens_c <- c_logi(homens_PS, dados_proj$homens[1]) 
+homens_k <- k_logi(dados_proj$homens[1], dados_proj$homens[6], homens_PS, t1 = 2005, t2 = 2010) 
+
+mulheres_r1 <- r_arit(dados_proj$mulheres[11], dados_proj$mulheres[1], t = 10)
+mulheres_r2 <- r_geom(dados_proj$mulheres[11], dados_proj$mulheres[1], t = 10)
+mulheres_PS <- PS_logi(dados_proj$mulheres[1], dados_proj$mulheres[6], dados_proj$mulheres[11])
+mulheres_c <- c_logi(mulheres_PS, dados_proj$mulheres[1]) 
+mulheres_k <- k_logi(dados_proj$mulheres[1], dados_proj$mulheres[6], mulheres_PS, t1 = 2005, t2 = 2010) 
+
+proj <- tibble(
+    ano = 2000:2030,
+    Total_arit = proj_arit(dados_proj$total[11], total_r1, t = ano),
+    Total_geom = proj_geom(dados_proj$total[11], total_r2, t = ano),
+    Total_logi = proj_logi(total_PS, total_c, total_k, t = ano),
+    Total_IBGE = dados_proj$total,
+    Homens_arit = proj_arit(dados_proj$homens[11], homens_r1, t = ano),
+    Homens_geom = proj_geom(dados_proj$homens[11], homens_r2, t = ano),
+    Homens_logi = proj_logi(homens_PS, homens_c, homens_k, t = ano),
+    Homens_IBGE = dados_proj$homens,
+    Mulheres_arit = proj_arit(dados_proj$mulheres[11], mulheres_r1, t = ano),
+    Mulheres_geom = proj_geom(dados_proj$mulheres[11], mulheres_r2, t = ano),
+    Mulheres_logi = proj_logi(mulheres_PS, mulheres_c, mulheres_k, t = ano),
+    Mulheres_IBGE = dados_proj$mulheres,
+)
+```
+
+```{r}
+#| label: tbl-par
+#| tbl-cap: Estimativa dos parâmetros dos modelos de projeção populacional no Estado do Rio de Janeiro.
+tibble(
+    Modelo = c(
+        "aritimético",
+        "geométrico",
+        "logístico",
+        "logístico",
+        "logístico"
+    ),
+    Parâmetro = c(
+        "$r$",
+        "$r$",
+        "$P_s$",
+        "$c$",
+        "$k$"
+    ),
+    Total = c(
+        total_r1, 
+        total_r2,
+        total_PS,
+        total_c,
+        total_k 
+    ),
+    Mulheres = c(
+        mulheres_r1, 
+        mulheres_r2,
+        mulheres_PS,
+        mulheres_c,
+        mulheres_k 
+    ),
+        Homens = c(
+        homens_r1, 
+        homens_r2,
+        homens_PS,
+        homens_c,
+        homens_k 
+    )
+) |> mutate(across(
+        c(Total, Homens, Mulheres),
+        \(x) {
+            format(x, digits = 3, big.mark = ".", decimal.mark = ",", scientific = FALSE) |> 
+                sub(",72106", "", x = _) |> 
+                sub(",94603", "", x = _) |> 
+                sub(",86786", "", x = _)
+        }
+    )) |> 
+    kable(align = "llrrr")
+```
+
+```{r}
+#| label: tbl-proj
+#| tbl-cap: Projeção para populacional total no Estado do Rio de Janeiro usando os modelos aritimético, geométrico e logístico, junto da projeção do IBGE.
+proj |> 
+    select(
+        Ano = ano,
+        Aritimética = Total_arit,
+        Geométrica = Total_geom,
+        Logística = Total_logi,
+        IBGE = Total_IBGE
+    ) |> 
+    kable()
+```
+
+```{r}
+#| out-width: 100%
+#| label: fig-proj
+#| fig-height: 7.5
+#| fig-pos: h!
+#| fig-cap: Projeção populacional no Estado do Rio de Janeiro usando os modelos aritimético, geométrico e logístico, junto da projeção do IBGE.
+proj |> 
+    pivot_longer(-ano) |> 
+    separate_wider_delim(name, "_", names_sep = "_") |> 
+    mutate(
+        value = value / 1000,
+        name_2 = factor(name_2, levels = c("arit", "geom", "logi", "IBGE"))
+    ) |> 
+    ggplot(aes(x = ano, y = value, color = name_2)) +
+    geom_line() +
+    facet_grid(rows = vars(fct_rev(name_1)), scales = "free") +
+    scale_color_manual(
+       values = c("#46307EFF", "#26AD81FF", "#FDE725FF", "#00000080"),
+       labels = c("Aritimética", "Geométrica", "Logística", "IBGE")
+    ) +
+    scale_y_continuous(
+        n.breaks = 3,
+        labels = \(x) format(x, scientific = FALSE, big.mark = ".", decimal.mark = ",")) +
+    labs(
+        x = "Tempo (ano)",
+        y = "Projeção populacional (milhares de habitantes)",
+        color = "Projeção"
+    ) +
+    theme_bw() +
+    theme(legend.position = "top")
+```
+
+A partir da @fig-proj, vemos que todas as projeções são iguais para os anos 2000 e 2010 pois foi usado as populações destes anos para estimar os modelos. As projeções aritimética e geométrica são similares, porém pela natureza multiplicativa, a previsão geométrica será mais elevada quanto mais distante do tempo inicial.
+
+As projeções logística e do IBGE são muito parecidas, e comparadas com a aritimética e geométrica, começam a desacelerar no período de projeção, pois o modelo logístico assume um valor máximo para população que será atingido assintóticamente, valor esse de $P_S = 18.056.311$ habitantes para o Rio de Janeiro segundo a @tbl-par. 
+
+<!--
 Exposição e discussão, de forma objetiva, enfatizando os resultados mais relevantes, que poderão ser exemplificados por meio de gráficos, tabelas, figuras, associados a argumentações teóricas (se for o caso). As atividades desenvolvidas no período devem ser destacadas e confrontados com aquelas propostas no plano original, justificando-se, caso seja pertinente, as limitações ocorridas e/ou as alterações realizadas. As discussões devem ser situadas e fundamentadas no contexto da abordagem teórica pertinente.
+-->
 
 ## CONCLUSÃO
+<!--
 Exposição com base nos resultados obtidos, evitando-se a simples repetição do que já foi apresentado nas discussões. Na elaboração desta seção, convém retomar os objetivos de modo a evidenciar se foram ou não alcançados, apresentando os possíveis desdobramentos do estudo.
+-->
 
 ## REFERÊNCIAS
-Usar a ABNT NBR 6023
 
+::: {#refs}
+:::
+
+<!--
+Usar a ABNT NBR 6023
 Este modelo segue as orientações da Pró-Reitoria de Pesquisa (PROPESQ)
+-->
