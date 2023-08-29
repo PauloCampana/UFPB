@@ -59,11 +59,17 @@ Estrutura conciliada e projeção populacional do Rio de Janeiro para os dados d
 ĸ \hfill Paulo Ricardo S. Campana^[Discente do curso de bacharelado em Estatística da UFPB.]
 
 ## RESUMO
-Neste relatório será apresentado uma análise em relação os índices demográficos e a população em geral do Estado do Rio de Janeiro, em específico sobre os índices de natalidade, mortalidade e taxa de crescimento populacional do período 2011 a 2020 e projeção da população do Estado para até 2030, com base nas contagens dos censos de 2000 e 2010. será explicado a metodologia e o passo a passo da obtenção dos índices e projeções com base nos conceitos vistos em aula e os materiais de referência @paes e slides da aula. Será abordado três métodos de projeção populacional: os modelos aritiméticos, geométricos e logísticos, suas comparações com as previsões do IBGE de 2018 para toda a população e separadamente para homens e mulheres. Os dados de população utilizados para esta análise foram obtidos da projeção de 2018 encontradas no site do IBGE e as informações sobre natalidade e mortalidade proveem do sistema TABNET do DATASUS, que organiza dados do Sistema de Informações sobre Nascidos Vivos e Sistema de Informações sobre Mortalidade. Por fim os resultados da pesquisa são apresentados por meio de gráficos e tabelas e discutimos sobre oque as tais estatísticas apresentadas no trabalho irão significar para o futuro da composição demográfica do Rio de Janeiro e seu impacto nas demais áreas.
+Neste relatório será apresentado uma análise em relação os índices demográficos e a população em geral do Estado do Rio de Janeiro, em específico sobre os índices de natalidade, mortalidade e Taxas de crescimento populacional do período 2011 a 2020 e projeção da população do Estado para até 2030, com base nas contagens dos censos de 2000 e 2010. Será explicado a metodologia e o passo a passo da obtenção dos índices e projeções com base nos conceitos vistos e discutidos em aula e os materiais de referência @paes. Será abordado três métodos de projeção populacional: os modelos aritiméticos, geométricos e logísticos, suas comparações com as previsões do IBGE para toda a população e separadamente para homens e mulheres. Os dados de população utilizados para esta análise foram obtidos da projeção de 2018 encontradas no site do IBGE, as informações sobre natalidade e mortalidade proveem do sistema TABNET do DATASUS, que organiza dados do Sistema de Informações sobre Nascidos Vivos e Sistema de Informações sobre Mortalidade. Por fim os resultados da pesquisa são apresentados por meio de gráficos e tabelas e discutimos sobre oque as tais estatísticas apresentadas no trabalho irão significar para o futuro da composição demográfica do Rio de Janeiro e seu impacto nas demais áreas.
 
 Palavras-chave: Demografia, População, Projeção.
 
 ## INTRODUÇÃO
+O estudo da população dos Estados e municípios Brasileiros é de fato importante para o planejamento público, visto que é garantido por lei a realização períodica do censo demográfico para fins de distribuição de verbas federais para os Estados e municípios, além de que as demais informações obtidas no censo ajudam na tomada de decisão de políticas públicas, como investimentos em educação, saúde e previdência social.
+
+Este trabalho tem como objetivo apresentar resultados referentes ao crescimento populacional no Rio de Janeiro e seu comportamento, visando entender a composição demográfica atual e futura através da tabela de estrutura concilidada da população e diferentes métodos de projeção populacional, será apresentado a metodologia da elaboração de tais resultados, explicando conceitos e fórmulas para obtenção de demais indicadores e modelos utilizados.
+
+Após isso, mostrarei os resultados da análise e interpretarei os principais fatos que me chamaram atenção, para que por fim haja uma conclusão sobre as informações obtidas no estudo e seus possíveis impactos no investimento de dinheiro público. 
+
 <!--
 O texto da introdução deverá conter os seguintes elementos de preferência seguindo essa ordem em forma textual.
 1º momento: apresentação do tema
@@ -76,7 +82,7 @@ Normalmente a introdução é uma das últimas coisas que se faz em qualquer tra
 \newpage
 
 ## PROCEDIMENTO METODOLÓGICO
-A composição deste documento foi feita com uma mistura de "Markdown" e \LaTeX, as tabelas e gráficos foram criadas atravez da linguagem `R` e apresentadas pelo software livre de publicação científica "Quarto" de forma que todo conteúdo do relatório seja reproduzível.
+A composição deste documento foi feita com uma mistura de Markdown e \LaTeX, as tabelas e gráficos foram criadas na linguagem de programação `R` e apresentadas pelo software livre de publicação científica "Quarto" de forma que todo conteúdo do relatório seja reproduzível.
 
 Na a @tbl-estrutura de estrutura concilidada da população, temos as variáveis de população, nascimentos e óbitos, para a construção dos índices das taxas brutas de natalidade e mortalidade é importante a normalização das quantidades totais de população, nascimentos e óbitos do período estudado para população, nascimentos e óbitos médios durante um ano, dividindo as quantidades totais pelo período de tempo de 10 anos. Tais medidas são referentes ao período de 1º de julho dos anos de 2011 a 2020 e foram obtidas pelo sistema TABNET, @datasus_nasc, @datasus_obti, com isso temos:
 
@@ -109,7 +115,7 @@ $$
 
 \newpage 
 
-Para as projeções populacionais, usaremos os modelos aritimético, geométrico e logístico, que fazem diferentes suposições sobre o comportamento do crescimento populacional, foi utilizado as quantidades populacionais dos censos de 2000 e 2010 para estimação dos parâmetros dos modelos, exceto o modelo logístico, no qual é necessário 3 observações, foi então incluído a projeção da população de 2005, as projeções foram feitas começando do ano de 2010. Tais medidas são referentes ao período de 1º de julho e foram obtidas no site do @IBGE_proj.
+Para as projeções populacionais, usaremos os modelos aritimético, geométrico e logístico, que fazem diferentes suposições sobre o comportamento do crescimento populacional, para cada modelo, foi feito três projeções, para homens, mulheres e total populacional, utilizamos as quantidades populacionais dos censos de 2000 e 2010 para estimação dos parâmetros dos modelos, exceto o modelo logístico, no qual é necessário 3 observações, foi então incluído a projeção da população de 2005, as projeções foram feitas começando do ano de 2010. Tais medidas são referentes ao período de 1º de julho e foram obtidas no site do @IBGE_proj.
 
 ### Método Aritimético
 Supõe que o crescimento populacional é aditivo de ano em ano e constante, dado pelo parâmetro $r$ estimado na @eq-r-arit, pode-se então projetar a população pada um dado momento com a @eq-proj-arit.
@@ -210,7 +216,7 @@ MS/SVS/DASIS - Sistema de Informações sobre Nascidos Vivos - SINASC
 
 MS/SVS/CGIAE - Sistema de Informações sobre Mortalidade - SIM
 
-Com a @tbl-estrutura, vemos que no período 2011-2020, houve um acréscimo de 771.046 habitantes, um aumento de cerca de 4,7% da população, o número de nascimentos foi um pouco menos que o dobro do número de óbitos e as Taxas de Crescimento Natural e Geométrico são similares, indicando um crescimento bastante linear.
+Com a @tbl-estrutura, vemos que no período 2011-2020, houve um acréscimo de 771.046 habitantes no Estado, um aumento de cerca de 4,7% da população, o número de nascimentos foi um pouco menos que o dobro do número de óbitos: aproximadamente 2,2 milhões de nascimentos e 1,4 milhões de óbitos. As Taxas de Crescimento Natural e Geométrico são similares, pouco abaixo de 0,5% indicando um crescimento bastante linear para esse período.
 
 \newpage
 
@@ -330,7 +336,7 @@ tibble(
 
 ```{r}
 #| label: tbl-proj
-#| tbl-cap: Projeção para populacional total no Estado do Rio de Janeiro usando os modelos aritimético, geométrico e logístico, junto da projeção do IBGE.
+#| tbl-cap: Projeção para população total e por sexo no Estado do Rio de Janeiro usando os modelos aritimético, geométrico e logístico, junto da projeção do IBGE.
 proj |> 
     select(
         Ano = ano,
@@ -347,14 +353,11 @@ proj |>
 #| label: fig-proj
 #| fig-height: 7.5
 #| fig-pos: h!
-#| fig-cap: Projeção populacional no Estado do Rio de Janeiro usando os modelos aritimético, geométrico e logístico, junto da projeção do IBGE.
+#| fig-cap: Projeção para população total e por sexo no Estado do Rio de Janeiro usando os modelos aritimético, geométrico e logístico, junto da projeção do IBGE.
 proj |> 
     pivot_longer(-ano) |> 
     separate_wider_delim(name, "_", names_sep = "_") |> 
-    mutate(
-        value = value / 1000,
-        name_2 = factor(name_2, levels = c("arit", "geom", "logi", "IBGE"))
-    ) |> 
+    mutate(name_2 = factor(name_2, levels = c("arit", "geom", "logi", "IBGE"))) |> 
     ggplot(aes(x = ano, y = value, color = name_2)) +
     geom_line() +
     facet_grid(rows = vars(fct_rev(name_1)), scales = "free") +
@@ -367,11 +370,11 @@ proj |>
         labels = \(x) format(x, scientific = FALSE, big.mark = ".", decimal.mark = ",")) +
     labs(
         x = "Tempo (ano)",
-        y = "Projeção populacional (milhares de habitantes)",
+        y = "Projeção populacional (habitantes)",
         color = "Projeção"
     ) +
     theme_bw() +
-    theme(legend.position = "top")
+    theme(legend.position = "top", axis.text.y = element_text(angle = 60))
 ```
 
 A partir da @fig-proj, vemos que todas as projeções são iguais para os anos 2000 e 2010 pois foi usado as populações destes anos para estimar os modelos. As projeções aritimética e geométrica são similares, porém pela natureza multiplicativa, a previsão geométrica será mais elevada quanto mais distante do tempo inicial.
@@ -383,6 +386,7 @@ Exposição e discussão, de forma objetiva, enfatizando os resultados mais rele
 -->
 
 ## CONCLUSÃO
+Planalto
 <!--
 Exposição com base nos resultados obtidos, evitando-se a simples repetição do que já foi apresentado nas discussões. Na elaboração desta seção, convém retomar os objetivos de modo a evidenciar se foram ou não alcançados, apresentando os possíveis desdobramentos do estudo.
 -->
