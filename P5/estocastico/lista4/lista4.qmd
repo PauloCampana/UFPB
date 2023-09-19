@@ -4,7 +4,7 @@ lang: pt
 title: Atividade 4
 subtitle: Particionamento do espaço de estados
 author: Paulo Ricardo Seganfredo Campana
-date: 2023-08-21
+date: 2023-08-28
 date-format: long
 callout-icon: false
 highlight-style: github
@@ -133,13 +133,13 @@ simular_de_0 <- function(n, transição) {
 }
 
 absorção <- function(C, transição) {
-    simular_de_0(50, transição) |>   # Simular até X50
-    replicate(n = 10000) |>          # 10000 vezes
-    apply(                           # para cada simulação
+    simular_de_0(50, transição) |> # Simular até X50
+    replicate(n = 10000) |>        # 10000 vezes
+    apply(                         # para cada simulação
         MARGIN = 2,
-        \(col) any(C %in% col[-1])   # TRUE se C está na cadeia
+        \(col) any(C %in% col)     # TRUE se C está na cadeia
     ) |>
-    mean()                           # proporção de TRUEs
+    mean()                         # proporção de TRUEs
 }
 ```
 
@@ -169,13 +169,13 @@ colnames(P2) <- rownames(P2) <- 0:5
 
 ```{r}
 #| collapse: true
+set.seed(65)
+
 absorção(c(1,2,3), P1)
 absorção(c(4,5,6), P1)
-absorção(0, P1)
 
 absorção(c(1,2,3), P2)
 absorção(c(4,5), P2)
-absorção(0, P2)
 ```
 :::
 
@@ -212,6 +212,10 @@ $$
 $$
 \p[^0]{y,y} + \sum_{n = 1}^\infty \p[^n]{y,y} = 
 \sum_{n = 0}^\infty \p[^n]{y,y}
+$$
+
+$$
+\sum_{n = 0}^\infty \p[^n]{x,y} \leqslant \sum_{n = 0}^\infty \p[^n]{y,y}
 $$
 :::
 
