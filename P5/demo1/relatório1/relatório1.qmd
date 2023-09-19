@@ -32,7 +32,7 @@ DISCIPLINA: DEMOGRAFIA I
 \vfill
 
 \begin{center}
-\Large{Estrutura conciliada e projeção populacional do Rio de Janeiro para os dados de 2011-2020}
+\Large{Estrutura conciliada 2011-2020 e projeção populacional 2000-2030 do Rio de Janeiro}
 \end{center}
 
 \vfill
@@ -52,14 +52,14 @@ Setembro, 2023
 
 \newpage
 
-Estrutura conciliada e projeção populacional do Rio de Janeiro para os dados de 2011-2020
+Estrutura conciliada 2011-2020 e projeção populacional 2000-2030 do Rio de Janeiro
 
 ĸ \hfill Everlane Suane A. Silva^[Docente do Departamento de Estatística da Universidade Federal da Paraíba (UFPB); Pesquisadora do Laboratório de Estudos Demográficos (LED) do Departamento de Estatística da UFPB.] 
 
 ĸ \hfill Paulo Ricardo S. Campana^[Discente do curso de bacharelado em Estatística da UFPB.]
 
 ## RESUMO
-Neste relatório será apresentado uma análise em relação os índices demográficos e a população em geral do Estado do Rio de Janeiro, em específico sobre os índices de natalidade, mortalidade e Taxas de crescimento populacional do período 2011 a 2020 e projeção da população do Estado para até 2030, com base nas contagens dos censos de 2000 e 2010. Será explicado a metodologia e o passo a passo da obtenção dos índices e projeções com base nos conceitos vistos e discutidos em aula e os materiais de referência @paes. Será abordado três métodos de projeção populacional: os modelos aritiméticos, geométricos e logísticos, suas comparações com as previsões do IBGE para toda a população e separadamente para homens e mulheres. Os dados de população utilizados para esta análise foram obtidos da projeção de 2018 encontradas no site do IBGE, as informações sobre natalidade e mortalidade proveem do sistema TABNET do DATASUS, que organiza dados do Sistema de Informações sobre Nascidos Vivos e Sistema de Informações sobre Mortalidade. Por fim os resultados da pesquisa são apresentados por meio de gráficos e tabelas e discutimos sobre oque as tais estatísticas apresentadas no trabalho irão significar para o futuro da composição demográfica do Rio de Janeiro e seu impacto nas demais áreas.
+Neste relatório será apresentado uma análise em relação os índices demográficos e a população em geral do Estado do Rio de Janeiro, em específico sobre os índices de natalidade, mortalidade e Taxas de crescimento populacional do período 2011 a 2020 e projeção da população do Estado para até 2030, com base nas contagens dos censos de 2000 e 2010. Será explicado a metodologia e o passo a passo da obtenção dos índices e projeções com base nos conceitos vistos e discutidos em aula e os materiais de referência @paes. Será abordado três métodos de projeção populacional: os modelos aritiméticos, geométricos e logísticos, suas comparações com as previsões do IBGE para toda a população e separadamente para homens e mulheres. Os dados de população utilizados para esta análise foram obtidos da projeção de 2013 encontradas no site do IBGE, as informações sobre natalidade e mortalidade proveem do sistema TABNET do DATASUS, que organiza dados do Sistema de Informações sobre Nascidos Vivos e Sistema de Informações sobre Mortalidade. Por fim os resultados da pesquisa são apresentados por meio de gráficos e tabelas e discutimos sobre oque as tais estatísticas apresentadas no trabalho irão significar para o futuro da composição demográfica do Rio de Janeiro e seu impacto nas demais áreas.
 
 Palavras-chave: Demografia, População, Projeção.
 
@@ -216,7 +216,7 @@ MS/SVS/DASIS - Sistema de Informações sobre Nascidos Vivos - SINASC
 
 MS/SVS/CGIAE - Sistema de Informações sobre Mortalidade - SIM
 
-Com a @tbl-estrutura, vemos que no período 2011-2020, houve um acréscimo de 771.046 habitantes no Estado, um aumento de cerca de 4,7% da população, o número de nascimentos foi um pouco menos que o dobro do número de óbitos: aproximadamente 2,2 milhões de nascimentos e 1,4 milhões de óbitos. As Taxas de Crescimento Natural e Geométrico são similares, pouco abaixo de 0,5% indicando um crescimento bastante linear para esse período.
+Com a @tbl-estrutura, vemos que no período 2011-2020, houve um acréscimo de 771.046 habitantes no Estado, um aumento de cerca de 4,7% da população, o número de nascimentos foi um pouco menos que o dobro do número de óbitos: aproximadamente 2,2 milhões de nascimentos e 1,4 milhões de óbitos. As Taxas de Crescimento Natural e Geométrico são similares, pouco abaixo de 0,5%, indicando um crescimento bastante linear para esse período.
 
 \newpage
 
@@ -386,7 +386,12 @@ Exposição e discussão, de forma objetiva, enfatizando os resultados mais rele
 -->
 
 ## CONCLUSÃO
-Planalto
+Com isso em mente, vemos que na decada atual, a tendencia do crescimento populacional é desacelerar, enquanto que para 2030 em frente, um crescimento quase nulo, a população do Rio de Janeiro atingirá um planalto.
+
+Muito provavelmente no futuro, a construção de novas escolas públicas, por exemplo, irá diminuir, pois com a população se mantendo constante, em específicio a população infantil e adolescente, as instituições existentes irão saturar a demanda por educação, sendo assim verba pública denstinada ao aprimoramento destas insituições, não a construção de novas escolas.
+
+Por outro lado, deve haver um crescimento no investimento público destinado aos idosos, visto que com a desaceleração do crescimento populacional, a cada ano que passa a população do Estado vai ficando mais velha. Será necessário uma maior verba para a saúde e combate a doenças que atingem mais a velha idade como Cancer e Alzheimer.
+
 <!--
 Exposição com base nos resultados obtidos, evitando-se a simples repetição do que já foi apresentado nas discussões. Na elaboração desta seção, convém retomar os objetivos de modo a evidenciar se foram ou não alcançados, apresentando os possíveis desdobramentos do estudo.
 -->
