@@ -1,0 +1,144 @@
+---
+format: pdf
+lang: pt
+title: Avaliação
+subtitle: Estatística Computacional
+author: Paulo Ricardo Seganfredo Campana
+date: 2023-09-18
+date-format: long
+callout-icon: false
+highlight-style: github
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+:::
+
+### Questão 1. Responda as seguintes questões:
+
+##### a) Explique, de modo geral, qual a importância de processos de geração de números pseudo-aleatórios e dê exemplos de aplicações.
+
+De modo geral, são usadas para imitar o comportamento não determinístico das variáveis aleatórias para simulações estatísticas, como no Bootstrap onde é selecionada amostras aleatórias do conjunto de dados, ou na integração de monte carlo, onde é preciso números aleatórios dentro de um intervalo.
+
+##### b) Defina matematicamente os geradores congruenciais linear e misto. Explique o funcionamento desses geradores.
+
+São geradores da forma $x_{n + 1} = a x_n \mod m$ e $x_{n + 1} = (a x_n + b) \mod m$ respectivamente, o comportamento do próximo número na sequência é baseado no anterior seguindo uma relação linear aplicada no resto da divisão por algum número. Quando não há elemento anterior na sequência, se usa uma semente, a qualidade destes geradores dependem muito da escolha das constantes $a$, $b$ e $m$.
+
+##### c) Defina o método da transformação inversa para geração de números pseudo-aleatórios.
+
+Baseia-se em utilizar a função quantílica da distribuição de interesse, obtida pela inversa da função de distribuição acumulada, e aplicar um número pseudo-aleatório de distribuição uniforme $[0,1]$ nesta função, o resultado será um número pseudo-aleatório da distribuição de interesse pois:
+
+$$
+\;\;\;\, F(x) : S_X \longrightarrow [0,1]
+$$
+$$
+F^{-1}(x) : [0,1] \longrightarrow S_X
+$$
+
+
+
+
+##### d) Usando o método da transformação inversa, obtenha uma expressão para o gerador de números pseudo-aleatórios para uma variável aleatória com função de distribuição $F(x) = x^\theta, \; 0 < x < 1, \; \theta > 0$.
+
+Obtendo a função quantílica da distribuição temos que $F^{-1}(x) = \exp \left\lbrace \dfrac{1}{\theta} \log x \right\rbrace$:
+
+\begin{align*}
+    F(x) &= x^\theta \\
+    \log F(x) &= \theta \log x \\
+    \dfrac{1}{\theta} \log F(x) &= \log x \\
+    \exp \left\lbrace \dfrac{1}{\theta} \log F(x) \right\rbrace &= x
+\end{align*}
+
+Então o algorítimo de geração para esta distribuição será gerar números pseudo-aleatórios da distribuição uniforme em $[0,1]$ e aplicar-los na função quantílica.
+
+```{r}
+#| collapse: true
+rnovo <- function(n, theta) {
+    U <- runif(n, 0, 1)
+    exp(log(U) / theta)
+}
+
+rnovo(48, 0.94)
+```
+
+##### e) Explique o método da aceitação e rejeição para geração de números pseudo-aleatórios.
+
+Com o objetivo de gerar números de uma distribuição $X$ com densidade $f(x)$, gere números de uma distribuição conhecida $Y$ com densidade $g(y)$, aceitamos esse número gerado $Y$ como número pseudo aleatório da distribuição $X$ dependendo de uma constante e o valor de uma V.A. uniforme:
+
+$$
+\text{Se } \dfrac{f(Y)}{cg(Y)} > U, \text{ tome } Y \text{ como número gerado da distribuição } X
+$$
+
+##### f) Use o método da aceitação e rejeição para obter um método de geração de números pseudo-aleatórios de uma variável aleatória com função densidade de probabilidade $f(x) = 20x(1 - x)^3, \; 0 < x < 1$.
+
+Como a V.A. de interesse é contínua e com suporte $[0,1]$, utilize $Y \sim U(0,1), \; g(y) = 1$. A constante $c$ pode ser obtida maximizando o quociente $f(y) / g(y)$
+
+```{r}
+#| collapse: true
+f <- function(x) 20 * x * (1 - x)^3
+g <- function(y) 1
+
+c <- optimise(
+    \(y) f(y) / g(y),
+    lower = 0, upper = 1,
+    maximum = TRUE
+)$objective
+c
+```
+
+```{r}
+#| collapse: true
+rnovo2 <- function(n) {
+    sapply(
+        1:n,
+        \(i) while (TRUE) {
+            y <- runif(1, 0, 1)
+            u <- runif(1, 0, 1)
+            if (f(y) / g(y) / c > u) return (y)
+        }
+    )
+}
+
+rnovo2(48)
+```
+
+{{< pagebreak >}}
+
+### Questão 2. Responda as seguintes questões:
+
+##### a) Defina matematicamente o método gradiente para maximização de uma função $g(\theta) : \Theta \longrightarrow \mathbb R$, em que $\Theta$ é um subespaço de $\mathbb R^p$.
+
+É um método iterativo de busca pelo máximo de uma função, onde, a partir de um chute inicial para $\boldsymbol \theta$, a próxima iteração é dada por $\boldsymbol \theta_{t + 1} = \boldsymbol \theta_t + \lambda_t \mathbf M_t \mathbf g_t$.
+
+$\lambda_t$ pode ser optimizado em cada passo de forma a maximizar $\theta_{t + 1}$. $\mathbf M_t$ é uma matriz $(p \times p)$ positiva definida qualquer, podemos tomar $\mathbf M_t = \mathbf I_p$, uma matriz constante por exemplo, ou optimizar $\mathbf M_t$ de alguma forma.
+
+##### b) Defina os métodos quasi-Newton e explique as diferenças para os métodos de Newton?
+
+O método de Newton de maximização para o caso univariado é definido como: $x_{t + 1} = x_t - \frac{f'(x_t)}{f''(x_t)}$, de maneira similar, para o caso multivariado como: $\boldsymbol \theta_{t + 1} = \boldsymbol \theta_t - \mathbf H_t^{-1} \mathbf g_t$, onde $\mathbf g_t$ é o vetor de primeiras derivadas da função e $\mathbf H_t$ a matriz de segundas derivadas.
+
+Os métodos de quasi-Newton funcionam de maneira similar, porém não é usado diretamente a matriz $- \mathbf H_t^{-1}$ e sim uma sequência de matrizes $\mathbf M_t$ que se aproximam assintóticamente de $- \mathbf H_t^{-1}$ a partir de uma matriz inicial positiva definida $\mathbf M_0$.
+
+Dessa forma, não é necessário obter a matriz de segundas derivadas $\mathbf H_t$ e invertê-la, além de que a sequência $\mathbf M_t$ com o método de quasi-Newton sempre será positiva definida ao contrário da matriz $- \mathbf H_t^{-1}$, essa propriedade é importante para o método ser válido.
+
+### Questão 3. Escreva sobre os métodos de Monte Carlo e sua importância para a estatística.
+
+Quando algum resultado que desejamos obter não é possivel ser expresso de maneira analítica, recorremos aos métodos numéricos, entre eles, os métodos de Monte Carlo busca transformar o problema em uma esperança de variável aleatória, no qual pode ser aproximada pela média amostral de uma amostra aleatória dessa variável.
+
+Por exemplo, para calcular a integral definida de uma função qualquer, podemos usar a distribuição uniforme para transformar este problema em uma esperança, que pode ser aproximada pela média amostral:
+
+$$
+\int \limits_a^b g(x) dx = 
+(b - a) E[g(X)] \approx
+\dfrac{(b - a)}{m} \sum_{i = 1}^m g(x_i)
+$$
+
+Em que $X \sim U(a,b)$.
+
+### Questão 4. Escreva sobre o método bootstrap e sua importância para a estatística. Explique as diferenças entre o bootstrap paramétrico e o não-paramétrico.
+
+Outro método numérico para estimar parâmetros e sua variância com base em um conjunto de dados. Consiste em gerar diversas amostras (réplicas bootstrap) e estimar pontualmente o parâmetro para cada amostra, assim podemos obter a média e a variância para o parâmetro a partir da distribuição desse parâmetro nas réplicas bootstrap.
+
+Para o bootstrap paramétrico, as amostras são geradas aleatóriamente com base na distribuição amostral do conjunto de dados, enquanto que o bootstrap não-paramétrico as novas amostras são tomadas diretamente dos dados originais, com reposição.
