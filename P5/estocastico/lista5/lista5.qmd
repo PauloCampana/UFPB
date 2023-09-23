@@ -1,0 +1,153 @@
+---
+format: pdf
+lang: pt
+title: Atividade 5
+subtitle: Cadeias Martingale e cadeias de nascimento e morte   
+author: Paulo Ricardo Seganfredo Campana
+date: 2023-09-22
+date-format: long
+callout-icon: false
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+\newcommand{\p}[2][]{\mathrm{P}{#1} \kern-2pt \left( #2 \right)}
+:::
+
+::: callout-note
+# 1) Considere a ruina do jogador com espaço de estados $\mathcal S = \lbrace 0,1,2,\cdots,d \rbrace$ e função de transição (para $0 < x < d$) $$ \p{x,y} = \begin{cases} 1/2, \; \text{se} \; y = x - 1 \; \text{ou} \; y = x + 1, \\ 0, \;\;\;\;\, \text{caso contrário}. \end{cases} $$ Mostre que essa cadeia de Markov é um martingale.
+
+Para $x = 0$, $\p{x,y} \neq 0$ apenas para $y = 0$, onde é igual a 1.
+
+$$
+\sum_{y \in \mathcal S} y \p{0,y} = 0 \p{0,0} = 0
+$$
+
+Para $x = d$, $\p{x,y} \neq 0$ apenas para $y = d$, onde é igual a 1.
+
+$$
+\sum_{y \in \mathcal S} y \p{d,y} = d \p{d,d} = d
+$$
+
+Para $0 < x <d$:
+
+$$
+\sum_{y \in \mathcal S} y \p{x,y} =
+\sum_{y \in \mathcal S} \begin{cases} y/2, \; \text{se} \; y = x - 1 \; \text{ou} \; y = x + 1, \\ 0, \;\;\;\;\, \text{caso contrário}. \end{cases} =
+$$
+$$
+\sum_{y \in \mathcal S} \begin{cases} y/2, \; \text{se} \; y = x - 1, \\ 0, \;\;\;\;\, \text{caso contrário}. \end{cases} + 
+\sum_{y \in \mathcal S} \begin{cases} y/2, \; \text{se} \; y = x + 1, \\ 0, \;\;\;\;\, \text{caso contrário}. \end{cases} =
+$$
+$$
+\dfrac{x - 1}{2} + \dfrac{x + 1}{2} = x
+$$
+
+Como para todos os casos, temos a propriedade $\displaystyle \sum_{y \in \mathcal S} y \p{x,y} = x$, então a cadeia é martigale.
+:::
+
+::: callout-note
+# 2) Uma cadeia de Markov sobre o espaço de estados $\mathcal S = \lbrace 0,1,\cdots,2d \rbrace$ muito usada em genética tem função de transição dada por $$ \p{x,y} = \binom{2d}{y} \left(\dfrac{x}{2d} \right)^y \left(1 - \dfrac{x}{2d} \right)^{2d - y}. $$ Calcule $\rho_{\lbrace 0 \rbrace}(x), 0 < x < 2d$.
+
+Para $0 < x < 2d$, $\sum_{y \in \mathcal S} y \p{x,y} = x$.
+
+Para $x = 0$:
+
+$$
+\sum_{y \in \mathcal S} y \p{x,y} = 
+\sum_{y \in \mathcal S} y \binom{2d}{y} 0^y 1^{2d - y} = 0
+$$
+
+Para $x = 2d$:
+
+$$
+\sum_{y \in \mathcal S} y \p{x,y} = 
+2d \p{2d,2d} + \sum_{y = 0}^{2d - 1} y \p{2d,y} = 
+$$
+$$
+2d + \sum_{y = 0}^{2d - 1} y \binom{2d}{y} 1^y 0^{2d - y} = 2d
+$$
+
+Como para todo $x \in \mathcal S$, $\displaystyle \sum_{y \in \mathcal S} y \p{x,y} = x$, esta é uma cadeia martingale.
+
+Então $\rho_{\lbrace 0 \rbrace}(x) = \rho_{x0}$ pode ser calculado como $1 - \dfrac{x}{2d}$.
+
+
+
+:::
+
+{{< pagebreak >}}
+
+::: callout-note
+# 3) Considere a ruina do jogador com espaço de estados $\mathcal S = \lbrace 0,1,2,\cdots,d \rbrace$. \newline Calcule $\p[_x]{T_0 < T_d}$, para $0 < x < d$.
+
+Como a ruína do jogador se trata de uma cadeia de nascimento e morte com $p_x$ e $q_x$ constantes:
+
+$$
+\p[_x]{T_0 < T_d} = u(x) = \sum_{n = x}^{d-1} \gamma_n \bigg/ \sum_{n = 0}^{d-1} \gamma_n
+$$
+
+Onde $\gamma_n = \dfrac{q_1 q_2 \cdots q_n}{p_1 p_2 \cdots p_n} = \left( \dfrac{q}{p} \right)^n$
+
+$$
+\sum_{n = 0}^{d-1} \left( \dfrac{q}{p} \right)^n =
+\dfrac{1 - (q / p)^d}{1 - q / p}
+$$
+
+$$
+\sum_{n = x}^{d-1} = \sum_{n = 0}^{d-1} - \sum_{n = 0}^{x-1}
+$$
+$$
+\sum_{n = x}^{d-1} \left( \dfrac{q}{p} \right)^n =
+\dfrac{1 - (q / p)^d}{1 - q / p} - \dfrac{1 - (q / p)^x}{1 - q / p} =
+\dfrac{(q / p)^x - (q / p)^d}{1 - q / p}
+$$
+
+$$
+u(x) = \dfrac{(q / p)^x - (q / p)^d}{1 - q / p} \bigg/ \dfrac{1 - (q / p)^d}{1 - q / p}
+$$
+$$
+\p[_x]{T_0 < T_d} = \dfrac{(q / p)^x - (q / p)^d}{1 - (q / p)^d}
+$$
+:::
+
+::: callout-note
+# 4) Considere uma cadeia de nascimento e morte irredutível sobre os inteiros não negativos. Prove que se $p_x \leqslant q_x$ para todo $x \geqslant 1$, então a cadeia é recorrente.
+
+$$
+p_x \leqslant q_x \implies 
+\dfrac{q_x}{p_x} \geqslant 1 \implies
+\dfrac{q_1 q_2 \cdots q_n}{p_1 p_2 \cdots p_n} \geqslant 1 \implies
+\gamma_n \geqslant 1 \implies
+\sum_{n = 0}^\infty \gamma_n = \infty
+$$
+
+Se $\displaystyle \sum_{n = 0}^\infty \gamma_n = \infty$ então a cadeia é recorrente.
+:::
+
+{{< pagebreak >}}
+
+::: callout-note
+# 5) Na roleta, o jogador tem chance 9/19 de ganhar uma aposta. Um jogador faz apostas de um real e decide sair do jogo se ele ficar com um real a mais ou perder seu capital inicial de R$ 1000. Calcule a probabilidade do jogador sair do jogo por ter perdido seu capital inicial.
+
+$\mathcal S = \lbrace 0,1,\cdots,1001 \rbrace$, $X_0 = 1000$, $p_x = 9/19$, $q_x = 10/19$, $\gamma_n = (10 / 9)^n$
+
+$$
+\p[_{1000}]{T_0 < T_{1001}} = u(1000) = \sum_{n = 1000}^{1000} \gamma_n \bigg/ \sum_{n = 0}^{1000} \gamma_n
+$$
+
+$$
+\sum_{n = 1000}^{1000} \gamma_n = \gamma_{1000} = (10 / 9)^{1000}
+$$
+$$
+\sum_{n = 0}^{1000} \gamma_n = \dfrac{1 - (10 / 9)^{1001}}{1 - (10 / 9)}
+$$
+
+$$
+u(1000) = (10 / 9)^{1000} \dfrac{1 - (10 / 9)}{1 - (10 / 9)^{1001}}
+$$
+$$
+\p[_{1000}]{T_0 < T_{1001}} \approx 0.1
+$$
+:::
