@@ -179,7 +179,7 @@ testar_med_var_igual <- function(xbar1, xbar2, S1, S2, n1, n2, tipo = "F", alpha
 testar_med_var_igual_dados <- function(X1, X2, tipo = "F", alpha = 0.05) {
     stopifnot(
         is.matrix(X1), is.matrix(X2),
-        all(dim(X1) == dim(X2))
+        ncol(X1) == ncol(X2)
     )
     xbar1 <- colMeans(X1)
     xbar2 <- colMeans(X2)
@@ -226,7 +226,7 @@ ics_med_var_igual <- function(xbar1, xbar2, S1, S2, n1, n2, tipo = "F", alpha = 
 ics_med_var_igual_dados <- function(X1, X2, tipo = "F", alpha = 0.05) {
     stopifnot(
         is.matrix(X1), is.matrix(X2),
-        all(dim(X1) == dim(X2))
+        ncol(X1) == ncol(X2)
     )
     xbar1 <- colMeans(X1)
     xbar2 <- colMeans(X2)
@@ -270,7 +270,7 @@ testar_med_var_diff <- function(xbar1, xbar2, S1, S2, n1, n2, alpha = 0.05) {
 testar_med_var_diff_dados <- function(X1, X2, alpha = 0.05) {
     stopifnot(
         is.matrix(X1), is.matrix(X2),
-        all(dim(X1) == dim(X2))
+        ncol(X1) == ncol(X2)
     )
     xbar1 <- colMeans(X1)
     xbar2 <- colMeans(X2)
@@ -310,7 +310,7 @@ ics_med_var_diff <- function(xbar1, xbar2, S1, S2, n1, n2, alpha = 0.05) {
 ics_med_var_diff_dados <- function(X1, X2, alpha = 0.05) {
     stopifnot(
         is.matrix(X1), is.matrix(X2),
-        all(dim(X1) == dim(X2))
+        ncol(X1) == ncol(X2)
     )
     xbar1 <- colMeans(X1)
     xbar2 <- colMeans(X2)
