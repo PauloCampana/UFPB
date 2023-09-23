@@ -1,0 +1,251 @@
+---
+format: pdf
+lang: pt
+title: Atividade 6
+subtitle: Análise de Resíduos e identificando observações atípicas
+author: Paulo Ricardo Seganfredo Campana
+date: 2023-09-23
+date-format: long
+callout-icon: false
+highlight-style: github
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
+df-print: kable
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+:::
+
+::: callout-note
+# **Problema**:
+Um hospital está implementando um programa para melhorar a qualidade do serviço e a produtividade. Como parte deste programa, o gerenciamento hospitalar está tentando medir e avaliar a satisfação do paciente. Os dados que foram obtidos de uma amostra aleatória de 25 pacientes recém-dispensados. A variável resposta é *satisfaction*, uma medida subjetiva da satisfação do paciente, em escala crescente. Enquanto as potenciais variáveis regressoras são *age*, a idade do paciente, e *severity*, um índice que mede a gravidade da doença do paciente. Estes dados são do livro do *Montgomery* podem ser encontrados no pacote *MPV* do **R** como o nome *table.b17*.
+
+\vspace{+12pt}
+
+Depois de algumas análises, concluímos que a melhor equação de regressão parece ser:
+
+$$
+\text{satisfação} = \beta_0 + \beta_1 \times \text{idade} + \beta_2 \times \text{gravidade},
+$$
+
+ou seja, a satisfação do paciente sendo explicada por sua idade e pela gravidade da sua doença. Tomando esta equação de regressão e considerando 5% de significância, responda as questões abaixo:
+:::
+
+```{r}
+#| echo: false
+options(digits = 3)
+```
+
+```{r}
+#| warning: false
+library(tidyverse)
+data <- MPV::table.b17[1:3]
+fit1 <- lm(Satisfaction ~ Age + Severity, data)
+data_resid <- data |> 
+    mutate(
+        residuals = residuals(fit1),
+        rstandard = rstandard(fit1),
+        rstudent = rstudent(fit1),
+        predict = predict(fit1),
+        hatvalues = hatvalues(fit1)
+    )
+```
+
+{{< pagebreak >}}
+
+###### 1. Realize a análise residual para o modelo ajustado. Comente TODOS os resultados.
+
+a) Construa um gráfico para verificar a suposição de normalidade. Parece haver algum problema com esta suposição?
+
+```{r}
+#| echo: false
+#| fig-height: 6
+data_resid |> 
+    ggplot(aes(sample = rstandard)) +
+    geom_qq(color = "#4582ec") +
+    geom_abline(slope = 1, intercept = 0, alpha = 0.25) +
+    coord_equal() +
+    labs(
+        x = "Quantis teóricos",
+        y = "Resíduos padronizados"
+    ) +
+    theme_bw()
+```
+
+Não, os valores dos resíduos padronizados parecem seguir distribuição normal porém com alguns desvios não aleatórios nas caudas da distribuição e um ponto fora do padrão, distante a mais de 3 desvios padrões, o que não é esperado para apenas 25 obervações.
+
+{{< pagebreak >}}
+
+b) Construa um gráfico dos resíduos padronizados versus a resposta prevista. É possível identificar algum problema de adequação no modelo ao analisar este gráfico? 
+    
+```{r}
+#| echo: false
+#| out-width: 100%
+#| fig-height: 5
+data_resid |> 
+    ggplot(aes(x = predict, y = rstandard)) +
+    geom_point(color = "#4582ec") +
+    geom_hline(yintercept = 0, alpha = 0.25) +
+    labs(
+        x = "Satisfação ajustada",
+        y = "Resíduos padronizados"
+    ) +
+    theme_bw()
+```
+
+Com exceção do ponto mencionado acima, não podemos notar nenhum comportamento não aleatório na distribuição dos resíduos padronizados, sua variância parece ser constante para diferentes valores da satisfação.
+
+{{< pagebreak >}}
+
+c) Construa um gráfico dos resíduos studentizados versus os valores das variáveis regressoras. Faça uma analise destes gráficos.
+    
+```{r}
+#| echo: false
+#| out-width: 100%
+#| fig-height: 5
+data_resid |> 
+    rename(`Idade do paciente` = Age, `Gravidade da doença` = Severity) |> 
+    pivot_longer(c(`Idade do paciente`, `Gravidade da doença`)) |> 
+    ggplot(aes(x = value, y = rstudent)) +
+    facet_grid(cols = vars(name)) +
+    geom_point(color = "#4582ec") +
+    geom_hline(yintercept = 0, alpha = 0.25) +
+    labs(
+        x = "Variáveis regressoras",
+        y = "Resíduos studentizados"
+    ) +
+    theme_bw()
+```
+
+Utilizando agora as variáveis regressoras ao invés da variável resposta, obtemos um gráfico similar onde não é possível detectar a presença de variância não constante dos erros, porém agora com os resíduos studentizados, os pontos com resíduos altos são mais extremos devido a distribuição $t$ apresentar caudas mais densas.
+
+{{< pagebreak >}}
+
+d) Construa um gráfico dos resíduos versus os valores de $h_{ii}$. O que é possível verificar ao analisar este gráfico?
+    
+```{r}
+#| echo: false
+#| out-width: 100%
+#| fig-height: 5
+data_resid |> 
+    ggplot(aes(x = hatvalues, y = rstudent)) +
+    geom_point(color = "#4582ec") +
+    geom_hline(yintercept = 0, alpha = 0.25) +
+    labs(
+        x = expression(h[ii]),
+        y = "Resíduos studentizados"
+    ) +
+    theme_bw()
+```
+
+Podemos ver que as observações com resíduos altos não possuem $h_{ii}$ diferente de outras observações com resíduos normais, isso significa que os mesmos estão dentro da região conjunta dos dados.
+
+{{< pagebreak >}}
+
+###### 2. Realize uma análise de diagnóstico para o modelo final. Comente os resutados.
+
+e) No gráfico obtido na letra **b)** foi possível identificar algum possível ***outlier***?
+
+Sim, houve um ponto em que seu resíduo padronizado foi acima de 3, indicando um possível outlier.
+
+f) No gráfico obtido na letra **d)** foi possível identificar algum possível **ponto de alavanca**?
+
+Não, não há nenhuma observação nos dados com $h_{ii}$ muito elevado comparado com os demais, significando que não há pontos muito distantes da região conjunta dos dados para serem considerados pontos de alavanca.
+
+```{r}
+data_detect <- data |> 
+    mutate(
+        cooks = cooks.distance(fit1),
+        dffits = dffits(fit1),
+        dfbetas_int = dfbetas(fit1)[ ,1],
+        dfbetas_age = dfbetas(fit1)[ ,2],
+        dfbetas_sev = dfbetas(fit1)[ ,3]
+    )
+```
+
+g) Através da análise da distância de Cook, é possível identificar alguma possível **observação
+influente**?
+
+```{r}
+data_detect |> 
+    filter(cooks > 1)
+```
+
+Não, nenhuma observação tem distância de Cook maior que 1.
+
+h) Faça agora detecção de pontos de influência utilizando as medidas ***DFFITS*** e ***DFBETAS***.
+
+```{r}
+data_detect |>  
+    filter(dffits > 2 * sqrt(ncol(data) / nrow(data)))
+
+data_detect |> 
+    filter(
+        abs(dfbetas_int) > 2 / sqrt(nrow(data)) |
+        abs(dfbetas_age) > 2 / sqrt(nrow(data)) |
+        abs(dfbetas_sev) > 2 / sqrt(nrow(data))
+    )
+```
+
+Com DFFITS, foi identificado um ponto de influência, aquele que possui resíduo altíssimo, além desse, DFBETAS identificou outros 3 pontos que exercem influência muito grande nos valores dos coeficientes do modelo.
+
+###### 3. Caso você tenha detectado a presença de observações atípicas, tais como ***Outliers***, **pontos de alavanca** e de **influência**, cheque o efeito dessas obervações nos principais resultados do ajuste. Para isso, ajuste um novo modelo excluindo as observações da base de dados e compare os resultados obtidos com àqueles obtidos com o uso da base completa. Comente os resultados!
+
+Seja o primeiro modelo aquele feito com todas as observações, o segundo modelo retirando a observação flagrada pela medida DFFITS e o terceiro modelo sem as 4 observações identificadas por DFBETAS.
+
+```{r}
+fit2 <- lm(
+    Satisfaction ~ Age + Severity, 
+    data_detect, 
+    subset = dffits < 2 * sqrt(ncol(data) / nrow(data))
+)
+fit3 <- lm(
+    Satisfaction ~ Age + Severity, 
+    data_detect,
+    subset = 
+        abs(dfbetas_int) < 2 / sqrt(nrow(data)) &
+        abs(dfbetas_age) < 2 / sqrt(nrow(data)) &
+        abs(dfbetas_sev) < 2 / sqrt(nrow(data)) 
+)
+```
+
+{{< pagebreak >}}
+
+: Variáveis dos modelos de regressão
+
+|Variáveis       |      Estimativa|     Erro padrão| Estatística $t$|p-valor         |
+|:---------------|---------------:|---------------:|---------------:|:---------------|
+|Primeiro modelo |                |                |                |                       |
+|(Intercepto)    |         139.923|           8.100|           17.27|$2.78 \times 10^{-14}$ |
+|Idade           |          -1.046|           0.157|           -6.65|$1.09 \times 10^{-6 }$ |
+|Gravidade       |          -0.436|           0.179|           -2.44|0.0233                 |
+\vspace{-25pt}
+|                |                |                |                |                |
+|:---------------|---------------:|---------------:|---------------:|:---------------|
+|Segundo modelo  |                |                |                |                       |
+|(Intercepto)    |         143.766|           6.147|           23.39|$1.60 \times 10^{-16}$ |
+|Idade           |          -1.030|           0.118|           -8.72|$2.01 \times 10^{-8 }$ |
+|Gravidade       |          -0.566|           0.138|           -4.11|0.000496               |
+\vspace{-25pt}
+|                |                |                |                |                |
+|:---------------|---------------:|---------------:|---------------:|:---------------|
+|Terceiro modelo |                |                |                |                       |
+|(Intercepto)    |         149.401|           4.812|           31.05|$4.37 \times 10^{-17}$ |
+|Idade           |          -1.190|           0.113|          -10.52|$4.06 \times 10^{-9 }$ |
+|Gravidade       |          -0.498|           0.121|           -4.11|0.000659               |
+
+Sobre os coeficientes da regressão, há algumas pequenas diferenças em seus valores entre os modelos, podemos notar que o erro padrão e o p-valor das estimativas dos coeficientes diminui ao retirar aquelas observações atípicas.
+
+: Métricas de performance dos modelos de regressão
+
+|Modelo          |         MSE|       $R^2$|  $R^2_a$| Estatística $F$|p-valor      |
+|:---------------|-----------:|-----------:|-----------:|------------:|:------------|
+|Primeiro modelo |       9.682|       0.809|       0.792|        46.77|$1.19 \times 10^{-08}$ |
+|Segundo modelo  |       7.267|       0.895|       0.885|        89.75|$5.14 \times 10^{-11}$ |
+|Terceiro modelo |       5.459|       0.948|       0.942|          163|$2.93 \times 10^{-12}$ |
+
+Com essa retirada, também observamos que o erro padrão dos resíduos diminui e o coeficiente de determinação aumenta, indicando um ajuste melhor, o teste $F$ trás a informação de que estes modelos são mais significativos.
+
+Porém, estas estatísticas foram calculadas sem as observações retiradas e não com o conjunto de dados original, se estas observações foram de fato comuns e não atípicas, o segundo e terceiro modelo apresentarão resultados piores na predição de tais valores.
