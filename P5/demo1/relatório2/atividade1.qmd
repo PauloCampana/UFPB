@@ -1,0 +1,117 @@
+---
+format: pdf
+---
+        
+```{r}
+#| echo: false
+#| warning: false
+#| fig-width: 6.25
+#| fig-height: 8
+#| fig-cap: Razão de sexo segundo faixa etária, situação do domicílio nos censos de 2000 e 2010
+
+# Razão de Sexo (Total, Urbana, Rural): 2000 e
+# 2010. Incluir gráficos (ver exemplo na página 23 do
+# livro Dinâmica da População).
+
+# Dados: População residente por sexo, situação de
+# domicílio.
+
+library(tidyverse)
+df2000 <- read_csv("includes/2000.csv")
+df2010 <- read_csv("includes/2010.csv")
+
+df2000[2:20, ] |>
+    rbind(df2010[2:20, ]) |>
+    transmute(
+        ano, idade,
+        RS_total = total_homens / total_mulheres,
+        RS_urbana = urbana_homens / urbana_mulheres,
+        RS_rural = rural_homens / rural_mulheres
+    ) |> pivot_longer(
+        cols = -c(ano, idade)
+    ) |>
+    mutate(
+        name = fct_relevel(name, "RS_rural", "RS_urbana", "RS_total"),
+        idade = fct_relevel(idade, "5 a 9 anos", after = 1) |>
+            fct_relevel("100 anos", after = 18)
+    ) |>
+    ggplot(aes(x = idade, y = value, color = name, group = name)) +
+    facet_grid(vars(ano)) +
+    geom_line() +
+    geom_point() +
+    scale_x_discrete(
+        name = "Faixa etária",
+        labels = \(x) {
+            x[-length(x)] |> sapply(\(x) {
+                nums <- str_extract_all(x, "\\d+")[[1]]
+                paste0(nums[1], "-", nums[2])
+            }) |> c("100+")
+        }
+    ) +
+    scale_y_continuous(
+        name = "Razão de Sexo",
+        breaks = c(0.4, 0.6, 0.8, 1, 1.2),
+        labels = \(y) paste0(100 * y, "%")
+    ) +
+    scale_color_brewer(
+        name = "Situação do domicílio",
+        labels = c("Rural", "Urbana", "Total"),
+        palette = "Dark2"
+    ) +
+    theme_bw() +
+    theme(
+        axis.text.x = element_text(angle = 45, vjust = 0.6),
+        legend.position = "top"
+    )
+```
+
+{{< pagebreak >}}
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: Índice de Myers segundo sexo, situação do domicílio nos censos de 2000 e 2010
+
+# Calcular o Índice de Myers para o total
+# masculino e feminino (censo 2010)
+
+# Dados: População residente por sexo, situação de
+# domicílio.
+
+df2000[-(1:20), ] |> 
+    rbind(df2010[-(1:20), ]) |> 
+    mutate(digito = as.integer(str_extract(idade, "\\d*")) %% 10) |>
+    summarise(
+        across(-idade, sum),
+        .by = c(digito, ano)
+    ) |> 
+    summarise(
+        across(
+            -digito,
+            \(x) 100 * sum(abs(x / sum(x) - 0.1))
+        ), 
+        .by = ano
+    ) |> 
+    pivot_longer(
+        -ano,
+        names_to = c("domicilio", "sexo"),
+        names_sep = "_"
+    ) |> 
+    pivot_wider(
+        names_from = ano,
+        names_prefix = "myers_"
+    ) |> 
+    mutate(across(
+        c(domicilio, sexo),
+        str_to_sentence
+    )) |> 
+    slice(8,9,7, 5,6,4, 2,3,1) |> 
+    kableExtra::kbl(
+        digits = 3,
+        col.names = c("Situação do domicílio", "Sexo", "2000", "2010"),
+        format.args = list(decimal.mark = ","),
+        booktabs = TRUE,
+        linesep = ""
+    ) |> 
+    kableExtra::add_header_above(c(" " = 2, "Índice de Myers" = 2))
+```

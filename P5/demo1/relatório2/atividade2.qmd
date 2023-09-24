@@ -1,0 +1,32 @@
+---
+format: pdf
+---
+
+```{r}
+# Calcular a Razão de Idade para o total, rural e urbano
+# para homens e mulheres (censo 2000 e 2010) e
+# apresentar em gráficos;
+```
+
+```{r}
+# Calcular a Idade Mediana por sexo (censo 2000 e 2010);
+```
+
+```{r}
+# Calcular a Razão de Dependência para o total, rural e
+# urbano para homens e mulheres (censo 2000 e 2010);
+```
+
+--- 
+
+```{r}
+# Classificação da estrutura etária segundo Sundbarg e
+# Whipple (2000 e 2010)
+
+# Índice de envelhecimento da população (2000 e 2010)
+
+# Fazer a Pirâmide Etária para o total, rural e urbano
+# (censo 2000 e 2010).
+```
+
+
