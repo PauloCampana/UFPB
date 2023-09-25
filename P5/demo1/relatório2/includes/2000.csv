@@ -1,4 +1,4 @@
-ano,idade,total_total,total_homens,total_mulheres,urbana_total,urbana_homens,urbana_mulheres,rural_total,rural_homens,rural_mulheres
+ano,idade,total_total,total_homens,total_mulheres,urbano_total,urbano_homens,urbano_mulheres,rural_total,rural_homens,rural_mulheres
 2000,total,14391282,6900335,7490947,13821466,6603891,7217575,569816,296444,273372
 2000,0 a 4 anos,1221148,621320,599828,1165603,593144,572459,55545,28176,27369
 2000,5 a 9 anos,1195262,606627,588635,1138081,577529,560552,57181,29098,28083

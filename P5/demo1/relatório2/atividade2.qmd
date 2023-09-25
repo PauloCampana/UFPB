@@ -3,30 +3,236 @@ format: pdf
 ---
 
 ```{r}
+#| echo: false
+#| warning: false
+library(tidyverse)
+df2000 <- read_csv("includes/2000.csv")
+df2010 <- read_csv("includes/2010.csv")
+```
+
+```{r}
+#| echo: false
+#| fig-width: 6.25
+#| fig-height: 8
+#| fig-cap: Razão de Idade nas faixas etárias segundo situação do domicílio e sexo nos censos de 2000 e 2010
+
 # Calcular a Razão de Idade para o total, rural e urbano
 # para homens e mulheres (censo 2000 e 2010) e
 # apresentar em gráficos;
+
+df2000[2:20, ] |> 
+    rbind(df2010[2:20, ]) |> 
+    filter(idade != "80 a 89 anos" & idade != "90 a 99 anos" & idade != "100 anos") |> 
+    pivot_longer(
+        -c(ano, idade),
+        names_to = c("domicilio", "sexo"),
+        names_sep = "_"
+    ) |>
+    mutate(
+        domicilio = fct_relevel(domicilio, "rural", "urbano", "total"),
+        sexo = fct_relevel(sexo, "homens", "mulheres", "total") |> 
+            str_to_sentence()
+    ) |> 
+    mutate(
+        value = 3 * value / (lag(value) + value + lead(value)),
+        idade = fct_relevel(idade, "5 a 9 anos", after = 1),
+        .by = c(ano, domicilio, sexo)
+    ) |> 
+    drop_na() |> 
+    ggplot(aes(x = idade, y = value, color = domicilio, group = domicilio)) +
+    facet_grid(rows = vars(sexo), cols = vars(ano)) +
+    geom_line() +
+    geom_point() +
+    scale_x_discrete(
+        name = "Faixa etária",
+        labels = \(x) {
+            x |> sapply(\(x) {
+                nums <- str_extract_all(x, "\\d+")[[1]]
+                paste0(nums[1], "-", nums[2])
+            })
+        }
+    ) +
+    scale_y_continuous(
+        name = "Razão de Idade",
+        breaks = c(0.9, 1, 1.1),
+        limits = c(0.9, 1.1)
+    ) +
+    scale_color_brewer(
+        name = "Situação do domicílio",
+        labels = c("Rural", "Urbano", "Total"),
+        palette = "Dark2"
+    ) +
+    theme_bw() +
+    theme(
+        axis.text.x = element_text(angle = 45, vjust = 0.6),
+        legend.position = "top"
+    )
 ```
 
 ```{r}
+#| echo: false
+#| tbl-cap: Idade Mediana segundo sexo e situação do domicílio nos censos de 2000 e 2010
+
 # Calcular a Idade Mediana por sexo (censo 2000 e 2010);
-```
 
-```{r}
-# Calcular a Razão de Dependência para o total, rural e
-# urbano para homens e mulheres (censo 2000 e 2010);
+df2000[-(1:20), ] |> 
+    rbind(df2010[-(1:20), ]) |> 
+    mutate(
+        idade = as.integer(str_extract(idade, "\\d*"))
+    ) |>
+    pivot_longer(-c(ano, idade)) |> 
+    summarise(
+        value = sort(
+            rep(idade, value)
+        )[length(rep(idade, value))/2],
+        .by = c(name, ano)
+    ) |> 
+    pivot_wider(
+        names_sep = "_"
+    ) |> 
+    pivot_longer(
+        -ano,
+        names_to = c("domicilio", "sexo"),
+        names_sep = "_"
+    ) |>
+    pivot_wider(names_from = ano) |> 
+    mutate(across(
+        c(domicilio, sexo),
+        str_to_sentence
+    )) |>  
+    slice(1,2,3, 7,8,9, 4,5,6) |> 
+    kableExtra::kbl(
+        col.names = c("Situação do domicílio", "Sexo", "2000", "2010"),
+        booktabs = TRUE,
+        linesep = ""
+    ) |> 
+    kableExtra::add_header_above(
+        c(" " = 2, "Idade Mediana" = 2)
+    )
 ```
-
---- 
 
 ```{r}
 # Classificação da estrutura etária segundo Sundbarg e
 # Whipple (2000 e 2010)
+```
+
+```{r}
+#| echo: false
+#| tbl-cap: Razão de Dependência e índice de Envelhecimento segundo sexo e situação do domicílio nos censos de 2000 e 2010
+
+# Calcular a Razão de Dependência para o total, rural e
+# urbano para homens e mulheres (censo 2000 e 2010);
 
 # Índice de envelhecimento da população (2000 e 2010)
 
+indice_dep <- df2000[-(1:20), ] |> 
+    rbind(df2010[-(1:20), ]) |> 
+    mutate(
+        idade = as.integer(str_extract(idade, "\\d*")),
+        faixa = case_when(
+            idade < 15 ~ "novo",
+            idade >= 65 ~ "velho",
+            .default = "normal"
+        )
+    ) |> 
+    summarise(
+        across(-c(idade), sum),
+        .by = c(ano, faixa)
+    ) |> 
+    summarise(
+        across(-faixa, \(x) 100 * (x[1] + x[3]) / x[2]),
+        .by = ano
+    ) |> 
+    mutate(indice = "dependencia")
+
+indice_env <- df2000[-(1:20), ] |> 
+    rbind(df2010[-(1:20), ]) |> 
+    mutate(
+        idade = as.integer(str_extract(idade, "\\d*")),
+        faixa = case_when(
+            idade < 15 ~ "novo",
+            idade >= 60 ~ "velho",
+            .default = "normal"
+        )
+    ) |> 
+    summarise(
+        across(-c(idade), sum),
+        .by = c(ano, faixa)
+    ) |> 
+    summarise(
+        across(-faixa, \(x) 100 * x[3] / x[1]),
+        .by = ano
+    ) |> 
+    mutate(indice = "envelhecimento")
+
+indice_dep |> 
+    rbind(indice_env) |> 
+    pivot_longer(
+        -c(ano, indice),
+        names_to = c("domicilio", "sexo"),
+        names_sep = "_"
+    ) |> 
+    pivot_wider(
+        names_from = c(ano, indice)
+    ) |> 
+    mutate(across(
+        c(domicilio, sexo),
+        str_to_sentence
+    )) |>  
+    slice(8,9,7, 5,6,4, 2,3,1) |> 
+    kableExtra::kbl(
+        digits = 1,
+        col.names = c("Situação do domicílio", "Sexo", "2000", "2010", "2000", "2010"),
+        format.args = list(decimal.mark = ","),
+        booktabs = TRUE,
+        linesep = ""
+    ) |> 
+    kableExtra::add_header_above(
+        c(" " = 2, "Razão de Dependência" = 2, "Índice de Envelhecimento" = 2)
+    )
+```
+
+{{< pagebreak >}}
+
+```{r}
+#| echo: false
+#| fig-width: 6.25
+#| fig-height: 8
+#| fig-cap: Pirâmide Etária segundo situação do domicílio nos censos de 2000 e 2010
+
 # Fazer a Pirâmide Etária para o total, rural e urbano
 # (censo 2000 e 2010).
+
+df2000[-(1:20), ] |> 
+    rbind(df2010[-(1:20), ]) |> 
+    pivot_longer(
+        -c(ano, idade),
+        names_to = c("domicilio", "sexo"),
+        names_sep = "_"
+    ) |> 
+    pivot_wider(
+        names_from = sexo
+    ) |> 
+    mutate(
+        idade = as.integer(str_extract(idade, "\\d*")),
+        domicilio = str_to_sentence(domicilio),
+        domicilio = fct_relevel(domicilio, "Rural", "Urbano", "Total")
+    ) |> 
+    ggplot(aes(y = idade, xmin = 0)) +
+    facet_grid(vars(domicilio), vars(ano)) +
+    geom_linerange(aes(xmax = -homens), linewidth = 1, color = "#6080f0") +
+    geom_linerange(aes(xmax = mulheres), linewidth = 1, color = "#f06080") +
+    annotate("text", x = -125000, y = 100, label = "Homens") +
+    annotate("text", x = +125000, y = 100, label = "Mulheres") +
+    scale_x_continuous(
+        name = "População",
+        labels = \(x) format(abs(x), scientific = FALSE, big.mark = " ")
+    ) +
+    scale_y_continuous(
+        name = "Idade",
+        n.breaks = 11
+    ) +
+    theme_bw()
 ```
 
 

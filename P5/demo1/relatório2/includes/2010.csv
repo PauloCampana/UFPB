@@ -1,4 +1,4 @@
-ano,idade,total_total,total_homens,total_mulheres,urbana_total,urbana_homens,urbana_mulheres,rural_total,rural_homens,rural_mulheres
+ano,idade,total_total,total_homens,total_mulheres,urbano_total,urbano_homens,urbano_mulheres,rural_total,rural_homens,rural_mulheres
 2010,total,15989929,7625679,8364250,15464239,7354325,8109914,525690,271354,254336
 2010,0 a 4 anos,987615,500802,486813,951421,482409,469012,36194,18393,17801
 2010,5 a 9 anos,1092991,555463,537528,1051477,534355,517122,41514,21108,20406
