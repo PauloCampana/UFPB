@@ -1,0 +1,473 @@
+---
+format: pdf
+lang: pt
+geometry: 
+  - left=1.25in
+  - right=1.25in
+  - top=1in
+  - bottom=1in
+# bibliography: includes/bib.bibtex
+fig-cap-location: top
+echo: false
+warning: false
+cache: true
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+:::
+
+![]("includes/ufpb.png"){height=100 fig-align=center}
+
+::: {layout-ncol=1}
+UNIVERSIDADE FEDERAL DA PARAÍBA 
+
+CENTRO DE CIÊNCIAS EXATAS E DA NATUREZA 
+
+DEPARTAMENTO DE ESTATÍSTICA 
+
+DISCIPLINA: DEMOGRAFIA I 
+:::
+
+\vfill
+
+\begin{center}
+\Large{TODO titulo}
+\end{center}
+
+\vfill
+
+**Docente:** \newline
+Everlane Suane de Araújo da Silva \newline
+**Discente** \newline
+Paulo Ricardo Seganfredo Campana - 20210044220
+
+\vfill
+
+::: {layout-ncol=1}
+João Pessoa - PB
+
+Outubro, 2023
+:::
+
+\newpage
+
+TODO titulo
+
+ĸ \hfill Everlane Suane A. Silva^[Docente do Departamento de Estatística da Universidade Federal da Paraíba (UFPB); Pesquisadora do Laboratório de Estudos Demográficos (LED) do Departamento de Estatística da UFPB.]
+
+ĸ \hfill Paulo Ricardo S. Campana^[Discente do curso de bacharelado em Estatística da UFPB.]
+
+## RESUMO
+
+
+<!--
+Apresenta de forma resumida a proposta investigativa descrita no trabalho. É elaborado de forma clara e objetiva em um único  com cerca de 250 a 300 palavras e espaçamento simples.
+No resumo sistematizamos as ideias principais de todas as sessões do documento.
+
+Palavras-chave: identifique no máximo 3 palavras que resume as ideias principais tratadas no texto.
+-->
+
+Palavras-chave: .
+
+## INTRODUÇÃO
+
+<!--
+O texto da introdução deverá conter os seguintes elementos de preferência seguindo essa ordem em forma textual.
+1º momento: apresentação do tema
+2º momento: um resumo dos objetivos do seu trabalho
+3º momento: um resumo da metodologia.
+4º momento: como o trabalho está estruturado
+Normalmente a introdução é uma das últimas coisas que se faz em qualquer trabalho.
+-->
+
+\newpage
+
+## PROCEDIMENTO METODOLÓGICO
+
+Os indicadores listados abaixo foram calculados separadamente por situação do domicílio (rural ou urbano), por sexo onde aplicável (homens e mulheres), por faixa etária ou idade e por ano do Censo (2000 e 2010).
+
+### Razão de Sexos
+Este indicador mede o equilíbrio entre os sexos da população, obtido dividindo a população masculina pela feminina do grupo de interesse, valores abaixo de 100% indicam maior quantidade de mulheres do que homens.
+
+$$
+\mathrm{RS} = \dfrac{P_{\mathrm{masc}}}{P_{\mathrm{fem}}}
+$$
+
+### Índice de Myers
+Este índice mede a concentração das declarações de idades em dígitos finais específicos, é calculado somando os desvios das frequências observadas pelas frequências esperadas de cada dígito. Em tese o último digito da idade deve seguir distribuição uniforme, porém é comum declarar idades terminadas em 0 ou 5 quando não se sabe exatamente sua idade ou devido ao arredondamento pelo respondente.
+
+$$
+\Delta = 100 \times \sum_{i = 0}^9 \left| f_i - \dfrac{1}{10} \right|
+$$
+
+### Razão de Idade
+Também é um indicador que avalia a qualidade da informação da idade, dessa vez mede uma relação relação entre o tamanho de população de certa faixa etária com as outras faixas adjacentes. Esperamos valores em torno de 1 para esta razão e com valores que não atinjam acima de 1,1 ou abaixo de 0,9.
+
+$$
+R_x = \dfrac{3 P_x}{P_{x - 5} + P_x + P_{x + 5}} 
+$$
+
+<!--
+Exposição e descrição da metodologia adotada, técnicas e/ou procedimentos de análise,
+instrumentos, e outros itens referentes ao desenvolvimento do estudo.
+-->
+
+\newpage
+
+## RESULTADOS E DISCUSSÃO
+
+```{r}
+library(tidyverse)
+library(kableExtra)
+df2000 <- read_csv("includes/2000.csv")
+df2010 <- read_csv("includes/2010.csv")
+```
+
+```{r}
+#| fig-cap: Razão de Sexo por faixa etária e situação do domicílio nos censos de 2000 e 2010
+#| label: fig-razao_sexo
+#| fig-width: 6.25
+#| fig-height: 8
+#| fig-pos: h!
+
+# Razão de Sexo (Total, Urbana, Rural): 2000 e
+# 2010. Incluir gráficos (ver exemplo na página 23 do
+# livro Dinâmica da População).
+
+# Dados: População residente por sexo, situação de
+# domicílio.
+
+df2000[2:20, ] |>
+    rbind(df2010[2:20, ]) |>
+    transmute(
+        ano, idade,
+        RS_total = total_homens / total_mulheres,
+        RS_urbano = urbano_homens / urbano_mulheres,
+        RS_rural = rural_homens / rural_mulheres
+    ) |> pivot_longer(
+        cols = -c(ano, idade)
+    ) |>
+    mutate(
+        name = fct_relevel(name, "RS_rural", "RS_urbano", "RS_total"),
+        idade = fct_relevel(idade, "5 a 9 anos", after = 1) |>
+            fct_relevel("100 anos", after = 18)
+    ) |>
+    ggplot(aes(x = idade, y = value, color = name, group = name)) +
+    facet_grid(vars(ano)) +
+    geom_line() +
+    geom_point() +
+    scale_x_discrete(
+        name = "Faixa etária",
+        labels = \(x) {
+            x[-length(x)] |> sapply(\(x) {
+                nums <- str_extract_all(x, "\\d+")[[1]]
+                paste0(nums[1], "-", nums[2])
+            }) |> c("100+")
+        }
+    ) +
+    scale_y_continuous(
+        name = "Razão de Sexo",
+        breaks = c(0.4, 0.6, 0.8, 1, 1.2),
+        labels = \(y) paste0(100 * y, "%")
+    ) +
+    scale_color_brewer(
+        name = "Situação do domicílio",
+        labels = c("Rural", "Urbano", "Total"),
+        palette = "Dark2"
+    ) +
+    theme_bw() +
+    theme(
+        axis.text.x = element_text(angle = 45, vjust = 0.6),
+        legend.position = "top"
+    )
+```
+\vspace{-16pt}
+\hspace{+20pt} \qquad {\footnotesize \textsf{Fonte: IBGE, Censo Demográfico 2000/2010}}
+
+Primeiramente, podemos notar que a Razão de Sexo urbana é muito semelhante ao total, o motivo por trás disso é que a população urbana do Rio de Janeiro compõe entre 96% e 97% da população total. A Razão de Sexo rural é superior àquela da urbana em quase todas as faixas etárias, possivelmente devido a maior emigração de mulheres e sobre-enumeração de homens.
+
+Vemos que ao nascer, a Razão de Sexo é acima de 100%, coerente com as evidências biológicas sobre homens nascerem em maior frequência do que as mulheres, através dos anos a razão diminui, chegando a 80% após os 60 anos pois a mortalidade masculina é superior à feminina em todas as idades, na velhice essa diminuição é mais grave devido a diferença de expectativa de vida entre homens e mulheres.
+
+Não há diferenças significativas para este indicador entre os Censos de 2000 e 2010, exceto por uma anomalia para a faixa etária acima de 100 anos de idade no Censo de 2000, onde houve mais homens do que o esperado pela tendência decrescente, porém esse grupo compõe menos de 0,1% da população total.
+
+```{r}
+#| tbl-cap: Índice de Myers por sexo e situação do domicílio nos censos de 2000 e 2010
+#| label: tbl-myers
+
+# Calcular o Índice de Myers para o total
+# masculino e feminino (censo 2010)
+
+# Dados: População residente por sexo, situação de
+# domicílio.
+
+df2000[-(1:20), ] |> 
+    rbind(df2010[-(1:20), ]) |> 
+    mutate(digito = as.integer(str_extract(idade, "\\d*")) %% 10) |>
+    summarise(
+        across(-idade, sum),
+        .by = c(digito, ano)
+    ) |> 
+    summarise(
+        across(
+            -digito,
+            \(x) 100 * sum(abs(x / sum(x) - 0.1))
+        ), 
+        .by = ano
+    ) |> 
+    pivot_longer(
+        -ano,
+        names_to = c("domicilio", "sexo"),
+        names_sep = "_"
+    ) |> 
+    pivot_wider(
+        names_from = ano,
+        names_prefix = "myers_"
+    ) |> 
+    mutate(across(
+        c(domicilio, sexo),
+        str_to_sentence
+    )) |> 
+    slice(8,9,7, 5,6,4, 2,3,1) |> 
+    kbl(
+        digits = 2,
+        col.names = c("Situação do domicílio", "Sexo", "2000", "2010"),
+        format.args = list(decimal.mark = ","),
+        booktabs = TRUE,
+        linesep = ""
+    ) |> 
+    add_header_above(c(" " = 2, "Índice de Myers" = 2)) |> 
+    kable_styling(latex_options = "HOLD_position")
+```
+\vspace{-20pt}
+\hspace{+64pt} \qquad {\footnotesize Fonte: IBGE, Censo Demográfico 2000/2010}
+
+Para a análise dos indicadores baseados em idade, é importante o cálculo do Índice de Myers para verificação da qualidade da idade declarada. Vemos que esse índice não varia muito entre os diferentes grupos, estando entre 4 a 5,5, valor relativamente baixo para o Brasil.
+
+Note que no Rio de Janeiro, o índice é maior para os homens do que as mulheres, e maior para domicílios rurais do que urbanos, mostrando pior qualidade na declaração de idade para estes grupos.
+
+Ainda no tópico dos erros de declaração, vemos através da @fig-razao_idade sobre a Razão de Idade que o indicador se concentra muito próximo de 1 para ambos os sexos, situação de domicílio e Censo Demográfico, indicando boa qualidade dessa informação. 
+
+\newpage
+
+```{r}
+#| fig-cap: Razão de Idade nas faixas etárias segundo situação do domicílio e sexo nos censos de 2000 e 2010
+#| label: fig-razao_idade
+#| fig-width: 6.25
+#| fig-height: 8
+#| fig-pos: h!
+
+# Calcular a Razão de Idade para o total, rural e urbano
+# para homens e mulheres (censo 2000 e 2010) e
+# apresentar em gráficos;
+
+df2000[2:20, ] |> 
+    rbind(df2010[2:20, ]) |> 
+    filter(idade != "80 a 89 anos" & idade != "90 a 99 anos" & idade != "100 anos") |> 
+    pivot_longer(
+        -c(ano, idade),
+        names_to = c("domicilio", "sexo"),
+        names_sep = "_"
+    ) |>
+    mutate(
+        domicilio = fct_relevel(domicilio, "rural", "urbano", "total"),
+        sexo = fct_relevel(sexo, "homens", "mulheres", "total") |> 
+            str_to_sentence()
+    ) |> 
+    mutate(
+        value = 3 * value / (lag(value) + value + lead(value)),
+        idade = fct_relevel(idade, "5 a 9 anos", after = 1),
+        .by = c(ano, domicilio, sexo)
+    ) |> 
+    drop_na() |> 
+    ggplot(aes(x = idade, y = value, color = domicilio, group = domicilio)) +
+    facet_grid(rows = vars(sexo), cols = vars(ano)) +
+    geom_line() +
+    geom_point() +
+    scale_x_discrete(
+        name = "Faixa etária",
+        labels = \(x) {
+            x |> sapply(\(x) {
+                nums <- str_extract_all(x, "\\d+")[[1]]
+                paste0(nums[1], "-", nums[2])
+            })
+        }
+    ) +
+    scale_y_continuous(
+        name = "Razão de Idade",
+        breaks = c(0.9, 1, 1.1),
+        limits = c(0.9, 1.1)
+    ) +
+    scale_color_brewer(
+        name = "Situação do domicílio",
+        labels = c("Rural", "Urbano", "Total"),
+        palette = "Dark2"
+    ) +
+    theme_bw() +
+    theme(
+        axis.text.x = element_text(angle = 45, vjust = 0.6),
+        legend.position = "top"
+    )
+```
+\vspace{-16pt}
+\hspace{+12pt} \qquad {\footnotesize \textsf{Fonte: IBGE, Censo Demográfico 2000/2010}}
+
+Nesta situação não foram considerados as faixas etárias de 80 a 89 anos, 90 a 99 anos e acima de 100 anos pois possuem comprimento do intervalo maior comparado com o restante dos dados, o que impossibilita a comparação direta do indicador.
+
+```{r}
+#| tbl-cap: Idade Mediana por sexo e situação do domicílio nos censos de 2000 e 2010
+#| label: tbl-mediana
+
+# Calcular a Idade Mediana por sexo (censo 2000 e 2010);
+
+df2000[-(1:20), ] |> 
+    rbind(df2010[-(1:20), ]) |> 
+    mutate(
+        idade = as.integer(str_extract(idade, "\\d*"))
+    ) |>
+    pivot_longer(-c(ano, idade)) |> 
+    summarise(
+        value = sort(
+            rep(idade, value)
+        )[length(rep(idade, value)) / 2],
+        .by = c(name, ano)
+    ) |> 
+    pivot_wider(
+        names_sep = "_"
+    ) |> 
+    pivot_longer(
+        -ano,
+        names_to = c("domicilio", "sexo"),
+        names_sep = "_"
+    ) |>
+    pivot_wider(names_from = ano) |> 
+    mutate(across(
+        c(domicilio, sexo),
+        str_to_sentence
+    )) |> 
+    slice(8,9,7, 5,6,4, 2,3,1) |> 
+    kbl(
+        col.names = c("Situação do domicílio", "Sexo", "2000", "2010"),
+        booktabs = TRUE,
+        linesep = ""
+    ) |> 
+    add_header_above(
+        c(" " = 2, "Idade Mediana" = 2)
+    ) |> 
+    kable_styling(latex_options = "HOLD_position")
+```
+\vspace{-20pt}
+\hspace{+64pt} \qquad {\footnotesize Fonte: IBGE, Censo Demográfico 2000/2010}
+
+Entre os Censos Demográficos de 2000 e 2010 há um pequeno aumento na idade mediana de forma geral, agora esta idade é de 32 anos para o Estado como um todo. No meio urbano, o aumento foi de 3 anos e no meio rural 5 anos, isso indica maior igualdade entre a distribuição de idades dos dois tipos de domicílio.
+
+Também vale ressaltar que no meio urbano, a idade mediana das mulheres é 3 anos maior que a dos homens e no meio rural essa diferença não se manifesta de forma significativa.
+
+```{r}
+#| tbl-cap: Razão de Dependência e índice de Envelhecimento por sexo e situação do domicílio nos censos de 2000 e 2010
+
+# Calcular a Razão de Dependência para o total, rural e
+# urbano para homens e mulheres (censo 2000 e 2010);
+
+# Índice de envelhecimento da população (2000 e 2010)
+
+dep <- df2000[-(1:20), ] |> 
+    rbind(df2010[-(1:20), ]) |> 
+    mutate(
+        idade = as.integer(str_extract(idade, "\\d*")),
+        faixa = case_when(
+            idade < 15 ~ "novo",
+            idade >= 65 ~ "velho",
+            .default = "normal"
+        )
+    ) |> 
+    summarise(
+        across(-c(idade), sum),
+        .by = c(ano, faixa)
+    ) |> 
+    summarise(
+        across(-faixa, \(x) 100 * (x[1] + x[3]) / x[2]),
+        .by = ano
+    ) |> 
+    pivot_longer(
+        -ano,
+        names_to = c("domicilio", "sexo"),
+        names_sep = "_"
+    ) |> 
+    pivot_wider(
+        names_from = ano,
+        names_prefix = "dep_"
+    ) 
+
+env <- df2000[-(1:20), ] |> 
+    rbind(df2010[-(1:20), ]) |> 
+    mutate(
+        idade = as.integer(str_extract(idade, "\\d*")),
+        faixa = case_when(
+            idade < 15 ~ "novo",
+            idade >= 60 ~ "velho",
+            .default = "normal"
+        )
+    ) |> 
+    summarise(
+        across(-c(idade), sum),
+        .by = c(ano, faixa)
+    ) |> 
+    summarise(
+        across(-faixa, \(x) 100 * x[3] / x[1]),
+        .by = ano
+    ) |> 
+    pivot_longer(
+        -ano,
+        names_to = c("domicilio", "sexo"),
+        names_sep = "_"
+    ) |> 
+    pivot_wider(
+        names_from = ano,
+        names_prefix = "env_"
+    ) 
+
+dep |> 
+    left_join(env, by = join_by(domicilio, sexo)) |> 
+    mutate(across(
+        c(domicilio, sexo),
+        str_to_sentence
+    )) |>  
+    slice(8,9,7, 5,6,4, 2,3,1) |> 
+    kbl(
+        digits = 1,
+        col.names = c("Situação do domicílio", "Sexo", "2000", "2010", "2000", "2010"),
+        format.args = list(decimal.mark = ","),
+        booktabs = TRUE,
+        linesep = ""
+    ) |> 
+    add_header_above(
+        c(" " = 2, "Razão de Dependência" = 2, "Índice de Envelhecimento" = 2)
+    ) |> 
+    kable_styling(latex_options = "HOLD_position")
+```
+\vspace{-20pt}
+\quad {\footnotesize Fonte: IBGE, Censo Demográfico 2000/2010}
+
+Lorem
+
+<!--
+Exposição e discussão, de forma objetiva, enfatizando os resultados mais relevantes, que poderão ser exemplificados por meio de gráficos, tabelas, figuras, associados a argumentações teóricas (se for o caso). As atividades desenvolvidas no período devem ser destacadas e confrontados com aquelas propostas no plano original, justificando-se, caso seja pertinente, as limitações ocorridas e/ou as alterações realizadas. As discussões devem ser situadas e fundamentadas no contexto da abordagem teórica pertinente.
+-->
+
+## CONCLUSÃO
+
+<!--
+Exposição com base nos resultados obtidos, evitando-se a simples repetição do que já foi apresentado nas discussões. Na elaboração desta seção, convém retomar os objetivos de modo a evidenciar se foram ou não alcançados, apresentando os possíveis desdobramentos do estudo.
+-->
+
+## REFERÊNCIAS
+
+::: {#refs}
+:::
+
+<!--
+Usar a ABNT NBR 6023
+Este modelo segue as orientações da Pró-Reitoria de Pesquisa (PROPESQ)
+-->
