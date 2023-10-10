@@ -85,7 +85,6 @@ Normalmente a introdução é uma das últimas coisas que se faz em qualquer tra
 \newpage
 
 ## PROCEDIMENTO METODOLÓGICO
-
 Os indicadores listados abaixo foram calculados separadamente por situação do domicílio (rural ou urbano), por sexo onde aplicável (homens e mulheres), por faixa etária ou idade e por ano do Censo (2000 e 2010).
 
 ### Razão de Sexos
@@ -108,6 +107,34 @@ Também é um indicador que avalia a qualidade da informação da idade, dessa v
 $$
 R_x = \dfrac{3 P_x}{P_{x - 5} + P_x + P_{x + 5}} 
 $$
+
+### Idade Mediana
+A Idade Mediana é o valor de idade tal que metade da população é mais velha e a outra metade mais nova que este valor. Geralmente para dados agrupados em intervalos a mediana é calculada de forma aproximada, podemos também obtê-la colocando as observações em ordem crescente e escolhendo o elemento do meio, como foi o caso apresentado.
+
+### Razão de Dependência
+É um índice que mede a relação entre as pessoas em idade potencialmente ativas ou não. Dividimos a quantidade de habitantes nas faixas etárias de até 14 anos e após 65 anos por aqueles entre 15 a 64 anos de idade.
+
+$$
+\mathrm{RD} = 100 \times \dfrac{P_{[0,14]} + P_{[65+]}}{P_{[15,64]}}
+$$
+
+### Índice de Envelhecimento
+De Maneira similar a Razão de Dependência, mede a relação entre a quantidade de habitantes com 60 anos ou mais e aqueles com menos de 15 anos pela divisão desses valores.
+
+$$
+\mathrm{IE} = 100 \times \dfrac{P_{[60+]}}{P_{[0,14]}}
+$$
+
+### Classificações de Sundbarg e Whipple
+Segundo Whipple, uma população é considerada normal se a proporção de habitates na faixa etária de 15 a 49 anos é aproximadamente 50%, "acessiva" se maior que 50% e "recessiva" caso contrário. Segundo Sundbarg a classificação é dada de acordo a estrutura que mais de assemelha a tabela a seguir
+
+|Faixa etária   | Progressiva | Estacionária| Regressiva  |
+|:--------------|:-----------:|:-----------:|:-----------:|
+|$\;\,0\vdash15$| 40%         | 33%         | 20%         |
+|$15 \vdash 50$ | 50%         | 50%         | 50%         |
+|50 ou mais     | 10%         | 17%         | 30%         |
+
+
 
 <!--
 Exposição e descrição da metodologia adotada, técnicas e/ou procedimentos de análise,
@@ -360,12 +387,13 @@ df2000[-(1:20), ] |>
 \vspace{-20pt}
 \hspace{+64pt} \qquad {\footnotesize Fonte: IBGE, Censo Demográfico 2000/2010}
 
-Entre os Censos Demográficos de 2000 e 2010 há um pequeno aumento na idade mediana de forma geral, agora esta idade é de 32 anos para o Estado como um todo. No meio urbano, o aumento foi de 3 anos e no meio rural 5 anos, isso indica maior igualdade entre a distribuição de idades dos dois tipos de domicílio.
+Entre os Censos Demográficos de 2000 e 2010 há um pequeno aumento na idade mediana de forma geral, agora esta idade é de 32 anos para o Estado como um todo. No meio urbano, o aumento foi de 3 anos e no meio rural 5 anos, isso indica aumento na igualdade entre a distribuição de idades dos dois tipos de domicílio.
 
 Também vale ressaltar que no meio urbano, a idade mediana das mulheres é 3 anos maior que a dos homens e no meio rural essa diferença não se manifesta de forma significativa.
 
 ```{r}
-#| tbl-cap: Razão de Dependência e índice de Envelhecimento por sexo e situação do domicílio nos censos de 2000 e 2010
+#| tbl-cap: Razão de Dependência e Índice de Envelhecimento por sexo e situação do domicílio nos censos de 2000 e 2010
+#| label: tbl-razao_dep
 
 # Calcular a Razão de Dependência para o total, rural e
 # urbano para homens e mulheres (censo 2000 e 2010);
@@ -450,7 +478,57 @@ dep |>
 \vspace{-20pt}
 \quad {\footnotesize Fonte: IBGE, Censo Demográfico 2000/2010}
 
-Lorem
+Vemos que entre os Censos de 2000 e 2010, a Razão de Dependência diminui para todos os grupos do estudo enquanto que o Índice de Envelhecimento aumentou, isso significa que a proporção de idosos neste período aumentou porém também houve aumento na proporção de habitantes em idade potencialmente ativa e diminuição da proporção de crianças e adolescentes.
+
+O efeito destes índices foi um pouco mais profundo no meio rural, no meio urbano, as mulheres possuem Índice de Envelhecimento significativamente maior.
+
+Sobre a estrutura da população por idade, segundo Sundbarg, a população do Rio de Janeiro em 2000 é estacionária, enquanto que em 2010 ela já é regressiva. Segundo Whipple a população do estado é "acessiva" para os dois Censos.
+
+```{r}
+#| fig-cap: Pirâmide Etária segundo situação do domicílio nos censos de 2000 e 2010
+#| label: fig-piramide
+#| fig-width: 6.25
+#| fig-height: 8
+#| fig-pos: h!
+
+# Fazer a Pirâmide Etária para o total, rural e urbano
+# (censo 2000 e 2010).
+
+df2000[-(1:20), ] |> 
+    rbind(df2010[-(1:20), ]) |> 
+    pivot_longer(
+        -c(ano, idade),
+        names_to = c("domicilio", "sexo"),
+        names_sep = "_"
+    ) |> 
+    pivot_wider(
+        names_from = sexo
+    ) |> 
+    mutate(
+        idade = as.integer(str_extract(idade, "\\d*")),
+        domicilio = str_to_sentence(domicilio),
+        domicilio = fct_relevel(domicilio, "Rural", "Urbano", "Total")
+    ) |> 
+    ggplot(aes(y = idade, xmin = 0)) +
+    facet_grid(vars(domicilio), vars(ano)) +
+    geom_linerange(aes(xmax = -homens), linewidth = 1, color = "#6080f0") +
+    geom_linerange(aes(xmax = mulheres), linewidth = 1, color = "#f06080") +
+    annotate("text", x = -125000, y = 100, label = "Homens") +
+    annotate("text", x = +125000, y = 100, label = "Mulheres") +
+    scale_x_continuous(
+        name = "População",
+        labels = \(x) format(abs(x), scientific = FALSE, big.mark = " ")
+    ) +
+    scale_y_continuous(
+        name = "Idade",
+        n.breaks = 11
+    ) +
+    theme_bw()
+```
+\vspace{-16pt}
+\hspace{+12pt} \qquad {\footnotesize \textsf{Fonte: IBGE, Censo Demográfico 2000/2010}}
+
+Através da pirâmide etária observamos os resultados expostos acima, a população envelheceu de maneira geral entre 2000 e 2010, as mulheres são em média mais velhas que os homens, principalmente na terceira idade, a população rural do Rio de Janeiro e muito baixa, também baixas concentrações de declaração de idade relativa terminadas em 0 ou 5, indicando que a qualidade dos dados é razoável.
 
 <!--
 Exposição e discussão, de forma objetiva, enfatizando os resultados mais relevantes, que poderão ser exemplificados por meio de gráficos, tabelas, figuras, associados a argumentações teóricas (se for o caso). As atividades desenvolvidas no período devem ser destacadas e confrontados com aquelas propostas no plano original, justificando-se, caso seja pertinente, as limitações ocorridas e/ou as alterações realizadas. As discussões devem ser situadas e fundamentadas no contexto da abordagem teórica pertinente.

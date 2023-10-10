@@ -1,0 +1,70 @@
+---
+format: pdf
+---
+
+```{r}
+# Mortalidade para o ano 2010 (por sexo)
+# 1) Taxa Bruta de Mortalidade
+# 2) Taxa Específica de Mortalidade
+# 3) Taxa Bruta de Mortalidade Padronizada pelo
+# Processo Direto (Padrão: Brasil)
+```
+
+```{r}
+#| tbl-cap: Taxas de Mortalidade Infantil, Materna e de algumas causas específicas por sexo no ano de 2010
+#| label: tbl-mortalidade_infantil
+
+# Mortalidade para o ano 2010 (por sexo)
+# 4) Taxa de Mortalidade Infantil
+# 5) Taxa de Mortalidade Neonatal
+# 6) Taxa de Mortalidade Pós-Neonatal
+# 7) Taxa de Mortalidade Perinatal
+# 8) Taxa de Mortalidade Materna
+# 9) Taxa de Mortalidade por Causa (Doenças do
+# Aparelho Circulatório e Causas Externas de
+# Morbidade e Mortalidade)
+
+data <- data.frame(
+    população = c(15989929, 7625679, 8364250),
+    nascidos = c(215262, 110269, 104944),
+    mn_infantil = c(3004, 1626, 1372),
+    mn_neonatal = c(2008, 1082, 920),
+    mn_posneonatal = c(996, 544, 452),
+    mm_materna = c(NA, NA, 180),
+    mp_circulatório = c(37120, 18988, 18128),
+    mp_externas = c(13794, 10842, 2925)
+)
+
+library(tidyverse)
+library(kableExtra)
+data |> 
+    transmute(
+        sexo = c("total", "masculino", "feminino"),
+        across(starts_with("mn_"), \(x) x / nascidos * 1000),
+        across(starts_with("mm_"), \(x) x / nascidos[1] * 100000),
+        across(starts_with("mp_"), \(x) x / população * 1000)
+    ) |> 
+    pivot_longer(-sexo) |> 
+    pivot_wider(names_from = sexo) |> 
+    mutate(
+        name = c(
+            "Infantil (‰)",
+            "Neonatal (‰)",
+            "Pós-Neonatal (‰)",
+            "Materna (por 100 mil)",
+            "Por Doenças do Aparelho Circulatório (‰)",
+            "Por Causas Externas (‰)"
+        ),
+        across(-name, \(x) ifelse(is.na(x), "", format(x, digits = 3, decimal.mark = ",")))
+    ) |> 
+    kbl(
+        col.names = c("Taxa de Mortalidade", "Total", "Masculino", "Feminino"),
+        booktabs = TRUE,
+        linesep = ""
+    ) |> 
+    kable_styling(latex_options = "HOLD_position")
+```
+\vspace{-20pt}
+\quad {\footnotesize Fonte: Sistema de Informações sobre Mortalidade (SIM) - Agosto de 2023}
+
+
