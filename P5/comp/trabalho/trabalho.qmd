@@ -1,0 +1,65 @@
+---
+format: pdf
+lang: pt
+bibliography: includes/bib.bibtex
+title: Comparação empírica de diferentes métodos de imputação para modelos de regressão linear múltipla.
+subtitle: UFPB - Estatística Computacional
+author: 
+  - name: Paulo Ricardo Seganfredo Campana
+  - name: Marcelo Rodrigo Portela Ferreira 
+date: today
+date-format: long
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+:::
+
+# Resumo
+
+Palavras-chave: Imputação, Regressão.
+
+{{< pagebreak >}}
+
+# Introdução
+Para a maioria dos modelos estatísticos, incluindo os modelos regressão linear, um grande problema são as observações faltantes, também conhecidas como **NA** (*not available* / não disponível), não podemos estimar parâmetros quando uma ou mais observações estão ausentes, muito menos podemos retirar tais observações do conjunto de dados pois isso introduz um viés de seleção já que muitas vezes esta falta pode estar correlacionada com alguma variável de interesse.
+
+Para remediar este problema existem técnicas de imputação, em que as observações ausentes de uma variável são substituídas por certos valores de modo a minimizar o viés introduzido por essa manobra. Entre os métodos de imputação mais comuns temos imputação por média e mediana, em que todas as observações faltantes são substituídas por uma única estatística calculada por todas as outras observações. Outros métodos utilizam modelos de regressão secundários para imputação, fazendo uso da correlação entre as variáveis regressoras.
+
+# Metodologia
+As seguintes análises foram realizadas na linguagem de programação R [@R] utilizando o *framework* de modelagem estatística *tidymodels* [@tidymodels].
+
+Foram usados 5 conjuntos de dados para comparação: o primeiro foi gerado números aleatórios de distribuição Normal Multivariada com 4 variáveis, vetor de médias $\vec{\mathbf 0}$ e matriz de covariância com moderada correlação entre as variáveis e adicionado uma variável $y$ como combinação linear das outras 4 mais um erro normal. Os outros conjuntos de dados são compostos por dados disponíveis em pacotes populares do R: `iris` [@iris], `diamonds` [@diamonds], `penguins` [@penguins] e `concrete` [@concrete]. A seguinte tabela resume os conjuntos de dados:
+
+: Conjuntos de dados utilizados para comparação
+
+|Dados              | Observações| V. Quantitativas| V. Qualitativas|
+|:------------------|-----------:|----------------:|---------------:|
+|Normal Multivariada|         500|                4|               0|
+|`iris`             |         150|                3|               1|
+|`diamonds`         |       53940|                6|               3|
+|`penguins`         |         344|                3|               3|
+|`concrete`         |        1030|                8|               0|
+
+Para cada conjunto, todas as variáveis regressoras numéricas foram escolhidas para terem 10% de suas observações escolhidas ao acaso substituídas por **NA**, aplicados 5 diferentes métodos de imputação, ajustado um modelo linear e observado as estatísticas de performance do modelo, este procedimento foi repetido em uma simulação Monte Carlo para obter estimativas pontuais e intervalares das métricas de performance.
+
+Não foram escolhidas para ocultação as variáveis qualitativas pois não é possível aplicar imputação por média, mediana ou por modelo linear, porém há a possibilidade de imputação por moda e modelos *KNN* e *Bag* em futuros trabalhos. A ocultação foi feita de forma independente para cada variável.
+
+Os métodos de imputação usados foram: imputação por média e mediana e por modelos lineares, *k-nearest neighbors* e *Bagged trees*, para estes três últimos, é criado submodelos para cada variável que necessita imputação de modo que as outras variáveis regressoras do conjunto de dados tentam prever o valor daquela que está sendo imputada.
+
+Para o modelo linear, os conjuntos de dados são divididos em duas partes: o modelo é ajustado com os dados de treinamento que compõem 80% do total e as métricas de performance, as estatísticas da raiz do erro quadrático médio ($RMSE$) e o coeficiente de determinação ($R^2$) são estimadas com o restante dos 20% dos dados, os dados de validação.
+
+Devido a cada etapa deste procedimento levar um tempo considerável e a baixa variação entre cada etapa, houve apenas 100 iterações de simulação de Monte Carlo, que em 12 processos em paralelo demorou ___TODO___  horas. Os resultados serão apresentados em tabelas e gráficos a seguir.
+
+# Resultados
+
+# Conclusões
+
+{{< pagebreak >}}
+
+# Referências
+
+::: {#refs}
+:::
+
