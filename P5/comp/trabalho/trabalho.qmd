@@ -9,6 +9,9 @@ author:
   - name: Marcelo Rodrigo Portela Ferreira 
 date: today
 date-format: long
+warning: false
+echo: false
+cache: true
 ---
 
 ::: hidden
@@ -30,7 +33,15 @@ Para remediar este problema existem técnicas de imputação, em que as observa�
 # Metodologia
 As seguintes análises foram realizadas na linguagem de programação R [@R] utilizando o *framework* de modelagem estatística *tidymodels* [@tidymodels].
 
-Foram usados 5 conjuntos de dados para comparação: o primeiro foi gerado números aleatórios de distribuição Normal Multivariada com 4 variáveis, vetor de médias $\vec{\mathbf 0}$ e matriz de covariância com moderada correlação entre as variáveis e adicionado uma variável $y$ como combinação linear das outras 4 mais um erro normal. Os outros conjuntos de dados são compostos por dados disponíveis em pacotes populares do R: `iris` [@iris], `diamonds` [@diamonds], `penguins` [@penguins] e `concrete` [@concrete]. A seguinte tabela resume os conjuntos de dados:
+Foram usados 5 conjuntos de dados para comparação, um conjunto de dados sintéticos e 4 incluidos em pacotes populares do R:
+
+* Quatro variáveis aleatórias de distribuição Normal Multivariada com vetor de médias 0 e matriz de covariância com moderada correlação entre as variáveis, e adicionado uma variável $y$ como combinação linear das outras 4 mais um erro normal.
+* `iris` [@iris].
+* `diamonds` [@diamonds].
+* `penguins` [@penguins].
+* `concrete` [@concrete].
+
+A seguinte tabela resume os conjuntos de dados:
 
 : Conjuntos de dados utilizados para comparação
 
@@ -48,11 +59,263 @@ Não foram escolhidas para ocultação as variáveis qualitativas pois não é p
 
 Os métodos de imputação usados foram: imputação por média e mediana e por modelos lineares, *k-nearest neighbors* e *Bagged trees*, para estes três últimos, é criado submodelos para cada variável que necessita imputação de modo que as outras variáveis regressoras do conjunto de dados tentam prever o valor daquela que está sendo imputada.
 
-Para o modelo linear, os conjuntos de dados são divididos em duas partes: o modelo é ajustado com os dados de treinamento que compõem 80% do total e as métricas de performance, as estatísticas da raiz do erro quadrático médio ($RMSE$) e o coeficiente de determinação ($R^2$) são estimadas com o restante dos 20% dos dados, os dados de validação.
+Para o modelo linear, os conjuntos de dados são divididos em duas partes: o modelo é ajustado com os dados de treinamento que compõem 80% do total e as métricas de performance, as estatísticas da raiz do erro quadrático médio ($RMSE$) e o coeficiente de determinação ($R^2$) são estimadas com o restante dos 20% dos dados, os dados de validação. Esta separação é importante para evitarmos o que é conhecido como *overfitting*.
 
-Devido a cada etapa deste procedimento levar um tempo considerável e a baixa variação entre cada etapa, houve apenas 100 iterações de simulação de Monte Carlo, que em 12 processos em paralelo demorou ___TODO___  horas. Os resultados serão apresentados em tabelas e gráficos a seguir.
+Devido a cada etapa deste procedimento levar um tempo considerável e a baixa variação entre cada etapa, houve apenas 1200 iterações de simulação de Monte Carlo em 12 processos em paralelo durante 3 horas. Os resultados serão apresentados em tabelas e gráficos a seguir.
 
 # Resultados
+
+Segundo a Tabela 2, o método de imputação por submodelos: linear, *K-nearest neighbors* e *Bagged trees* apresenta em todos os casos um $RMSE$ menor e $R^2$ maior, indicando que as imputações feita por estes métodos são mais eficientes para encontrar os reais estimadores dos coeficientes do modelo de regressão. Em específico, a imputação por modelo linear parece se destacar um pouco das demais, porém apresenta desvio padrão destas métricas superior aos outros métodos.
+
+```{r library}
+library(tidyverse)
+library(tidymodels)
+library(furrr)
+library(kableExtra)
+set.seed(0)
+```
+
+```{r data}
+S <- matrix(rbeta(25, 0.5, 0.5), 5, 5)
+X <- mvtnorm::rmvnorm(500, sigma = crossprod(S))
+colnames(X) <- paste0("x", 1:5)
+data_random <- as_tibble(X) |>
+    mutate(y = 1 * x1 + 2 * x2 + 3 * x3 + 4 * x4 + 5 * x5 + rnorm(500, sd = 5))
+
+data_iris <- iris |>
+    as_tibble() |>
+    rename(
+        factor = Species,
+        y = Petal.Width
+    )
+
+data_diamonds <- diamonds |>
+    rename(
+        factor1 = cut,
+        factor2 = color,
+        factor3 = clarity,
+        yy = y,
+        y = price
+    )
+
+data_penguins <- penguins |>
+    drop_na() |>
+    rename(
+        factor1 = species,
+        factor2 = island,
+        factor3 = sex,
+        y = body_mass_g
+    )
+
+data_concrete <- concrete |>
+    rename(y = compressive_strength)
+```
+
+```{r function}
+evaluate_model <- function(df) {
+    data <- df |>
+        mutate(across(
+            -c(y, starts_with("factor")), \(x) {
+                n <- length(x)
+                index <- sample(n, size = 0.1 * n)
+                x[index] <- NA
+                x
+            }
+        ))
+
+    split <- initial_validation_split(data, prop = c(0.8, 0.19))
+    training <- training(split)
+    validation <- validation_set(split)
+
+    workflow <- workflow_set(
+        preproc = list(
+            mean = training |>
+                recipe(y ~ .) |>
+                step_impute_mean(all_numeric_predictors()),
+            median = training |>
+                recipe(y ~ .) |>
+                step_impute_median(all_numeric_predictors()),
+            linear = training |>
+                recipe(y ~ .) |>
+                step_impute_linear(all_numeric_predictors()),
+            knn = training |>
+                recipe(y ~ .) |>
+                step_impute_knn(all_numeric_predictors()),
+            bag = training |>
+                recipe(y ~ .) |>
+                step_impute_bag(all_numeric_predictors())
+        ),
+        models = list(impute = linear_reg())
+    )
+
+    workflow |>
+        workflow_map(
+            fn = "fit_resamples",
+            validation,
+            verbose = TRUE,
+            seed = 0
+        ) |>
+        collect_metrics() |>
+        select(-.config, -preproc, -model, -.estimator, -n, -std_err) |>
+        pivot_wider(names_from = .metric, values_from = mean)
+}
+```
+
+```{r results random}
+plan(multisession, workers = 12)
+
+results_random <- future_map(
+    1:1200,
+    \(x) evaluate_model(data_random),
+    .progress = TRUE
+) |> Reduce(f = rbind) |>
+    mutate(data = "data_random", .before = wflow_id)
+```
+
+```{r results iris}
+plan(multisession, workers = 12)
+
+results_iris <- future_map(
+    1:1200,
+    \(x) evaluate_model(data_iris),
+    .progress = TRUE
+) |> Reduce(f = rbind) |>
+    mutate(data = "data_iris", .before = wflow_id)
+```
+
+```{r results diamonds}
+plan(multisession, workers = 12)
+
+results_diamonds <- future_map(
+    1:1200,
+    \(x) evaluate_model(data_diamonds),
+    .progress = TRUE
+) |> Reduce(f = rbind) |>
+    mutate(data = "data_diamonds", .before = wflow_id)
+```
+
+```{r results penguins}
+plan(multisession, workers = 12)
+
+results_penguins <- future_map(
+    1:1200,
+    \(x) evaluate_model(data_penguins),
+    .progress = TRUE
+) |> Reduce(f = rbind) |>
+    mutate(data = "data_penguins", .before = wflow_id)
+```
+
+```{r results concrete}
+plan(multisession, workers = 12)
+
+results_concrete <- future_map(
+    1:1200,
+    \(x) evaluate_model(data_concrete),
+    .progress = TRUE
+) |> Reduce(f = rbind) |>
+    mutate(data = "data_concrete", .before = wflow_id)
+
+plan(sequential)
+```
+
+```{r table}
+rbind(
+    results_random,
+    results_iris,
+    results_diamonds,
+    results_penguins,
+    results_concrete
+) |> summarise(
+        mean_rmse = mean(rmse),
+        sd_rmse = sd(rmse),
+        mean_rsq = mean(rsq),
+        sd_rsq = sd(rsq),
+        .by = c(data, wflow_id)
+    ) |> mutate(
+        data = data |> case_match(
+            "data_random"   ~ "Normal Multivariada",
+            "data_iris"     ~ "iris",
+            "data_diamonds" ~ "diamonds",
+            "data_penguins" ~ "penguins",
+            "data_concrete" ~ "concrete"
+        ),
+        wflow_id = wflow_id |> case_match(
+            "mean_impute"   ~ "Média",
+            "median_impute" ~ "Mediana",
+            "linear_impute" ~ "Modelo linear",
+            "knn_impute"    ~ "K-nearest neighbors",
+            "bag_impute"    ~ "Bagged trees"
+        )
+    ) |>
+    select(-data) |> 
+    kbl(
+        digits = 3,
+        col.names = c("Método", "Média", "Desvio padrão", "Média", "Desvio padrão"),
+        booktabs = TRUE,
+        linesep = "",
+        caption = "Resultados da simulação de Monte Carlo para a performance dos diferentes métodos de imputação nos conjuntos de dados estudados."
+    ) |>
+    kable_styling(
+        latex_options = "HOLD_position",
+        full_width = TRUE
+    ) |>
+    add_header_above(c(" " = 1, "RMSE" = 2, "R²" = 2)) |> 
+    column_spec(1, width = "110pt") |> 
+    pack_rows("Normal Multivariada", 1, 5) |> 
+    pack_rows("iris", 6, 10) |> 
+    pack_rows("diamonds", 11, 15) |> 
+    pack_rows("penguins", 16, 20) |> 
+    pack_rows("concrete", 21, 25)
+```
+
+```{r graph}
+#| fig-cap: Intervalos de confiança para a raiz do erro quadrático médio da regressão com os diferentes métodos de imputação.
+#| label: fig-result
+#| out-width: 100%
+#| fig-height: 7
+
+rbind(
+    results_random,
+    results_iris,
+    results_diamonds,
+    results_penguins,
+    results_concrete
+) |> summarise(
+        mean = mean(rmse),
+        sd = sd(rmse),
+        ci_low = mean - qt(0.975, n()) * sd / sqrt(n()),
+        ci_high = mean + qt(0.975, n()) * sd / sqrt(n()),
+        .by = c(data, wflow_id)
+    ) |> mutate(
+        data = as.factor(data) |> recode_factor(
+            "data_random"   = "Normal Multivariada",
+            "data_iris"     = "iris",
+            "data_diamonds" = "diamonds",
+            "data_penguins" = "penguins",
+            "data_concrete" = "concrete"
+        ) ,
+        wflow_id = as.factor(wflow_id) |> recode_factor(
+            "mean_impute"   = "Média",
+            "median_impute" = "Mediana",
+            "linear_impute" = "Modelo linear",
+            "knn_impute"    = "K-nearest neighbors",
+            "bag_impute"    = "Bagged trees"
+        ) 
+    ) |> 
+    ggplot(aes(x = wflow_id, y = mean)) +
+    facet_grid(rows = vars(data), scales = "free") +
+    geom_errorbar(aes(ymin = ci_low, ymax = ci_high), width = 0.25) +
+    geom_point(size = 1) +
+    scale_y_continuous(n.breaks = 4) +
+    labs(
+        x = "Método",
+        y = "RMSE"
+    ) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 10, vjust = 0.7))
+```
+
+Pelos intervalos de confiança da @fig-result vemos que de fato os métodos de imputação por média e mediana não obtêm resultados tão bons quanto imputação por submodelos e o método de submodelo linear se destaca apenas em alguns conjuntos de dados: Normal Multivariada e `concrete`.
 
 # Conclusões
 
