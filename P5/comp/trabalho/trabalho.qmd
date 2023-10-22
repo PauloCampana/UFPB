@@ -2,6 +2,8 @@
 format: pdf
 lang: pt
 bibliography: includes/bib.bibtex
+linkcolor: black
+urlcolor: black
 title: Comparação empírica de diferentes métodos de imputação para modelos de regressão linear múltipla.
 subtitle: UFPB - Estatística Computacional
 author: 
@@ -20,10 +22,11 @@ cache: true
 :::
 
 # Resumo
+Técnicas para lidar com valores ausentes em conjuntos de dados são não só importantes mas necessárias para a criação de modelos estatísticos. A imputação destes valores é uma técnica popular para solucionar este problema.
+
+Dentre elas, iremos estudar o impacto na regressão linear múltipla de 5 métodos de imputação aplicados em 5 conjuntos de dados onde valores ausentes foram impostos de maneira aleatória, será avaliada o poder preditivo e a explicabilidade da regressão para comparar os diferentes métodos.
 
 Palavras-chave: Imputação, Regressão.
-
-{{< pagebreak >}}
 
 # Introdução
 Para a maioria dos modelos estatísticos, incluindo os modelos regressão linear, um grande problema são as observações faltantes, também conhecidas como **NA** (*not available* / não disponível), não podemos estimar parâmetros quando uma ou mais observações estão ausentes, muito menos podemos retirar tais observações do conjunto de dados pois isso introduz um viés de seleção já que muitas vezes esta falta pode estar correlacionada com alguma variável de interesse.
@@ -31,11 +34,15 @@ Para a maioria dos modelos estatísticos, incluindo os modelos regressão linear
 Para remediar este problema existem técnicas de imputação, em que as observações ausentes de uma variável são substituídas por certos valores de modo a minimizar o viés introduzido por essa manobra. Entre os métodos de imputação mais comuns temos imputação por média e mediana, em que todas as observações faltantes são substituídas por uma única estatística calculada por todas as outras observações. Outros métodos utilizam modelos de regressão secundários para imputação, fazendo uso da correlação entre as variáveis regressoras.
 
 # Metodologia
-As seguintes análises foram realizadas na linguagem de programação R [@R] utilizando o *framework* de modelagem estatística *tidymodels* [@tidymodels].
+As seguintes análises foram realizadas na linguagem de programação R [@R] utilizando o *framework* de modelagem estatística *tidymodels* [@tidymodels]. os códigos da simulação estão disponíveis de maneira reproduzível no Github [@trabalho].
 
-Foram usados 5 conjuntos de dados para comparação, um conjunto de dados sintéticos e 4 incluidos em pacotes populares do R:
+Foram usados 5 conjuntos de dados para comparação, um conjunto de dados sintéticos e 4 incluídos em pacotes populares do R:
 
-* Quatro variáveis aleatórias de distribuição Normal Multivariada com vetor de médias 0 e matriz de covariância com moderada correlação entre as variáveis, e adicionado uma variável $y$ como combinação linear das outras 4 mais um erro normal.
+* Dados gerados:
+    - 500 observações de 5 variáveis com distribuição conjunta Normal Multivariada.
+    - $\mathcal N_5(0, \Sigma)$ em que $\Sigma$ trás uma moderada correlação entre as variáveis.
+    - $y$ gerado como: $y_i = x_1 + 2x_2 + 3x_3 + 4x_4 + 5x_5 + \varepsilon_i$.
+    - $\varepsilon$ de distribuição $\mathcal N(0, 5)$.
 * `iris` [@iris].
 * `diamonds` [@diamonds].
 * `penguins` [@penguins].
@@ -45,21 +52,21 @@ A seguinte tabela resume os conjuntos de dados:
 
 : Conjuntos de dados utilizados para comparação
 
-|Dados              | Observações| V. Quantitativas| V. Qualitativas|
-|:------------------|-----------:|----------------:|---------------:|
-|Normal Multivariada|         500|                4|               0|
-|`iris`             |         150|                3|               1|
-|`diamonds`         |       53940|                6|               3|
-|`penguins`         |         344|                3|               3|
-|`concrete`         |        1030|                8|               0|
+|Dados         | Observações| V. Quantitativas| V. Qualitativas|
+|:-------------|-----------:|----------------:|---------------:|
+|Dados gerados |         500|                5|               0|
+|`iris`        |         150|                3|               1|
+|`diamonds`    |       53940|                6|               3|
+|`penguins`    |         344|                3|               3|
+|`concrete`    |        1030|                8|               0|
 
-Para cada conjunto, todas as variáveis regressoras numéricas foram escolhidas para terem 10% de suas observações escolhidas ao acaso substituídas por **NA**, aplicados 5 diferentes métodos de imputação, ajustado um modelo linear e observado as estatísticas de performance do modelo, este procedimento foi repetido em uma simulação Monte Carlo para obter estimativas pontuais e intervalares das métricas de performance.
+Para cada conjunto, todas as variáveis regressoras numéricas tiveram 10% de suas observações escolhidas ao acaso substituídas por **NA**, um processo que iremos chamar de "ocultação", e aplicados 5 diferentes métodos de imputação, ajustado um modelo linear e observado as estatísticas de performance do modelo, este procedimento foi repetido em uma simulação Monte Carlo para obter estimativas pontuais e intervalares das métricas de performance.
 
-Não foram escolhidas para ocultação as variáveis qualitativas pois não é possível aplicar imputação por média, mediana ou por modelo linear, porém há a possibilidade de imputação por moda e modelos *KNN* e *Bag* em futuros trabalhos. A ocultação foi feita de forma independente para cada variável.
+Não foram selecionadas para ocultação as variáveis qualitativas pois não é possível aplicar imputação por média, mediana ou por modelo linear, porém há a possibilidade de imputação por moda e modelos *KNN* e *Bag* em futuros trabalhos. A ocultação foi feita de forma independente para cada variável.
 
 Os métodos de imputação usados foram: imputação por média e mediana e por modelos lineares, *k-nearest neighbors* e *Bagged trees*, para estes três últimos, é criado submodelos para cada variável que necessita imputação de modo que as outras variáveis regressoras do conjunto de dados tentam prever o valor daquela que está sendo imputada.
 
-Para o modelo linear, os conjuntos de dados são divididos em duas partes: o modelo é ajustado com os dados de treinamento que compõem 80% do total e as métricas de performance, as estatísticas da raiz do erro quadrático médio ($RMSE$) e o coeficiente de determinação ($R^2$) são estimadas com o restante dos 20% dos dados, os dados de validação. Esta separação é importante para evitarmos o que é conhecido como *overfitting*.
+Para o modelo de regressão linear, os conjuntos de dados são divididos em duas partes: o modelo é ajustado com os dados de treinamento que compõem 80% do total e as métricas de performance, as estatísticas da raiz do erro quadrático médio ($RMSE$) e o coeficiente de determinação ($R^2$) são estimadas com o restante dos 20% dos dados, os dados de validação. Esta separação é importante para evitarmos o que é conhecido como *overfitting*.
 
 Devido a cada etapa deste procedimento levar um tempo considerável e a baixa variação entre cada etapa, houve apenas 1200 iterações de simulação de Monte Carlo em 12 processos em paralelo durante 3 horas. Os resultados serão apresentados em tabelas e gráficos a seguir.
 
@@ -259,12 +266,12 @@ rbind(
         latex_options = "HOLD_position",
         full_width = TRUE
     ) |>
-    add_header_above(c(" " = 1, "RMSE" = 2, "R²" = 2)) |> 
-    column_spec(1, width = "110pt") |> 
-    pack_rows("Normal Multivariada", 1, 5) |> 
-    pack_rows("iris", 6, 10) |> 
-    pack_rows("diamonds", 11, 15) |> 
-    pack_rows("penguins", 16, 20) |> 
+    add_header_above(c(" " = 1, "RMSE" = 2, "R²" = 2)) |>
+    column_spec(1, width = "110pt") |>
+    pack_rows("Normal Multivariada", 1, 5) |>
+    pack_rows("iris", 6, 10) |>
+    pack_rows("diamonds", 11, 15) |>
+    pack_rows("penguins", 16, 20) |>
     pack_rows("concrete", 21, 25)
 ```
 
@@ -317,9 +324,11 @@ rbind(
 
 Pelos intervalos de confiança da @fig-result vemos que de fato os métodos de imputação por média e mediana não obtêm resultados tão bons quanto imputação por submodelos e o método de submodelo linear se destaca apenas em alguns conjuntos de dados: Normal Multivariada e `concrete`.
 
-# Conclusões
-
 {{< pagebreak >}}
+
+# Conclusões
+Desta forma, vemos que as imputações por média e mediana são ferramentas muito boas para podermos 
+construir modelos onde há observações ausentes, porém quando estamos na situação de um modelo multivariado, os métodos de imputação por submodelos utilizam a correlação entre as variáveis regressoras para imputação, isso trás benefícios que são significantes em relação a imputação por média ou mediana.
 
 # Referências
 
