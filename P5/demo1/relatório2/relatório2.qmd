@@ -6,7 +6,7 @@ geometry:
   - right=1.25in
   - top=1in
   - bottom=1in
-# bibliography: includes/bib.bibtex
+bibliography: includes/bib.bibtex
 fig-cap-location: top
 echo: false
 warning: false
@@ -61,7 +61,6 @@ TODO titulo
 
 ## RESUMO
 
-
 <!--
 Apresenta de forma resumida a proposta investigativa descrita no trabalho. É elaborado de forma clara e objetiva em um único  com cerca de 250 a 300 palavras e espaçamento simples.
 No resumo sistematizamos as ideias principais de todas as sessões do documento.
@@ -85,23 +84,25 @@ Normalmente a introdução é uma das últimas coisas que se faz em qualquer tra
 \newpage
 
 ## PROCEDIMENTO METODOLÓGICO
-Os indicadores listados abaixo foram calculados separadamente por situação do domicílio (rural ou urbano), por sexo onde aplicável (homens e mulheres), por faixa etária ou idade e por ano do Censo (2000 e 2010).
+Os indicadores para fatores estáticos da população de sexo e idade listados abaixo foram calculados separadamente por situação do domicílio (rural ou urbano), por sexo onde aplicável (homens e mulheres), por faixa etária ou idade e por ano.
 
-### Razão de Sexos
+Estes dados foram obtidos dos Censos Demográficos [@censo2000] e [@censo2010], para os indicadores de Mortalidade e Fecundidade, foi utilizado dados sistema TABNET do Ministério da Saúde [@mortalidade] e [@fecundidade]
+
+### Razão de Sexos (RS)
 Este indicador mede o equilíbrio entre os sexos da população, obtido dividindo a população masculina pela feminina do grupo de interesse, valores abaixo de 100% indicam maior quantidade de mulheres do que homens.
 
 $$
 \mathrm{RS} = \dfrac{P_{\mathrm{masc}}}{P_{\mathrm{fem}}}
 $$
 
-### Índice de Myers
+### Índice de Myers ($\Delta$)
 Este índice mede a concentração das declarações de idades em dígitos finais específicos, é calculado somando os desvios das frequências observadas pelas frequências esperadas de cada dígito. Em tese o último digito da idade deve seguir distribuição uniforme, porém é comum declarar idades terminadas em 0 ou 5 quando não se sabe exatamente sua idade ou devido ao arredondamento pelo respondente.
 
 $$
 \Delta = 100 \times \sum_{i = 0}^9 \left| f_i - \dfrac{1}{10} \right|
 $$
 
-### Razão de Idade
+### Razão de Idade ($R_x$)
 Também é um indicador que avalia a qualidade da informação da idade, dessa vez mede uma relação relação entre o tamanho de população de certa faixa etária com as outras faixas adjacentes. Esperamos valores em torno de 1 para esta razão e com valores que não atinjam acima de 1,1 ou abaixo de 0,9.
 
 $$
@@ -111,14 +112,14 @@ $$
 ### Idade Mediana
 A Idade Mediana é o valor de idade tal que metade da população é mais velha e a outra metade mais nova que este valor. Geralmente para dados agrupados em intervalos a mediana é calculada de forma aproximada, podemos também obtê-la colocando as observações em ordem crescente e escolhendo o elemento do meio, como foi o caso apresentado.
 
-### Razão de Dependência
+### Razão de Dependência (RD)
 É um índice que mede a relação entre as pessoas em idade potencialmente ativas ou não. Dividimos a quantidade de habitantes nas faixas etárias de até 14 anos e após 65 anos por aqueles entre 15 a 64 anos de idade.
 
 $$
 \mathrm{RD} = 100 \times \dfrac{P_{[0,14]} + P_{[65+]}}{P_{[15,64]}}
 $$
 
-### Índice de Envelhecimento
+### Índice de Envelhecimento (ID)
 De Maneira similar a Razão de Dependência, mede a relação entre a quantidade de habitantes com 60 anos ou mais e aqueles com menos de 15 anos pela divisão desses valores.
 
 $$
@@ -134,7 +135,54 @@ Segundo Whipple, uma população é considerada normal se a proporção de habit
 |$15 \vdash 50$ | 50%         | 50%         | 50%         |
 |50 ou mais     | 10%         | 17%         | 30%         |
 
+### Taxas de Mortalidade 
+Trazem a informação sobre a relação entre óbitos de um grupo de interesse e a quantidade populacional do grupo que aquele tipo de morte poderia ter afetado pela razão entre estes dois valores.
 
+A Taxa Bruta de Mortalidade (TBM) trata sobre o contexto geral, neste caso levam em consideração todas as mortes que ocorreram no Rio de Janeiro e toda a população do Estado em unidades de óbitos por mil, esta taxa deve ser padronizada para que possa compará-la com outras divisões políticas, a padronização é feita levando em consideração a população do Estado e do Brasil para as faixas etárias.
+
+A Taxa Específica de Mortalidade (TEM) é obtida da mesma maneira, porém restringindo a óbitos e a população para cada faixa etária.
+
+::: {layout-ncol=2}
+$$
+\text{TBM} = 1000 \times \dfrac{O}{P}
+$$
+
+$$
+\text{TEM}_x = \dfrac{O_x}{P_x}
+$$
+:::
+
+Também estudamos outras taxas de mortalidades específicas, as Taxas de Mortalidade Infantil (TMI), Neonatal (TMN), Pós-Neonatal (TMPN), Materna (TMM) e por duas causas de morte da CID-10: Doenças do aparelho circulatório (I00 - I99) e Causas externas de mortalidade (V01 - Y98) [@cid10].
+
+As Taxas de Mortalidade Infantil, Neonatal e Pós-Neonatal mostram a relação entre óbitos de recém-nascidos de diferentes idades com a quantidade de nascidos vivos na região de estudo, para mortalidade infantil, é considerados óbitos abaixo de 1 ano de idade, mortalidade Neonatal é até 27 dias após o nascimento e Pós-Neonatal entre 28 dias a 1 ano.
+
+::: {layout-ncol=3}
+$$
+\text{TMI} = 1000 \times \dfrac{O_{[0,365) \text{ dias}}}{NV_0}
+$$
+
+$$
+\text{TMN} = 1000 \times \dfrac{O_{[0,28) \text{ dias}}}{NV_0}
+$$
+
+$$
+\text{TMPN} = 1000 \times \dfrac{O_{[28,365) \text{ dias}}}{NV_0}
+$$
+:::
+
+A Taxa de Mortalidade Materna foca nos óbitos de mulheres durante a gestação ou até 42 dias após o parto por causas relacionadas a gravidez, é medida em mortes por 100 mil nascidos vivos, enquanto que os outros indicadores de mortalidade são por mil.
+
+De maneira similar, temos as Taxas de Mortalidade por 2 supergrupos da CID-10: Doenças do aparelho circulatório e Causas externas de mortalidade, nestes indicadores fazemos a razão entre a quantidade de óbitos por essas causas e a população total do Estado.
+
+::: {layout-ncol=2}
+$$
+\text{TMM} = 100000 \times \dfrac{O_m}{NV_0}
+$$
+
+$$
+\text{TM}_{\text{causa}} = 1000 \times \dfrac{O_{\text{causa}}}{NV_0}
+$$
+:::
 
 <!--
 Exposição e descrição da metodologia adotada, técnicas e/ou procedimentos de análise,
@@ -144,6 +192,8 @@ instrumentos, e outros itens referentes ao desenvolvimento do estudo.
 \newpage
 
 ## RESULTADOS E DISCUSSÃO
+
+### Fatores Estáticos
 
 ```{r}
 library(tidyverse)
@@ -211,7 +261,7 @@ df2000[2:20, ] |>
     )
 ```
 \vspace{-16pt}
-\hspace{+20pt} \qquad {\footnotesize \textsf{Fonte: IBGE, Censo Demográfico 2000/2010}}
+\hspace{+20pt} \qquad {\footnotesize Fonte: IBGE, Censo Demográfico 2000/2010}
 
 Primeiramente, podemos notar que a Razão de Sexo urbana é muito semelhante ao total, o motivo por trás disso é que a população urbana do Rio de Janeiro compõe entre 96% e 97% da população total. A Razão de Sexo rural é superior àquela da urbana em quase todas as faixas etárias, possivelmente devido a maior emigração de mulheres e sobre-enumeração de homens.
 
@@ -338,7 +388,7 @@ df2000[2:20, ] |>
     )
 ```
 \vspace{-16pt}
-\hspace{+12pt} \qquad {\footnotesize \textsf{Fonte: IBGE, Censo Demográfico 2000/2010}}
+\hspace{+12pt} \qquad {\footnotesize Fonte: IBGE, Censo Demográfico 2000/2010}
 
 Nesta situação não foram considerados as faixas etárias de 80 a 89 anos, 90 a 99 anos e acima de 100 anos pois possuem comprimento do intervalo maior comparado com o restante dos dados, o que impossibilita a comparação direta do indicador.
 
@@ -526,9 +576,125 @@ df2000[-(1:20), ] |>
     theme_bw()
 ```
 \vspace{-16pt}
-\hspace{+12pt} \qquad {\footnotesize \textsf{Fonte: IBGE, Censo Demográfico 2000/2010}}
+\hspace{+12pt} \qquad {\footnotesize Fonte: IBGE, Censo Demográfico 2000/2010}
 
 Através da pirâmide etária observamos os resultados expostos acima, a população envelheceu de maneira geral entre 2000 e 2010, as mulheres são em média mais velhas que os homens, principalmente na terceira idade, a população rural do Rio de Janeiro e muito baixa, também baixas concentrações de declaração de idade relativa terminadas em 0 ou 5, indicando que a qualidade dos dados é razoável.
+
+### Mortalidade
+
+```{r}
+#| tbl-cap: Óbitos, Taxa Específica de Mortalidade e Taxas Brutas de Mortalidade regular e padronizada em 2010
+#| label: tbl-mortalidade
+
+# Mortalidade para o ano 2010 (por sexo)
+# 1) Taxa Bruta de Mortalidade
+# 2) Taxa Específica de Mortalidade
+# 3) Taxa Bruta de Mortalidade Padronizada pelo
+# Processo Direto (Padrão: Brasil)
+
+data.frame(
+    idade = c(
+          "0 a 4 anos",   "5 a 9 anos", "10 a 14 anos", "15 a 19 anos", 
+        "20 a 29 anos", "30 a 39 anos", "40 a 49 anos", "50 a 59 anos",
+        "60 a 69 anos", "70 a 79 anos", "80 anos ou mais", "Total"
+    ),
+    população = c(
+        987615, 1092991, 1305033, 1270276, 
+        1302789 + 1364348, 1322771 + 1190425, 1142871 + 1101947, 999398 + 828857,
+        653219 + 476867, 376282 + 269399, 263334 + 39760 + 1747, 15989929
+    ),
+    brasil = c(
+        13796158, 14969375, 17166761, 16990872,
+        34349606, 29633091, 24842716, 18416623,
+        11349930, 6305083,  2935584,  190755799
+    ),
+    mortalidade = c(
+        3004 + 529, 335, 460, 1654,
+        4943, 5562, 9484, 17175,
+        21535, 27591, 33833, 127536
+    )
+) |> 
+    mutate(
+        TEM = mortalidade / população,
+        TEMpd = TEM * brasil
+    ) |> 
+    select(-brasil, -TEMpd) |> 
+    kbl(
+        digits = 4,
+        format.args = list(decimal.mark = ","),
+        col.names = c("Faixa etária", "População", "Óbitos", "TEM"),
+        booktabs = TRUE,
+        linesep = ""
+    ) |> 
+    kable_styling(latex_options = "HOLD_position") |> 
+    add_footnote("TBM = 7,976 e TBM padronizada = 6,819", notation = "symbol")
+```
+\vspace{-20pt}
+\quad {\footnotesize Fonte: IBGE, Censo Demográfico 2000/2010}
+
+\vspace{-10pt}
+\qquad \qquad {\footnotesize Sistema de Informações sobre Mortalidade (SIM) - Agosto de 2023}
+
+Podemos notar que a Taxa Específica de Mortalidade é mais baixa entre 5 a 14 anos, e cresce muito rapidamente a partir dos 50 anos de idade. Na padronização da Taxa Bruta de Mortalidade, ocorre uma pequena diminuição deste índice, possivelmente devido ao Rio de Janeiro possuir uma população mais velha em relação ao resto do Brasil pois isso exerce influência crescente na Taxa Bruta não padronizada.
+
+```{r}
+#| tbl-cap: Taxas de Mortalidade Infantil, Materna e de algumas causas específicas por sexo no ano de 2010
+#| label: tbl-mortalidade_infantil
+
+# Mortalidade para o ano 2010 (por sexo)
+# 4) Taxa de Mortalidade Infantil
+# 5) Taxa de Mortalidade Neonatal
+# 6) Taxa de Mortalidade Pós-Neonatal
+# 7) Taxa de Mortalidade Perinatal
+# 8) Taxa de Mortalidade Materna
+# 9) Taxa de Mortalidade por Causa (Doenças do
+# Aparelho Circulatório e Causas Externas de
+# Morbidade e Mortalidade)
+
+data.frame(
+    população = c(15989929, 7625679, 8364250),
+    nascidos = c(215262, 110269, 104944),
+    mn_infantil = c(3004, 1626, 1372),
+    mn_neonatal = c(2008, 1082, 920),
+    mn_posneonatal = c(996, 544, 452),
+    mm_materna = c(NA, NA, 180),
+    mp_circulatório = c(37120, 18988, 18128),
+    mp_externas = c(13794, 10842, 2925)
+) |> 
+    transmute(
+        sexo = c("total", "masculino", "feminino"),
+        across(starts_with("mn_"), \(x) x / nascidos * 1000),
+        across(starts_with("mm_"), \(x) x / nascidos[1] * 100000),
+        across(starts_with("mp_"), \(x) x / população * 1000)
+    ) |> 
+    pivot_longer(-sexo) |> 
+    pivot_wider(names_from = sexo) |> 
+    mutate(
+        name = c(
+            "Infantil (‰)",
+            "Neonatal (‰)",
+            "Pós-Neonatal (‰)",
+            "Materna (por 100 mil)",
+            "Por Doenças do Aparelho Circulatório (‰)",
+            "Por Causas Externas (‰)"
+        ),
+        across(-name, \(x) ifelse(is.na(x), "", format(x, digits = 3, decimal.mark = ",")))
+    ) |> 
+    kbl(
+        col.names = c("Taxa de Mortalidade", "Total", "Masculino", "Feminino"),
+        booktabs = TRUE,
+        linesep = ""
+    ) |> 
+    kable_styling(latex_options = "HOLD_position")
+```
+\vspace{-20pt}
+\quad {\footnotesize Fonte: Sistema de Informações sobre Mortalidade (SIM) - Agosto de 2023}
+
+As Taxas de Mortalidade Infantil para o Rio de Janeiro são baixas, menores do que 20, enquanto que a mortalidade materna é relativamente alta, não alcançando o objetivo mundial desse indicador ser menor que 70 até 2030. A mortalidade infantil e as duas causas estudadas afetam um pouco mais os homens, principalmente nos óbitos por causas externas, que englobam acidentes, suicídios e homicídios.
+
+### Fecundidade
+
+bla
 
 <!--
 Exposição e discussão, de forma objetiva, enfatizando os resultados mais relevantes, que poderão ser exemplificados por meio de gráficos, tabelas, figuras, associados a argumentações teóricas (se for o caso). As atividades desenvolvidas no período devem ser destacadas e confrontados com aquelas propostas no plano original, justificando-se, caso seja pertinente, as limitações ocorridas e/ou as alterações realizadas. As discussões devem ser situadas e fundamentadas no contexto da abordagem teórica pertinente.
