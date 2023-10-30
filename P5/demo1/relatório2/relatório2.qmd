@@ -7,6 +7,8 @@ geometry:
   - top=1in
   - bottom=1in
 bibliography: includes/bib.bibtex
+linkcolor: "black"
+urlcolor: "black"
 fig-cap-location: top
 echo: false
 warning: false
@@ -33,7 +35,7 @@ DISCIPLINA: DEMOGRAFIA I
 \vfill
 
 \begin{center}
-\Large{TODO titulo}
+\Large{Estudo sobre fatores estáticos e mortalidade da população do Rio de Janeiro para os anos 2000 e 2010}
 \end{center}
 
 \vfill
@@ -53,24 +55,34 @@ Outubro, 2023
 
 \newpage
 
-TODO titulo
+Estudo sobre fatores estáticos e mortalidade da população do Rio de Janeiro para os anos 2000 e 2010
 
 ĸ \hfill Everlane Suane A. Silva^[Docente do Departamento de Estatística da Universidade Federal da Paraíba (UFPB); Pesquisadora do Laboratório de Estudos Demográficos (LED) do Departamento de Estatística da UFPB.]
+\vspace{-8pt}
 
 ĸ \hfill Paulo Ricardo S. Campana^[Discente do curso de bacharelado em Estatística da UFPB.]
+\vspace{-12pt}
 
-## RESUMO
+## Resumo
+Neste trabalho, foi elaborado uma análise em relação a diversos índices demográficos para o Estado do Rio de Janeiro nos anos de 2000 e 2010, em específico sobre fatores estáticos da população como sexo e idade além de índices de mortalidade, mortalidade infantil, materna e por causas externas. Estes resultados foram obtidos com base nas informações de população e sua distribuição dos Censos Demográficos e dados de mortalidade do TABNET do DATASUS, que organiza dados do Sistema de Informações sobre Nascidos Vivos e Sistema de Informações sobre Mortalidade. Cada indicador utilizado será explicado sua interpretação e cálculo para obtenção do mesmo, com base nos conceitos vistos e discutidos em aula e os materiais de referência [@paes]. Os índices abordados são apresentados em tabelas e gráficos e é feita discussões sobre padrões que podemos observar nos índices como um todo, possíveis causas para o mesmo e suas consequências de um ponto de vista de planejamento público.
+
+Palavras-chave: Demografia, Idade, Mortalidade.
 
 <!--
-Apresenta de forma resumida a proposta investigativa descrita no trabalho. É elaborado de forma clara e objetiva em um único  com cerca de 250 a 300 palavras e espaçamento simples.
+Apresenta de forma resumida a proposta investigativa descrita no trabalho. É elaborado de forma clara e objetiva em um único parágrafo com cerca de 250 a 300 palavras e espaçamento simples.
 No resumo sistematizamos as ideias principais de todas as sessões do documento.
 
 Palavras-chave: identifique no máximo 3 palavras que resume as ideias principais tratadas no texto.
 -->
 
-Palavras-chave: .
+## Introdução
+O Rio de Janeiro é o segundo mais rico e terceiro mais populoso Estado da união, devido a também ser um dos menores Estados em área, tem uma população de grande maioria urbana e de extrema densidade populacional.
 
-## INTRODUÇÃO
+Com isso em mente, a análise da distribuição dessa população pelos fatores estáticos de sexo, idade e situação do domicílio, além dos indicadores de mortalidade do Estado é uma tarefa importante e necessária para o planejamento público, ajudando a tomada de decisão de políticas públicas como investimentos em saúde e segurança, na previdência social e educação.
+
+Sendo assim, iremos estudar diversos índices relacionados a mortalidade e distribuição por sexo e idade no Rio de Janeiro, com um foco em indicadores de qualidade de informação da idade e taxas de mortalidade infantil e por outras causas específicas. A fonte dos dados utilizados no estudo e o cálculo dos indicadores estão citados na metodologia abaixo.
+
+Em seguida será apresentado os resultados obtidos através de tabelas e gráficos sobre os indicadores estudados e reflexões perante aos valores obtidos e distinção desses indicadores em diferentes grupos da população. Após isso, uma conclusão geral sobre as informações vistas no estudo e seus possíveis impactos para o futuro do Estado.
 
 <!--
 O texto da introdução deverá conter os seguintes elementos de preferência seguindo essa ordem em forma textual.
@@ -83,16 +95,16 @@ Normalmente a introdução é uma das últimas coisas que se faz em qualquer tra
 
 \newpage
 
-## PROCEDIMENTO METODOLÓGICO
-Os indicadores para fatores estáticos da população de sexo e idade listados abaixo foram calculados separadamente por situação do domicílio (rural ou urbano), por sexo onde aplicável (homens e mulheres), por faixa etária ou idade e por ano.
+## Prodecimento Metodológico 
+Os indicadores para fatores estáticos da população de sexo e idade listados abaixo foram calculados separadamente por situação do domicílio (rural ou urbano), por sexo onde aplicável (homens e mulheres), por faixa etária ou idade e por ano de pesquisa.
 
-Estes dados foram obtidos dos Censos Demográficos [@censo2000] e [@censo2010], para os indicadores de Mortalidade e Fecundidade, foi utilizado dados sistema TABNET do Ministério da Saúde [@mortalidade] e [@fecundidade]
+Estes dados foram obtidos dos Censos Demográficos [@censo2000] e [@censo2010], para os indicadores de Mortalidade, foi utilizado dados do sistema TABNET do Ministério da Saúde [@mortalidade].
 
 ### Razão de Sexos (RS)
 Este indicador mede o equilíbrio entre os sexos da população, obtido dividindo a população masculina pela feminina do grupo de interesse, valores abaixo de 100% indicam maior quantidade de mulheres do que homens.
 
 $$
-\mathrm{RS} = \dfrac{P_{\mathrm{masc}}}{P_{\mathrm{fem}}}
+\mathrm{RS} = 100 \% \times \dfrac{P_{\mathrm{masc}}}{P_{\mathrm{fem}}}
 $$
 
 ### Índice de Myers ($\Delta$)
@@ -103,35 +115,35 @@ $$
 $$
 
 ### Razão de Idade ($R_x$)
-Também é um indicador que avalia a qualidade da informação da idade, dessa vez mede uma relação relação entre o tamanho de população de certa faixa etária com as outras faixas adjacentes. Esperamos valores em torno de 1 para esta razão e com valores que não atinjam acima de 1,1 ou abaixo de 0,9.
+Também é um indicador que avalia a qualidade da informação da idade, dessa vez mede uma relação relação entre o tamanho de população de certa faixa etária com as outras faixas adjacentes. Esperamos valores em torno de 1 para esta razão e com valores que não atinjam acima de 110% ou abaixo de 90%.
 
 $$
-R_x = \dfrac{3 P_x}{P_{x - 5} + P_x + P_{x + 5}} 
+R_x = 100 \% \times \dfrac{3 P_x}{P_{x - 5} + P_x + P_{x + 5}} 
 $$
 
 ### Idade Mediana
-A Idade Mediana é o valor de idade tal que metade da população é mais velha e a outra metade mais nova que este valor. Geralmente para dados agrupados em intervalos a mediana é calculada de forma aproximada, podemos também obtê-la colocando as observações em ordem crescente e escolhendo o elemento do meio, como foi o caso apresentado.
+A Idade Mediana é o valor de idade tal que metade da população é mais velha e a outra metade mais nova que este valor. Geralmente para dados agrupados em intervalos a mediana é calculada de forma aproximada, podemos também obtê-la expandindo as observações, posicionando-as em ordem crescente e escolhendo o elemento do meio, como será apresentado.
 
 ### Razão de Dependência (RD)
 É um índice que mede a relação entre as pessoas em idade potencialmente ativas ou não. Dividimos a quantidade de habitantes nas faixas etárias de até 14 anos e após 65 anos por aqueles entre 15 a 64 anos de idade.
 
 $$
-\mathrm{RD} = 100 \times \dfrac{P_{[0,14]} + P_{[65+]}}{P_{[15,64]}}
+\mathrm{RD} = 100 \% \times \dfrac{P_{[0,14]} + P_{[65+]}}{P_{[15,64]}}
 $$
 
-### Índice de Envelhecimento (ID)
+### Índice de Envelhecimento (IE)
 De Maneira similar a Razão de Dependência, mede a relação entre a quantidade de habitantes com 60 anos ou mais e aqueles com menos de 15 anos pela divisão desses valores.
 
 $$
-\mathrm{IE} = 100 \times \dfrac{P_{[60+]}}{P_{[0,14]}}
+\mathrm{IE} = 100 \% \times \dfrac{P_{[60+]}}{P_{[0,14]}}
 $$
 
 ### Classificações de Sundbarg e Whipple
-Segundo Whipple, uma população é considerada normal se a proporção de habitates na faixa etária de 15 a 49 anos é aproximadamente 50%, "acessiva" se maior que 50% e "recessiva" caso contrário. Segundo Sundbarg a classificação é dada de acordo a estrutura que mais de assemelha a tabela a seguir
+Segundo Whipple, uma população é considerada "normal" se a proporção de habitates na faixa etária de 15 a 49 anos é aproximadamente 50%, "acessiva" se maior que 50% e "recessiva" caso contrário. Segundo Sundbarg a classificação é dada de acordo a estrutura que mais de assemelha a tabela a seguir.
 
 |Faixa etária   | Progressiva | Estacionária| Regressiva  |
 |:--------------|:-----------:|:-----------:|:-----------:|
-|$\;\,0\vdash15$| 40%         | 33%         | 20%         |
+|$\;\, 0\vdash15$| 40%         | 33%         | 20%         |
 |$15 \vdash 50$ | 50%         | 50%         | 50%         |
 |50 ou mais     | 10%         | 17%         | 30%         |
 
@@ -172,7 +184,7 @@ $$
 
 A Taxa de Mortalidade Materna foca nos óbitos de mulheres durante a gestação ou até 42 dias após o parto por causas relacionadas a gravidez, é medida em mortes por 100 mil nascidos vivos, enquanto que os outros indicadores de mortalidade são por mil.
 
-De maneira similar, temos as Taxas de Mortalidade por 2 supergrupos da CID-10: Doenças do aparelho circulatório e Causas externas de mortalidade, nestes indicadores fazemos a razão entre a quantidade de óbitos por essas causas e a população total do Estado.
+De maneira similar, temos as Taxas de Mortalidade por 2 grupos da CID-10: Doenças do aparelho circulatório e Causas externas de mortalidade, nestes indicadores fazemos a razão entre a quantidade de óbitos por essas causas e a população total do Estado.
 
 ::: {layout-ncol=2}
 $$
@@ -184,6 +196,39 @@ $$
 $$
 :::
 
+### Tábuas de vida
+Trás diversas informações sobre a mortalidade de uma região através das idades, utilizamos da tábua de vida abreviada de coorte hipotética devido aos dados de mortalidade do Ministério da Saúde serem agrupados em faixas etárias e a maior qualidade dos mesmos. Para cada faixa etária, contem colunas sobre:
+
+* Quantidade populacional: $P_x$
+
+* Quantidade de óbitos: $D_x$
+
+* Razão de óbitos: $m_x = \dfrac{D_x}{P_x}$
+
+* Probabilidade de morte: $q_x = \dfrac{n_x m_x}{1 + n_x m_x (1 - a_x)}$
+
+* Número hipotético de sobreviventes: $l_{x + n} = l_x - d_x, \quad l_0 = 100000$
+
+* Número de óbitos hipotéticos: $d_x = l_x q_x$
+
+* Anos vividos hipotéticos: $L_x = n_x l_{x + n} + n_x d_x (1 - a_x)$
+
+* Anos vividos totais esperados: $T_x = L_x + T_{x + n}$
+
+* Expectativa de vida: $e_x = \dfrac{T_x}{l_x}$
+
+Alguns valores secundários são necessários para o cálculo dos indicadores: $n_x$ é a amplitude em anos da faixa etária e $a_x$ é o fator de separação, tomado como $n_x / 10$.
+
+O mais importante indicador desta tabela é a expectativa de vida ao nascer: ($e_0$), que trás a informação da quantidade esperada de anos de vida que um recém-nascido terá. 
+
+Também foi construída uma tábua de vida de decremento, com a eliminação total das causas de morte por "Causas externas de mortalidade", uma classificação de causa de morte da CID-10. Nesse caso, a coluna de probabilidade de porte é dada por:
+
+$$
+q_x = 1 - p_x^{\left( 1 - \frac{D_{xj}}{D_x} \right)}, \quad p_x = \dfrac{1 - (1 - a_x) n_x m_x}{1 + a_x n_x m_x}
+$$
+
+Onde $D_{xj}$ representa a quantidade de óbitos por causas externas de mortalidade.
+
 <!--
 Exposição e descrição da metodologia adotada, técnicas e/ou procedimentos de análise,
 instrumentos, e outros itens referentes ao desenvolvimento do estudo.
@@ -191,7 +236,7 @@ instrumentos, e outros itens referentes ao desenvolvimento do estudo.
 
 \newpage
 
-## RESULTADOS E DISCUSSÃO
+## Resultados e discussão
 
 ### Fatores Estáticos
 
@@ -374,7 +419,8 @@ df2000[2:20, ] |>
     scale_y_continuous(
         name = "Razão de Idade",
         breaks = c(0.9, 1, 1.1),
-        limits = c(0.9, 1.1)
+        limits = c(0.9, 1.1),
+        labels = c("90%", "100%", "110%")
     ) +
     scale_color_brewer(
         name = "Situação do domicílio",
@@ -508,10 +554,16 @@ env <- df2000[-(1:20), ] |>
 
 dep |> 
     left_join(env, by = join_by(domicilio, sexo)) |> 
-    mutate(across(
-        c(domicilio, sexo),
-        str_to_sentence
-    )) |>  
+    mutate(
+        across(
+            c(domicilio, sexo),
+            str_to_sentence
+        ),
+        across(
+            -c(domicilio, sexo),
+            \(x) paste0(format(x, digits = 3), "%")
+        )
+    ) |>  
     slice(8,9,7, 5,6,4, 2,3,1) |> 
     kbl(
         digits = 1,
@@ -627,13 +679,13 @@ data.frame(
         linesep = ""
     ) |> 
     kable_styling(latex_options = "HOLD_position") |> 
-    add_footnote("TBM = 7,976 e TBM padronizada = 6,819", notation = "symbol")
+    add_footnote("TBM = 7,976 ‰ e TBM padronizada = 6,819 ‰", notation = "symbol")
 ```
 \vspace{-20pt}
-\quad {\footnotesize Fonte: IBGE, Censo Demográfico 2000/2010}
+\qquad\qquad\qquad\qquad\quad {\footnotesize Fonte: IBGE, Censo Demográfico 2000/2010}
 
 \vspace{-10pt}
-\qquad \qquad {\footnotesize Sistema de Informações sobre Mortalidade (SIM) - Agosto de 2023}
+\qquad\qquad\qquad\qquad\qquad\qquad {\footnotesize Sistema de Informações sobre Mortalidade (SIM) - Agosto de 2023}
 
 Podemos notar que a Taxa Específica de Mortalidade é mais baixa entre 5 a 14 anos, e cresce muito rapidamente a partir dos 50 anos de idade. Na padronização da Taxa Bruta de Mortalidade, ocorre uma pequena diminuição deste índice, possivelmente devido ao Rio de Janeiro possuir uma população mais velha em relação ao resto do Brasil pois isso exerce influência crescente na Taxa Bruta não padronizada.
 
@@ -688,25 +740,204 @@ data.frame(
     kable_styling(latex_options = "HOLD_position")
 ```
 \vspace{-20pt}
-\quad {\footnotesize Fonte: Sistema de Informações sobre Mortalidade (SIM) - Agosto de 2023}
+\qquad\quad {\footnotesize Fonte: IBGE, Censo Demográfico 2000/2010}
 
 As Taxas de Mortalidade Infantil para o Rio de Janeiro são baixas, menores do que 20, enquanto que a mortalidade materna é relativamente alta, não alcançando o objetivo mundial desse indicador ser menor que 70 até 2030. A mortalidade infantil e as duas causas estudadas afetam um pouco mais os homens, principalmente nos óbitos por causas externas, que englobam acidentes, suicídios e homicídios.
 
-### Fecundidade
+### Tábuas de vida
 
-bla
+A @tbl-tabua a seguir trás a Tábua de vida abreviada para o ano de 2010, o principal resultado desta tabela é a expectativa de vida ao nascer, que foi de 64,21 anos para os homens e 74 anos para as mulheres, uma diferença bastante grande. Uma consequência disso vista anteriormente é que na velhice há muito mais mulheres do que homens, a coluna $l_x$ trás essa informação, começando com 100.000 indivíduos homens e mulheres, apenas 25.169 homens ultrapassam 80 anos de idade, enquanto que são quase o dobro de mulheres, 48.822.
+
+Já a @tbl-tabua_decremento considera a situação onde ocorre eliminação total das causas de morte pelo grupo da CID-10 "Causas externas de mortalidade", causa essa que afeta desproporcionalmente mais os homens, neste cenário, ocorre aumento muito significativo da expectativa de vida de ambos os sexo e menor diferença entre os mesmos: a expectativa de vida para os homens aumentou de 64,21 para 70,71 anos e para as mulheres de 74 anos para 76,52.
+
+Comparando a @tbl-tabua com Tábua abreviada de mortalidade edição 2010 para o Brasil [@tabua], vemos que o Rio de Janeiro estava um pouco abaixo da média nacional naquele ano, para o sexo masculino, a expectativa de vida ao nascer no Brasil era de 69,7 anos de idade, porém observamos apenas 64,21 anos no Rio de Janeiro, para as mulheres o IBGE obteve resultado de expectativa de vida ao nascer de 77,3 anos enquanto que observamos 74 anos no rio de janeiro.
+
+```{r}
+tábua <- data.frame(
+    idade = c(
+        "menos de 1 ano", "1 a 4 anos", "5 a 9 anos", "10 a 14 anos", "15 a 19 anos",
+        "20 a 29 anos",	"30 a 39 anos", "40 a 49 anos", "50 a 59 anos",
+        "60 a 69 anos", "70 a 79 anos", "80 anos ou mais"
+    ),
+    pop_masc = c(
+        99210,401592,555463,662506,638420,1311708,1203989,1058659,836449,496422,260375,100886
+    ),
+    pop_fem = c(
+        95990,390823,537528,642527,631856,1355429,1309207,1186159,991806,633664,385306,203955
+    ),
+    óbitos_masc = c(
+        1626, 314, 178, 266, 1343, 3940, 3809, 5857, 10557, 12579, 14330, 12884
+    ),
+    óbitos_fem = c(
+        1372, 215, 157, 194, 311, 1003, 1753, 3627, 6616, 8956, 13259, 20948	
+    ),
+    externas_masc = c(
+        84, 83, 61, 118, 1085, 2986, 1837, 1335, 988, 651, 524, 510
+    ),
+    externas_fem = c(
+        66, 38, 47, 62, 104, 299, 228, 272, 232, 235, 397, 877
+    )
+)
+
+makeixdx <- function(length, prob) {
+    ix <- dx <- numeric(length)
+    ix[1] <- 100000
+    dx[1] <- ix[1] * prob[1]
+    for (i in 2:length) {
+        ix[i] <- ix[i - 1] - dx[i - 1]
+        dx[i] <- ix[i] * prob[i]
+    }
+    list(ix, dx)
+}
+maketx <- function(length, anos) {
+    tx <- numeric(length)
+    tx[length] <- anos[length]
+    for (i in (length - 1):1) {
+        tx[i] <- tx[i + 1] + anos[i]
+    }
+    tx
+}
+```
+
+```{r}
+#| tbl-cap: Tábua de vida por sexo para o Estado do Rio de Janeiro em 2010
+#| label: tbl-tabua
+
+# 1) Tábuas de vida, 2010, por sexo
+
+tábua |>
+    select(idade, pop_masc, pop_fem, óbitos_masc, óbitos_fem) |> 
+    pivot_longer(
+        -idade,
+        names_to = c("name", "sexo"),
+        names_sep = "_"
+    ) |> 
+    pivot_wider(names_from = name) |> 
+    arrange(desc(sexo)) |> 
+    mutate(
+        razão = óbitos / pop,
+        fator = rep(c(0.1, 0.4, rep(0.5, 3), rep(1, 7)), 2),
+        n = rep(c(1, 4, rep(5, 3), rep(10, 7)), 2),
+        prob = n * razão / (1 + n * (1 - fator) * razão),
+        prob = c(prob[1:11], 1, prob[13:23], 1),
+        sobreviventes = c(makeixdx(12, prob[1:12])[[1]], makeixdx(12, prob[13:24])[[1]]),
+        mortes = c(makeixdx(12, prob[1:12])[[2]], makeixdx(12, prob[13:24])[[2]]),
+        anos = n * lead(sobreviventes) + mortes * n * (1 - fator),
+        anos = c(anos[1:11], mortes[12] / razão[12], anos[13:23], mortes[24] / razão[24]),
+        apartir = c(maketx(12, anos[1:12]), maketx(12, anos[13:24])),
+        espectativa = apartir / sobreviventes
+    ) |> 
+    select(-sexo, -fator, -n) |> 
+    kbl(
+        digits = c(2,0,0,5,5,0,0,0,0),
+        col.names = c(
+            "Faixa etária",
+            "Px",
+            "Dx",
+            "mx",
+            "qx",
+            "lx",
+            "dx",
+            "Lx",
+            "Tx",
+            "Expectativa de vida"
+        ),
+        booktabs = TRUE,
+        linesep = ""
+    ) |> 
+    kable_styling(latex_options = "HOLD_position") |> 
+    pack_rows("Homens", 1, 12) |> 
+    pack_rows("Mulheres", 13, 24) |>
+    footnote(
+        symbol = c(
+            "IBGE, Censo Demográfico 2010",
+            "Sistema de Informações sobre Mortalidade (SIM) - Agosto de 2023"
+        ),
+        symbol_title = "Fonte:",
+        symbol_manual = c("", ""),
+        footnote_as_chunk = FALSE
+    ) |> 
+    landscape()
+```
+
+```{r}
+#| tbl-cap: Tábua de vida de decremento por sexo considerando a eliminação completa de mortes por Causas Externas para o Estado do Rio de Janeiro em 2010
+#| label: tbl-tabua_decremento
+
+# 2) Tábua de Vida de Múltiplo Decremento, 2010, por sexo, excluindo 100% das Causas Externas
+
+tábua |>
+    pivot_longer(
+        -idade,
+        names_to = c("name", "sexo"),
+        names_sep = "_"
+    ) |>
+    pivot_wider(names_from = name) |>
+    arrange(desc(sexo)) |>
+    mutate(
+        razão = óbitos / pop,
+        fator = rep(c(0.1, 0.4, rep(0.5, 3), rep(1, 7)), 2),
+        n = rep(c(1, 4, rep(5, 3), rep(10, 7)), 2),
+        prob = (1 - (1 - fator) * n * razão) / (1 + fator * n * razão),
+        prob = 1 - prob ^ (1 - externas / óbitos),
+        prob = c(prob[1:11], 1, prob[13:23], 1),
+        sobreviventes = c(makeixdx(12, prob[1:12])[[1]], makeixdx(12, prob[13:24])[[1]]),
+        mortes = c(makeixdx(12, prob[1:12])[[2]], makeixdx(12, prob[13:24])[[2]]),
+        anos = n * lead(sobreviventes) + mortes * n * (1 - fator),
+        anos = c(anos[1:11], mortes[12] / razão[12], anos[13:23], mortes[24] / razão[24]),
+        apartir = c(maketx(12, anos[1:12]), maketx(12, anos[13:24])),
+        espectativa = apartir / sobreviventes
+    ) |>
+    select(-sexo, -fator, -n) |>
+    kbl(
+        digits = c(2,0,0,0,5,5,0,0,0,0),
+        col.names = c(
+            "Faixa etária",
+            "Px",
+            "Dx",
+            "Dxj",
+            "mx",
+            "qx",
+            "lx",
+            "dx",
+            "Lx",
+            "Tx",
+            "Expectativa de vida"
+        ),
+        booktabs = TRUE,
+        linesep = ""
+    ) |>
+    kable_styling(latex_options = "HOLD_position") |>
+    pack_rows("Homens", 1, 12) |>
+    pack_rows("Mulheres", 13, 24) |>
+    footnote(
+        symbol = c(
+            "IBGE, Censo Demográfico 2010",
+            "Sistema de Informações sobre Mortalidade (SIM) - Agosto de 2023"
+        ),
+        symbol_title = "Fonte:",
+        symbol_manual = c("", ""),
+        footnote_as_chunk = FALSE
+    ) |>
+    landscape()
+```
 
 <!--
 Exposição e discussão, de forma objetiva, enfatizando os resultados mais relevantes, que poderão ser exemplificados por meio de gráficos, tabelas, figuras, associados a argumentações teóricas (se for o caso). As atividades desenvolvidas no período devem ser destacadas e confrontados com aquelas propostas no plano original, justificando-se, caso seja pertinente, as limitações ocorridas e/ou as alterações realizadas. As discussões devem ser situadas e fundamentadas no contexto da abordagem teórica pertinente.
 -->
 
-## CONCLUSÃO
+## Conclusão
+Tendo em vista os resultados acima, vemos que as taxas de mortalidade são em geral maiores para os homens, principalmente nas "Causas externas de Mortalidade", que se tornam mais elevadas no Rio de Janeiro devido ao tráfico de drogas, crime organizado e intervenções policiais nas comunidades. Isso é refletido nos indicadores de Razão de Sexo, onde essa razão rapidamente cai abaixo de 80%.
+
+A qualidade da declaração da idade é razoável, com um índice de Myers entre 4 e 5 e a Razão de Sexo raramente fora do intervalo entre 95% e 105%, a idade mediana e o índice de envelhecimento do Estado vem crescendo entre os Censos. Dessa forma, deve haver um crescimento no investimento público destinado aos idosos pois será necessário uma maior verba para a assistência social, previdência e saúde pública.
+
+Por fim, a mortalidade materna no Rio de Janeiro em 2010 é alta e a mortalidade infantil está perto da média nacional, por mais que seja um Estado mais rico e urbanizado. As mortes por causas externas como homicídios são elevadas, e sua eliminação provocaria um crescimento de 6,5 anos na expectativa de vida para os homens do Estado.
 
 <!--
 Exposição com base nos resultados obtidos, evitando-se a simples repetição do que já foi apresentado nas discussões. Na elaboração desta seção, convém retomar os objetivos de modo a evidenciar se foram ou não alcançados, apresentando os possíveis desdobramentos do estudo.
 -->
 
-## REFERÊNCIAS
+## Referências
 
 ::: {#refs}
 :::
