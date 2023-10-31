@@ -1,0 +1,328 @@
+---
+format: pdf
+lang: pt
+title: Atividade 6
+author: Paulo Ricardo Seganfredo Campana
+date: today
+date-format: long
+callout-icon: false
+highlight-style: github
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+\newcommand{\p}[2][]{\mathrm{P}{#1} \kern-2pt \left( #2 \right)}
+\newcommand{\pc}[2]{\mathrm{P} \kern-2pt \left( #1 \; \big\rvert \; #2 \right)}
+:::
+
+::: callout-note
+# 1) Seja $\pi$ uma distribuição estacionária de uma cadeia de Markov. Mostre que se $\pi(x) > 0$ e $x \to y$, então $\pi(y) > 0$.
+
+Pela questão 5 da atividade 3 temos que $\rho_{xy} > 0 \iff \p[^n]{x,y} > 0$ para algum $n$, então:
+
+$$
+x \to y \implies \rho_{xy} > 0 \implies \p[^n]{x,y} > 0 \text{ para algum } n
+$$
+
+$\pi$ sendo distribuição estacionária então satisfaz a seguinte soma para todo $k$:
+
+$$
+\sum_{z \in \mathcal S} \pi(z) \p[^k]{z,y} = \pi(y)
+$$
+
+Escolhendo apenas o termo da soma em que $z = x$ e $k = n$ tal que $\p[^n]{x,y} > 0$ temos a desigualdade:
+
+$$
+\pi(x) \p[^n]{x,y} \leqslant \pi(y)
+$$
+
+Porém $\pi(x) > 0$ e $\p[^n]{x,y} > 0$, então $\pi(y) > 0$.
+:::
+
+::: callout-note
+# 2) Considere uma cadeia de Markov redutível, em que $C_0$ e $C_1$ são dois subconjuntos de $\mathcal S$ irredutíveis disjuntos de recorrência positiva. Se $\pi_0$ e $\pi_1$ são as distribuições estacionárias concentradas em $C_0$ e $C_1$, respectivamente, mostre que $\pi_\alpha = (1 - \alpha) \pi_0 + \alpha \pi_1$, $0 < \alpha < 1$, é também uma distribuição estacionária da cadeia.
+
+Para $\pi$ ser distribuição estacionária temos que $\pi \mathbf{P} = \pi$, então:
+
+$$
+\pi_\alpha \mathbf{P} = 
+((1-\alpha) \pi_0 + \alpha \pi_1) \mathbf{P} = 
+(1-\alpha) \pi_0 \mathbf{P} + \alpha \pi_1 \mathbf{P} = 
+(1-\alpha) \pi_0 + \alpha \pi_1 = 
+\pi_\alpha
+$$
+
+$\pi_\alpha \mathbf{P} = \pi_\alpha$ então $\pi_\alpha$ é distribuição estacionária.
+:::
+
+::: callout-note
+# 3) Seja $X_n$, $n \geqslant 0$, uma cadeia de nascimento e morte irredutível de recorrência positiva, e suponha que $X_0$ tem a distribuição estacionária $\pi$. Mostre que $$ \pc{X_0 = y}{X_1 = x} = \p{x,y}, \; x,y \in \mathcal S. $$
+
+$$
+\pc{X_0 = y}{X_1 = x} =
+\dfrac{\p{X_0 = y, X_1 = x}}{\p{X_1 = x}} =
+\dfrac{\p{X_0 = y} \p{X_0 = y, X_1 = x}}{\p{X_0 = y} \p{X_1 = x}} =
+$$
+$$
+\dfrac{\p{X_0 = 0} \pc{X_1 = x}{X_0 = y}}{\p{X_1 = x}} = 
+\dfrac{\pi_0(y)}{\pi_1(x)} \p{y,x} =
+\dfrac{\pi(y)}{\pi(x)} \p{y,x} =
+\dfrac{\pi_y}{\pi_x} \p{y,x}
+$$
+
+Seja $y = x$:
+
+$$
+\dfrac{\pi_y}{\pi_x} \p{y,x} =
+\p{x,x} = 
+\p{x,y}
+$$
+
+Seja $y = x + 1$:
+
+$$
+\dfrac{\pi_y}{\pi_x} \p{y,x} =
+\dfrac{\pi_{x + 1}}{\pi_x} \p{x + 1,x} =
+\dfrac{p_x}{q_{x + 1}} q_{x + 1} =
+p_x =
+\p{x,x + 1} =
+\p{x,y}
+$$
+
+Seja $y = x - 1$:
+
+$$
+\dfrac{\pi_y}{\pi_x} \p{y,x} =
+\dfrac{\pi_{x - 1}}{\pi_x} \p{x - 1,x} =
+\dfrac{q_x}{p_{x - 1}} p_{x - 1} =
+q_x =
+\p{x,x - 1} =
+\p{x,y}
+$$
+
+Em todos os possíveis casos de uma cadeia de nascimento e morte (permanecer, aumentar ou diminuir em 1) temos que a propriedade $\pc{X_0 = y}{X_1 = x} = \p{x,y}$ vale. 
+:::
+
+{{< pagebreak >}}
+
+::: callout-note
+# 4) Considere uma cadeia de Markov sobre $\mathcal S = \lbrace 0,1,2 \rbrace$ com matriz de transição $P$. \newline a) Mostre que a cadeia é irredutível; \newline b) Ache o período; \newline c) Ache a distribuição estacionária.
+
+$x \to y, \forall x,y \in \mathcal S$, então a cadeia é irredutível.
+\vspace{+12pt}
+
+Analisando o estado 0, a probabilidade $\p[^m]{0,0}$ é positiva para $m = 2$ pelo caminho $0 \to 2 \to 0$ e $m = 3$ pelo caminho $0 \to 2 \to 1 \to 0$.
+\vspace{+12pt}
+
+Então $I_0 = \lbrace n \geqslant 1 | \p[^n]{0,0} > 0 \rbrace = \lbrace 2,3,\cdots \rbrace$. Sendo assim, o M.D.C de $I_0$ é 1, o período de 0, mas já que a cadeia é irredutível, todos os estados tem o mesmo período, portanto a cadeia tem período 1.
+
+$$
+\pi \mathbf P = \pi \implies 
+\begin{cases}
+     b + c/2 = a \\
+     c/2 = b \\
+     a = c \\
+     a + b + c = 1
+\end{cases} \implies
+\begin{cases}
+     2b = a = c \\
+     a + b + c = 1
+\end{cases} \implies
+\pi = \left( \dfrac{2}{5}, \dfrac{1}{5}, \dfrac{2}{5} \right)
+$$
+:::
+
+::: callout-note
+# 5) Considere uma cadeia de Markov sobre $\mathcal S = \lbrace 0,1,2,3,4 \rbrace$ com matriz de transição $P$. \newline a) Mostre que a cadeia é irredutível; \newline b) Ache o período; \newline c) Ache a distribuição estacionária.
+
+Começando de qualquer estado, visitará todos os próximos, sendo assim irredutível pois a cadeia segue um padrão: 
+
+$$
+0 \to (1 \text{ ou } 2) \to (3 \text{ ou } 4) \to 0 \to \cdots
+$$
+
+Analisando o estado 0, a probabilidade $\p[^m]{0,0}$ é positiva apenas para $m$ múltiplos de 3, dessa forma, a cadeia tem período 3.
+
+$$
+\pi \mathbf P = \pi \implies 
+\begin{cases}
+     d + e = a \\
+     a/3 = b \\
+     2a/3 = c \\
+     b/4 + c/4 = d \\
+     3b/4 + 3c/4 = e \\
+     a + b + c + d + e = 1
+\end{cases} \hspace{-24pt} \implies
+\begin{cases}
+     b + c = a \\
+     d + e = a \\
+     b = a/3 \\
+     c = 2a/3 \\
+     d = a/4 \\
+     e = 3a/4 \\
+     a + b + c + d + e = 1
+\end{cases} \hspace{-24pt} \implies
+\pi = \left( \dfrac{1}{3}, \dfrac{1}{9}, \dfrac{2}{9}, \dfrac{1}{12}, \dfrac{1}{4} \right)
+$$
+:::
+
+::: callout-note
+# 6) Considere uma cadeia de Markov sobre $\mathcal S = \lbrace 0,1,2,3,4,5,6 \rbrace$, com matriz de transição dada por $P$. \newline a) Obtenha a decomposição do espaço de estados. \newline b) Obtenha a distribuição estacionária concentrada em cada um dos conjuntos irredutíveis. \newline c) Calcule $\displaystyle \lim_{n \to \infty} \sum_{m = 1}^n \p[^m]{x,y}, \quad x,y \in \mathcal S$. \newline d) Qual é o período de cada um dos conjuntos irredutíveis?
+
+$$
+\mathcal S_{\mathsf T} = 3,
+\quad \mathcal S_{\mathsf R} = C_1 \cup C_2 =
+\lbrace 0,1,2 \rbrace \cup \lbrace 4,5,6 \rbrace
+$$
+
+$$
+\pi_{C_1} \mathbf P = \pi_{C_1} \implies 
+\begin{cases}
+     c = a \\
+     a = b \\
+     b = c \\
+     a + b + c = 1 \\
+     d,e,f,g = 0
+\end{cases} \implies
+\pi_{C_1} = \left( \dfrac{1}{3}, \dfrac{1}{3}, \dfrac{1}{3}, 0,0,0,0 \right)
+$$
+$$
+\pi_{C_2} \mathbf P = \pi_{C_2} \implies 
+\begin{cases}
+     f/2 + g/2 = e \\
+     e/2 + f/4 + g/2 = f \\
+     e/2 + f/4 = g \\
+     e + f + g = 1 \\
+     a,b,c,d = 0
+\end{cases} \hspace{-28pt} \implies
+\begin{cases}
+     2e = f + g \\
+     e + f + g = 1 \\
+     a,b,c,d = 0
+\end{cases} \hspace{-8pt} \implies
+\pi_{C_2} = \left( 0,0,0,0, \dfrac{1}{5}, \dfrac{2}{5}, \dfrac{2}{5} \right)
+$$
+
+$$
+f(x,y) = \lim_{n \to \infty} \sum_{m = 1}^n \p[^m]{x,y} = \begin{cases}
+    0, \qquad y \in \mathcal S_{\mathsf T} \\
+    \dfrac{\rho_{xy}}{m_y}, \quad y \in \mathcal S_{\mathsf R}
+\end{cases}
+$$
+
+Para $C_1$ temos que $\dfrac{1}{m_y} = \pi_{C_1}(y) = \dfrac{1}{3}$ para $y = 0,1,2$. E $\rho_{xy} = 1$ para $x,y \in C_1$ e 0 caso contrário.
+
+$$ 
+f(x,0) = f(x,1) = f(x,2) = \left( \dfrac{1}{3}, \dfrac{1}{3}, \dfrac{1}{3}, 0,0,0,0 \right)
+$$
+
+Para $C_2$ temos que $\dfrac{1}{m_y} = \pi_{C_1}(y)$ então $m_4 = 5$ e $m_5 = m_6 = 5/2$. E $\rho_{xy} = 1$ para $x,y \in C_2$ e 0 caso contrário.
+
+$$
+f(x,4) = f(x,5) = f(x,6) = \left( 0,0,0,0, \dfrac{1}{5}, \dfrac{2}{5}, \dfrac{2}{5} \right)
+$$
+
+Para o estado 3, $\rho_{3y} = 1/2$ para $y = 0,1,2,4,5,6$.
+
+$$
+f(x,3) = \left( \dfrac{1}{6}, \dfrac{1}{6}, \dfrac{1}{6}, 0, \dfrac{1}{10}, \dfrac{1}{5}, \dfrac{1}{5} \right)
+$$
+
+Para $C_1$: o período é 3 pois segue a ordem $0 \to 1 \to 2 \to 0 \to \cdots$.
+\vspace{+12pt}
+
+Para $C_2$: $\p[^m]{4,4} > 0$ para $m = 2$ pelo caminho $4 \to 5 \to 4$ e $m = 3$ pelo caminho $4 \to 5 \to 5 \to 4$, $I_0$ contém pelo menos 2 e 3, então seu M.D.C. e período é 1.
+:::
+
+::: callout-note
+# 7) Considere a cadeia de Ehrenfest, com $d = 3$. Determine o comportamento assintótico da matriz $P^n$ para os casos em que n é par ou impar. Verifique numericamente o resultado usando o R.
+
+$$
+P = \begin{bmatrix}
+    0 & 1 & 0 \\
+    1/2 & 0 & 1/2 \\
+    0 & 1 & 0
+\end{bmatrix} \qquad
+P^2 = \begin{bmatrix}
+    1/2 & 0 & 1/2 \\
+    0 & 1 & 0 \\
+    1/2 & 0 & 1/2
+\end{bmatrix} \qquad
+P^3 = \begin{bmatrix}
+    0 & 1 & 0 \\
+    1/2 & 0 & 1/2 \\
+    0 & 1 & 0
+\end{bmatrix}
+$$
+
+Como $P = P^3$, por indução $P^\text{impar} = P$ e $P^\text{par} = P^2$ pois:
+
+$$
+P^{2n + 1} = P^{2n - 2} P^3 = P^{2n - 2} P = P^{2n - 1}
+$$
+
+$$
+P^{2n} = P^{2n - 3} P^3 = P^{2n - 3} P = P^{2n - 2}
+$$
+
+```{r}
+#| layout-ncol: 2
+matrixpow <- function(M, n) {
+    M |> 
+        replicate(n = n, simplify = FALSE) |> 
+        Reduce(f = `%*%`)
+}
+
+P <- rbind(
+    c(  0, 1,   0),
+    c(1/2, 0, 1/2),
+    c(  0, 1,   0)
+)
+
+matrixpow(P, 1000)
+matrixpow(P, 1001)
+```
+:::
+
+::: callout-note
+# 8) Considere a cadeia de Ehrenfest modificada, com $d = 3$. \newline a) Usando o `R`, verifique que a distribuição estacionária é também a distribuição limite da cadeia. \newline b) Usando o método de Monte Carlo, implemente um script no `R` para verificar numericamente que a distribuição limite pode ser vista como a proporção esperada de vezes que a cadeia visita cada estado para $n$ grande.
+
+Como visto em sala, a matriz de transição e distribuição estacionária são as seguintes:
+
+```{r}
+#| collapse: true
+P <- rbind(
+    c(1/2, 1/2,   0,   0),
+    c(1/6, 1/2, 1/3,   0),
+    c(  0, 1/3, 1/2, 1/6),
+    c(  0,   0, 1/2, 1/2)
+)
+rownames(P) <- colnames(P) <- 0:3
+
+estacionária <- c(1/8, 3/8, 3/8, 1/8)
+estacionária
+
+limite <- matrixpow(P, 1000)[1, ]
+limite 
+```
+
+```{r}
+#| collapse: true
+proporções <- function(n, transição) {
+    X <- "1"
+    for(i in 2:n) {
+        j <- X[i - 1]
+        p <- transição[j, ]
+        X[i] <- sample(names(p), size = 1, prob = p)
+    } # simula a cadeia n passos
+    table(X) / n # calcula as proporções de visita aos estados
+}
+
+proporções(1000, P) |>     # simular até 1000
+    replicate(n = 1000) |> # 1000 réplicas dessa simulação
+    apply(1, mean)         # média das proporções em todas as réplicas
+```
+:::
