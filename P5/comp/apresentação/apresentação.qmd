@@ -1,0 +1,123 @@
+---
+format: 
+  revealjs: 
+    theme: solarized
+lang: pt
+bibliography: includes/bib.bibtex
+self-contained: true
+self-contained-math: true
+highlight-style: solarized
+code-line-numbers: false
+callout-icon: false
+title: Comparação empírica de diferentes métodos de imputação para modelos de regressão linear múltipla.
+author: 
+  - name: Paulo Ricardo Seganfredo Campana
+  - name: Marcelo Rodrigo Portela Ferreira 
+date: today
+date-format: long
+---
+
+## Problemática
+Técnicas para lidar com valores ausentes em conjuntos de dados são não só importantes mas necessárias para a criação de modelos estatísticos.
+
+Não podemos estimar parâmetros quando uma ou mais observações estão ausentes.
+
+A imputação destes valores é uma técnica popular para solucionar este problema.
+
+## Técnicas de imputação
+Utilizei as seguintes 5 técnicas:
+
+Imputação por:
+
+* Média 
+* Mediana
+* Modelo linear
+* Modelo *K-nearest neighbors*
+* Modelo *Bagged trees*
+
+## Imputação por modelo
+Funcionam da seguinte maneira:
+
+Para cada variável a ser imputada, são escolhidas as outras variáveis regressoras do conjunto de dados para a especificação de um submodelo de regressão que tenta explicar a variável a ser imputada.
+
+As observações ausentes serão substituídas pela predição deste submodelo ajustado com as observações não ausentes.
+
+## Para imputação por modelo linear
+Modelo de regressão: 
+
+$$
+\hat{\mathbf y} = \beta_0 + \beta_1 \mathbf x_1 + \beta_2 \mathbf x_2 + \cdots + \boldsymbol \varepsilon
+$$
+
+Submodelos de imputação: 
+
+$$
+\hat{\mathbf x}_1 = \beta_0 + \beta_1 \mathbf x_2 + \beta_2 \mathbf x_3 + \cdots + \boldsymbol \varepsilon
+$$
+$$
+\hat{\mathbf x}_2 = \beta_0 + \beta_1 \mathbf x_1 + \beta_2 \mathbf x_3 + \cdots + \boldsymbol \varepsilon
+$$
+$$
+\vdots
+$$
+
+## Conjuntos de dados
+Devido aos métodos de imputação por submodelos fazerem uso da correlação entre os regressores, usei 5 conjuntos de dados para a análise:
+
+* Dados gerados de uma Normal multivariada
+* `iris` [@iris].
+* `diamonds` [@diamonds].
+* `penguins` [@penguins].
+* `concrete` [@concrete].
+
+---
+
+|Dados         | Observações| Variáveis Quantitativas| Variáveis Qualitativas|
+|:-------------|-----------:|----------------:|---------------:|
+|Dados gerados |         500|                5|               0|
+|`iris`        |         150|                3|               1|
+|`diamonds`    |       53940|                6|               3|
+|`penguins`    |         344|                3|               3|
+|`concrete`    |        1030|                8|               0|
+
+## Introdução de valores ausentes
+Para cada conjunto, todas as variáveis regressoras numéricas tiveram 10% de suas observações escolhidas ao acaso substituídas por **NA**, aplicados os métodos de imputação, ajustado um modelo de regressão e observado as estatísticas de performance do modelo, este procedimento foi repetido em uma simulação Monte Carlo.
+
+## Métricas de performance
+O modelo de regressão foi ajustado em 80% dos dados de cada conjunto e avaliado nos restantes 20% pelas métricas da raiz do erro quadrático médio ($RMSE$) e o coeficiente de determinação ($R^2$).
+
+::: {layout-ncol=2}
+$$
+R^2 = \dfrac{SS_{\text{regressão}}}{SS_{\text{total}}}
+$$
+
+$$
+RMSE = \sqrt{\dfrac{1}{n} \sum_{i = 0}^n (\hat y_i - y_i)^2 }
+$$
+:::
+
+## Simulação
+As seguintes análises foram realizadas na linguagem de programação R [@R] utilizando o *framework* de modelagem estatística *tidymodels* [@tidymodels]. os códigos da simulação estão disponíveis de maneira reproduzível no Github [@trabalho].
+
+---
+
+![](includes/tabela.png){height=700 fig-align=center}
+
+## Resultados
+Os método de imputação por submodelos: linear, *k-nearest neighbors* e *bagged trees* apresentam em todos os casos um $RMSE$ menor e $R^2$ maior do que a imputação por média e mediana.
+
+Em específico, a imputação por modelo linear parece se destacar um pouco das demais nos conjuntos de dados `concrete` e "Dados gerados", porém apresenta desvio padrão superiores dos demais.
+
+---
+
+![](includes/gráfico.png){height=700 fig-align=center}
+
+## Conclusões
+Desta forma, vemos que as imputações por média e mediana são ferramentas muito boas para podermos 
+construir modelos onde há observações ausentes.
+
+Quando estamos na situação de um modelo multivariado, os métodos de imputação por submodelos utilizam a correlação entre as variáveis regressoras, isso trás benefícios que são significantes para uma melhor imputação.
+
+## Referências
+::: {#refs}
+:::
