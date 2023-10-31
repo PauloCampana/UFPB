@@ -1,0 +1,235 @@
+---
+format: pdf
+lang: pt
+title: Atividade 9
+subtitle: Transformações e seleção de variáveis
+author: Paulo Ricardo Seganfredo Campana
+date: today
+date-format: long
+callout-icon: false
+highlight-style: github
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
+fig-cap-location: top
+---
+
+::: hidden
+\pagestyle{empty}
+\thispagestyle{empty}
+:::
+
+::: callout-note
+# 
+Considerando novamente os dados da **Tabela B.3** do livro do *Montgomery*, sobre o consumo de combustível de diferentes automóveis, responda as questões abaixo, fixando o nível de significância em 5%.
+:::
+
+# Questão 1
+a) Estime um modelo de regressão linear que relaciona o consumo de combustível em milhas/galão, $y$,
+com o volume de deslocamento do motor (cilindrada), $x_1$.
+
+```{r}
+data <- MPV::table.b3
+fit1 <- lm(y ~ x1, data)
+```
+
+$$
+\hat y = 33.723 - 0.047 x_1
+$$
+
+b) Verifique se o modelo ajustado é homoscedástico, se essa suposição for violada, proceda a correção das estimativas de $\text{Var}(\beta)$ por meio dos HC's (utilize a função *vcovHC*, biblioteca *sandwich*). Comente os resultados;
+
+```{r}
+#| echo: false
+#| out-width: 100%
+#| fig-height: 2.7
+#| fig-cap: "Gráfico para verificação da suposição de homoscedasticidade: valores ajudastos versus resíduos padronizados"
+
+library(ggplot2)
+data |> 
+    ggplot(aes(x = predict(fit1), y = rstandard(fit1))) +
+    geom_point(color = "#4582ec") +
+    geom_hline(yintercept = 0, alpha = 0.25) +
+    labs(x = "Valores ajustados", y = "Resíduos padronizados") +
+    theme_bw()
+```
+
+```{r}
+#| collapse: true
+lmtest::gqtest(fit1)$p.value
+lmtest::bptest(fit1, studentize = FALSE)$p.value
+lmtest::bptest(fit1, studentize = TRUE)$p.value
+```
+
+É difícil notar algum padrão de mudança de variância dos resíduos dependente dos valores ajustados, possivelmente devido a baixa quantidade de observações, o teste de Goldfeld-Quandt não rejeita a suposição de homoscedasticidade porém os testes de Breusch-Pagan e Koenker rejeitam essa suposição.
+
+c) Aplique a transformação de Box-Cox e verifique se a mesma consegue estabilizar a variância no modelo final. Comente os resultados;
+
+```{r}
+#| collapse: true
+bct <- car::powerTransform(fit1, family = "bcPower")
+data$ybc <- car::bcPower(data$y, bct$lambda)
+fit2 <- lm(ybc ~ x1, data)
+
+lmtest::gqtest(fit2)$p.value
+lmtest::bptest(fit2, studentize = FALSE)$p.value
+lmtest::bptest(fit2, studentize = TRUE)$p.value
+```
+
+Sim, a transformação de Box-Cox com $\lambda = -0.218$ ajudou a estabilizar a variância dos resíduos, com isso todos os testes suportam a hipótese da homoscedasticidade do modelo.
+
+# Questão 2
+a) Ajuste um modelo de regressão linear que relaciona a variável consumo de combustível em milhas/galão, $y$, com o peso do carro, $x_{10}$.
+
+```{r}
+fit3 <- lm(y ~ x10, data)
+```
+
+$$
+\hat y = 40.852 - 0.00575 x_{10}
+$$
+
+b) Construa um gráfico dos resíduos padronizados versus a resposta prevista. É possível identificar algum problema de adequação no modelo ao analisar este gráfico?
+
+```{r}
+#| echo: false
+#| out-width: 100%
+#| fig-height: 2.7
+#| fig-cap: "Gráfico para verificação da suposição de homoscedasticidade: valores ajudastos versus resíduos padronizados"
+
+data |> 
+    ggplot(aes(x = predict(fit3), y = rstandard(fit3))) +
+    geom_point(color = "#4582ec") +
+    geom_hline(yintercept = 0, alpha = 0.25) +
+    labs(x = "Valores ajustados", y = "Resíduos padronizados") +
+    theme_bw()
+```
+
+Sim, abaixo da reta $y = 0$, os resíduos padronizados são geralmente sobre valores de $\hat y$ medianos enquanto que acima da reta são valores mais extremos em ambas as direções, possivelmente indicando a não linearidade do modelo.
+
+c) Faça um gráfico dos valores de y versus a resposta prevista. Parece que um modelo linear é adequado?
+
+```{r}
+#| echo: false
+#| fig-height: 3
+#| fig-cap: "Gráfico para verificação da suposição de linearidade: Valores ajustados versus valores originais"
+
+data |> 
+    ggplot(aes(x = y, y = predict(fit3))) +
+    geom_point(color = "#4582ec") +
+    geom_abline(intercept = 0, slope = 1) +
+    tune::coord_obs_pred() +
+    labs(x = "Valores originais", y = "Valores ajustados") +
+    theme_bw()
+```
+
+Um modelo linear possivelmente sim, porém esse modelo utilizando apenas $x_{10}$ não, o mesmo falha em ajustar para valores de $y$ altos, subestimando-os. 
+
+d) Verifique a hipótese de linearidade. Quais são as conclusões sobre a adequação do modelo com relação a esse pressuposto?
+
+```{r}
+#| collapse: true
+lmtest::resettest(fit3)$p.value
+lmtest::raintest(fit3)$p.value
+```
+
+O teste RESET rejeita a suposição de linearidade do modelo, enquanto que o teste *rainbow* não rejeita a mesma devido ao modelo linear ser suficientemente razoável. O não cumprimento dessa suposição nos leva a considerar transformações nas variáveis regressoras ou resposta, ou até mesmo um modelo não linear.
+
+e) Verifique a hipótese de normalidade Quais são as conclusões sobre a adequação do modelo com relação a esse pressuposto?
+
+```{r}
+#| collapse: true
+res <- rstandard(fit3)
+nortest::ad.test(res)$p.value
+nortest::cvm.test(res)$p.value
+nortest::lillie.test(res)$p.value
+nortest::pearson.test(res)$p.value
+nortest::sf.test(res)$p.value
+shapiro.test(res)$p.value
+moments::jarque.test(res)$p.value
+```
+
+A maioria dos testes para normalidade dos resíduos rejeita esta suposição, com isso os intervalos de confiança e testes de hipótese para os coeficientes do modelo e predição não são confiáveis, pois partem do pressuposto de normalidade para o cálculo de estatísticas.
+
+f) Utilizando o método de Box-Tidwell, identifique uma transformação apropriada para este caso. Ajuste o modelo com a variável transformada e verifique a adequação deste modelo. Comente os resultados.
+
+```{r}
+#| collapse: true
+BT <- car::boxTidwell(data$y ~ data$x10)
+alphaBT <- BT$result[1]
+alphaBT
+
+data$x10BT <- data$x10 ^ alphaBT
+fit4 <- lm(y ~ x10BT, data)
+```
+
+Com o método de Box-Tidwell obtemos $\alpha = -1.835$, essa transformação nos leva ao modelo
+
+$$
+\hat y = 10.09 + 27435160 x_{10}^{-1.835}
+$$
+
+```{r}
+#| collapse: true
+
+# Normalidade
+res <- rstandard(fit4)
+nortest::lillie.test(res)$p.value
+shapiro.test(res)$p.value
+moments::jarque.test(res)$p.value
+
+# Linearidade
+lmtest::resettest(fit4)$p.value
+lmtest::raintest(fit4)$p.value
+
+# Homoscedasticidade
+lmtest::bgtest(fit4)$p.value
+lmtest::bptest(fit4, studentize = FALSE)$p.value
+lmtest::bptest(fit4, studentize = TRUE)$p.value
+
+# Autocorrelação
+lmtest::dwtest(fit4)$p.value
+```
+
+O novo modelo com a transformação de Box-Tidwell é aceito por todos os testes de normalidade, linearidade, homoscedasticidade e autocorrelação, não é necessário verificar a suposição da multicolinearidade pois se trata de um modelo de regressão linear simples.
+
+# Questão 3
+a) Sem considerar a variável $x_3$, use os métodos de seleção *forward* e de eliminação *backward* para especificar um modelo de regressão para explicar o consumo de gasolina por milhas por um subconjunto de variáveis regressoras. Ambos os procedimentos levaram ao mesmo modelo final? Expresse o modelo final.
+
+```{r}
+#| output: false
+semx3 <- MPV::table.b3[-4]
+menor <- lm(y ~ 1, semx3)
+maior <- lm(y ~ ., semx3)
+
+foward <- step(menor, scope = list(lower = menor, upper = maior), direction = "forward")
+backward <- step(maior, direction = "backward")
+```
+
+Não, pelo método forward obtemos o modelo $\hat y = 33.885 - 0.053 x_1 + 0.959 x_6$ enquanto que por eliminação backward o modelo é $\hat y = 5.011 + 2.625 x_5 + 0.212 x_8 - 0.0093 x_{10}$.
+
+b) Ajuste uma regressão linear múltipla que relaciona o consumo de combustível, $y$, com o volume de deslocamento do motor (cilindrada), $x_1$, e o número de carburadores, $x_6$. Faça uma análise de variância e teste a significância global da regressão e escreva o que é possível concluir com este resultado? Faça o teste individual sobre os coeficientes da regressão, quais variáveis regressoras são significativas para o modelo? Apresente os resultados!
+
+```{r}
+fit5 <- lm(y ~ x1 + x6, data)
+```
+
+: Análise de variância para o modelo utilizando $x_1$ e $x_6$
+
+|Variável  | gl|      SS|      MS|Estatística|    p.value|
+|:---------|--:|-------:|-------:|----------:|----------:|
+|$x_1$     |  1|  955.72|  955.72|    105.290|$3.66 \times 10^{-11}$|
+|$x_6$     |  1|   18.59|   18.59|      2.048|      0.163|
+|Regressão |  2|  974.31|  487.16|     53.670|$1.79 \times 10^{-10}$|
+|Resíduos  | 29| 263.235|   9.077|           |           |
+
+: Teste $t$ para os coeficientes da regressão
+
+|Coeficiente | Estimativa|Erro padrão|Estatística|   p.value|
+|:-----------|----------:|----------:|----------:|---------:|
+|(Intercepto)|     32.885|      1.535|     21.417|$2.54 \times 10^{-19}$|
+|$x_1$       |     -0.053|      0.006|     -8.660|$1.55 \times 10^{-9}$|
+|$x_6$       |      0.959|      0.670|      1.431| 0.163|
+
+A análise de variância traz a informação de que o modelo num todo é significativo, porém a adição da variável $x_6$ por si só não é significativa para melhorar o modelo. O teste $t$ também indica que a estimativa para o coeficiente da regressão da variável $x_6$ não é significativa.
+
+Apenas a variável $x_1$ e o coeficiente do intercepto são altamente significantes para o modelo.
