@@ -1,0 +1,286 @@
+---
+format: pdf
+lang: pt
+title: Lista 1
+subtitle: Modelos lineares generalizados
+author: Paulo Ricardo Seganfredo Campana
+date: today
+date-format: long
+callout-icon: false
+highlight-style: github
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
+geometry:
+    - top    = 2cm
+    - bottom = 2cm
+    - left   = 2cm
+    - right  = 2cm
+echo: false
+warning: false
+---
+
+\pagestyle{empty}
+\thispagestyle{empty}
+
+::: callout-tip
+# **Questão 1.** Mostre que a distribuição Binomial, pertence à família exponencial. Calcule $\mu$ e $V(\mu)$.
+
+$$
+\begin{aligned}
+    f(y; n, \mu)
+    &= \binom{n}{y} \mu^y (1 - \mu)^{n - y} \\
+    &= \exp \left\lbrace \ln \binom{n}{y} + y \ln \mu + (n - y) \ln (1 - \mu) \right\rbrace \\
+    &= \exp \left\lbrace y \ln \left( \dfrac{\mu}{1 - \mu} \right) + n \ln (1 - \mu) + \ln \binom{n}{y} \right\rbrace
+\end{aligned}
+$$
+
+$$
+\phi = 1, \quad
+\theta = \ln \left( \dfrac{\mu}{1 - \mu} \right), \quad
+c(y, \phi) = \ln \binom{n}{y}
+$$
+
+$$
+b(\theta) = -n \ln (1 - \mu) = n \ln (1 + e^\theta)
+$$
+
+::: {layout-ncol=2}
+$$
+\begin{aligned}
+    E(X)
+    &= b'(\theta) \\
+    &= \dfrac{\partial}{\partial \theta} n \ln (1 + e^\theta) \\
+    &= \dfrac{n e^\theta}{1 + e^\theta} \\
+    &= \dfrac{n \frac{\mu}{1 - \mu}}{1 + \frac{\mu}{1 - \mu}} \\
+    &= n \mu
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+    V(\mu)
+    &= b''(\theta) \\
+    &= \dfrac{\partial}{\partial \theta} \dfrac{n e^\theta}{1 + e^\theta} \\
+    &= \dfrac{n e^\theta}{(1 + e^\theta)^2} \\
+    &= \dfrac{n \frac{\mu}{1 - \mu}}{(1 + \frac{\mu}{1 - \mu})^2} \\
+    &= n \mu (1 - \mu)
+\end{aligned}
+$$
+:::
+:::
+
+{{< pagebreak >}}
+
+::: callout-tip
+# **Questão 2.** Mostre que a distribuição Normal inversa pertence à família exponencial. Calcule $\mu$ e $V(\mu)$.
+
+$$
+\begin{aligned}
+    f(y; \mu, \phi)
+    &= \sqrt{\dfrac{\phi}{2 \pi y^3}} \exp \left\lbrace \dfrac{-\phi(y - \mu)^2}{2y \mu^2} \right\rbrace \\
+    &= \exp \left\lbrace \dfrac{-\phi (y - \mu)^2}{2y \mu^2} + \dfrac{1}{2} \ln \left( \dfrac{\phi}{2 \pi y^3} \right) \right\rbrace \\
+    &= \exp \left\lbrace \phi \left( \dfrac{y}{2 \mu^2} - \dfrac{1}{\mu} + \dfrac{1}{2y} \right) + \dfrac{1}{2} \ln \left( \dfrac{\phi}{2 \pi y^3} \right) \right\rbrace \\
+    &= \exp \left\lbrace \phi \left( \dfrac{y}{2 \mu^2} - \dfrac{1}{\mu} \right) + \dfrac{\phi}{2y} + \dfrac{1}{2} \ln \left( \dfrac{\phi}{2 \pi y^3} \right) \right\rbrace
+\end{aligned}
+$$
+
+$$
+\phi = \phi, \quad
+\theta = \dfrac{1}{2\mu^2}, \quad
+c(y, \phi) = \dfrac{\phi}{2y} + \dfrac{1}{2} \ln \left( \dfrac{\phi}{2 \pi y^3} \right)
+$$
+
+$$
+b(\theta) = \dfrac{1}{\mu} = \sqrt{2 \theta}
+$$
+
+::: {layout-ncol=2}
+$$
+\begin{aligned}
+    E(X)
+    &= b'(\theta) \\
+    &= \dfrac{\partial}{\partial \theta} \sqrt{2 \theta} \\
+    &= \dfrac{1}{\sqrt{2 \theta}} \\
+    &= \mu
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+    V(\mu)
+    &= b''(\theta) \\
+    &= \dfrac{\partial}{\partial \theta} \dfrac{1}{\sqrt{2 \theta}} \\
+    &= \dfrac{-\theta^{-3/2}}{2 \sqrt 2} \\
+    &= \dfrac{-(2 \mu^2)^{3/2}}{2 \sqrt 2} \\
+    &= -\mu^3
+\end{aligned}
+$$
+:::
+:::
+
+{{< pagebreak >}}
+
+::: callout-tip
+# **Questão 3.** Mostre que a distribuição logarítmica pertence à família exponencial. Calcule $\mu$ e $V(\mu)$.
+
+$$
+\begin{aligned}
+    f(y; \rho)
+    &= \dfrac{\rho^y}{-y \ln (1 - \rho)} \\
+    &= \exp \left\lbrace y \ln \rho - \ln y - \ln(-\ln (1 - \rho)) \right\rbrace \\
+    &= \exp \left\lbrace y \ln \rho - \ln(-\ln (1 - \rho)) - \ln y \right\rbrace \\
+\end{aligned}
+$$
+
+$$
+\phi = 1, \quad
+\theta = \ln \rho, \quad
+c(y, \phi) = -\ln y
+$$
+
+$$
+b(\theta) = \ln(-\ln (1 - \rho)) = \ln(-\ln(1 - e^\theta))
+$$
+
+::: {layout-ncol=2}
+$$
+\begin{aligned}
+    E(X)
+    &= b'(\theta) \\
+    &= \dfrac{\partial}{\partial \theta} \ln(-\ln(1 - e^\theta)) \\
+    &= \dfrac{e^\theta}{-\ln(1 - e^\theta) (1 - e^\theta)} \\
+    &= \dfrac{\rho}{-\ln(1 - \rho) (1 - \rho)} \\
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+    V(\mu)
+    &= b''(\theta) \\
+    &= \dfrac{\partial}{\partial \theta} \dfrac{e^\theta}{-\ln(1 - e^\theta) (1 - e^\theta)} \\
+    &= \dfrac{-e^\theta \ln(1 - e^\theta) - e^{2 \theta}}{(\ln(1 - e^\theta) (1 - e^\theta))^2} \\
+    &= \dfrac{-\rho \ln(1 - \rho) - \rho^2}{(\ln(1 - \rho) (1 - \rho))^2} \\
+\end{aligned}
+$$
+:::
+:::
+
+{{< pagebreak >}}
+
+::: callout-tip
+# **Questão 4.** O conjunto de dados descrito no arquivo censo.txt, extraído do censo do IBGE de 2000, apresenta para cada unidade da federação o número médio de anos de estudo e a renda média mensal (em reais) do chefe ou chefes do domicílio. Suponha que a renda tenha distribuição gama.
+
+```{r}
+library(tidyverse)
+library(boot)
+library(patchwork)
+data4 <- read.csv("data/censo.csv")
+fit14 <- glm(renda ~ ano, data4, family = Gamma(link = identity))
+fit24 <- glm(renda ~ ano, data4, family = Gamma(link = inverse ))
+fit34 <- glm(renda ~ ano, data4, family = Gamma(link = log     ))
+```
+
+a) Realize o ajuste da gama com as possíveis funções de ligação e decida, entre elas, qual a função de ligação é melhor. Justifique sua escolha.
+
+Eu escolho a função de ligação log, por estimar melhor as observações tanto para valores altos e baixos de renda.
+
+```{r}
+#| out-width: 100%
+#| fig-height: 4
+tibble(
+    y        = data4$renda  ,
+    identity = fitted(fit14),
+    inverse  = fitted(fit24),
+    log      = fitted(fit34),
+) |>
+    pivot_longer(-y) |>
+    ggplot(aes(x = value, y = y)) +
+    facet_grid(rows = vars(name)) +
+    geom_point(color = "#02b875") +
+    geom_abline(alpha = 0.25) +
+    labs(x = "Valores ajustados", y = "Valores observados") +
+    theme_bw()
+```
+
+{{< pagebreak >}}
+
+b) Selecione as variáveis. Realize uma análise residual para o melhor modelo obtido. O modelo é adequado? Por quê?
+
+Os dados possuem apenas uma variável independente, a seleção não é necessária. O modelo com função de ligação inversa obteve melhor normalidade nos resíduos, podemos aceitar os três pois os desvios normalizados são menores que o quantil da Chi-quadrado para estes dados.
+
+```{r}
+#| out-width: 100%
+#| fig-height: 4
+tibble(
+    identity = glm.diag(fit14)$rd,
+    inverse  = glm.diag(fit24)$rd,
+    log      = glm.diag(fit34)$rd,
+) |>
+    pivot_longer(everything()) |>
+    ggplot(aes(sample = value)) +
+    facet_grid(vars(name))+
+    geom_qq(color = "#02b875") +
+    geom_qq_line(alpha = 0.25) +
+    labs(x = "Quantil teórico", y = "Quantil observado") +
+    theme_bw()
+```
+
+```{r}
+desvio14  <- summary(fit14)$deviance / summary(fit14)$dispersion
+quantil14 <- qchisq(0.95, summary(fit14)$df.residual)
+
+desvio24  <- summary(fit24)$deviance / summary(fit24)$dispersion
+quantil24 <- qchisq(0.95, summary(fit24)$df.residual)
+
+desvio34  <- summary(fit34)$deviance / summary(fit34)$dispersion
+quantil34 <- qchisq(0.95, summary(fit34)$df.residual)
+```
+
+|Função de ligação|    $D(y; \mu) / \phi$|       Quantil $\chi^2$|
+|:----------------|---------------------:|----------------------:|
+|Identidade       |`r round(desvio14, 3)`|`r round(quantil14, 3)`|
+|Inversa          |`r round(desvio24, 3)`|`r round(quantil24, 3)`|
+|Log              |`r round(desvio34, 3)`|`r round(quantil34, 3)`|
+
+{{< pagebreak >}}
+
+c) Realize uma análise de diagnóstico para o melhor modelo obtido em (a). Analise os resultados obtidos.
+
+```{r}
+fit4 <- fit34
+n <- nrow(data4)
+p <- ncol(data4)
+```
+
+Os coeficientes são altamentes significativos atráves o teste $t$, os testes de Lilliefors e Shapiro-Wilk contribuem para a hipótese de normalidade dos resíduos (p-valores 0.390 e 0.202). Apenas uma observação dos dados possui distância de Cook e $h_{ii}$ fora do padrão.
+
+|Coeficiente |Estimativa|Erro padrão|Estatística|     p-valor|
+|:-----------|---------:|----------:|----------:|-----------:|
+|(Intercepto)|     4.984|     0.0679|       73.4|$1.03 \times 10^{-30}$|
+|ano         |     0.279|     0.0128|       21.9|$7.98 \times 10^{-18}$|
+
+```{r}
+#| out-width: 100%
+#| fig-height: 5.7
+g14 <- data4 |>
+    ggplot(aes(x = fitted(fit4), y = glm.diag(fit4)$rd)) +
+    geom_point(color = "#02b875") +
+    geom_hline(aes(yintercept = -2), alpha = 0.25) +
+    geom_hline(aes(yintercept = +2), alpha = 0.25) +
+    labs(x = "Valores ajustados", y = "Resíduo padronizado") +
+    theme_bw()
+g24 <- data4 |>
+    ggplot(aes(x = fitted(fit4), y = glm.diag(fit4)$h)) +
+    geom_point(color = "#02b875") +
+    geom_hline(yintercept = 2 * p / n, alpha = 0.25) +
+    labs(x = "Valores ajustados", y = expression(h[i][i])) +
+    theme_bw()
+g34 <- data4 |>
+    ggplot(aes(x = fitted(fit4), y = glm.diag(fit4)$cook)) +
+    geom_point(color = "#02b875") +
+    geom_hline(yintercept = qchisq(0.1, p) / p, alpha = 0.25) +
+    labs(x = "Valores ajustados", y = "Distância de Cook") +
+    theme_bw()
+g14 / g24 / g34
+```
+:::
