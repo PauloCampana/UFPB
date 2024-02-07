@@ -1,0 +1,158 @@
+---
+format: pdf
+lang: pt
+title: Trabalho 1
+subtitle: Análise de Variância
+author: Paulo Ricardo Seganfredo Campana
+date: today
+date-format: long
+callout-icon: false
+highlight-style: github
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
+geometry:
+    - top    = 2cm
+    - bottom = 2cm
+    - left   = 2cm
+    - right  = 2cm
+---
+
+\pagestyle{empty}
+\thispagestyle{empty}
+
+::: callout-tip
+**Problem 3.6**. An article in Bioelectromagnetics ("Electromagnetic Effects on Forearm Disuse Osteopenia: A Randomized, Double-Blind, Sham-Controlled Study", Vol. 32, 2011, pp. 273-282) described a randomized, double-blind, sham-controlled, feasibility and dosing study to determine if a common pulsing electromagnetic field (PEMF) treatment could moderate the substantial osteopenia that occurs after forearm disuse. Subjects were randomized into four groups after a distal radius fracture, or carpal surgery requiring immobilization in a cast. Active or identical sham PEMF transducers were worn on the distal forearm for 1, 2, or 4h/day for 8 weeks starting after cast removal ("baseline") when bone density continues to decline. Bone mineral density (BMD) and bone geometry were measured in the distal forearm by
+dual energy X-ray absorptiometry (DXA) and peripheral quantitative computed tomography (pQCT). The data below are the percent losses in BMD measurements on the radius
+after 16 weeks for patients wearing the active or sham PEMF transducers for 1, 2, or 4h/day (data were constructed to match the means and standard deviations read from a graph in the paper).
+
+Is there evidence to support a claim that PEMF usage affects BMD loss? <!-- If so, analyze the data to determine which specific treatments produce the differences. -->
+
+<!-- b) Analyze the residuals from this experiment and comment on the underlying assumptions and model adequacy. -->
+:::
+
+```{r}
+data <- data.frame(
+    loss = c(
+        4.51, 7.95, 4.97, 3   , 7.97, 2.23, 3.95, 5.64, 9.35, 6.52,
+        4.96, 6.1 , 7.19, 4.03, 2.72, 9.19, 5.17, 5.7 , 5.85, 6.45,
+        5.32, 6   , 5.12, 7.08, 5.48, 6.52, 4.09, 6.28, 7.77, 5.68,
+        8.47, 4.58, 4.11, 5.72, 5.91, 6.89, 6.99, 4.98, 9.94, 6.38,
+        4.73, 5.81, 5.69, 3.86, 4.06, 6.56, 8.34, 3.01, 6.71, 6.51,
+        1.7 , 5.89, 6.55, 5.34, 5.88, 7.5 , 3.28, 5.38, 7.3 , 5.46,
+        7.03, 4.65, 6.65, 5.49, 6.98, 4.85, 7.26, 5.92, 5.58, 7.91,
+        4.9 , 4.54, 8.18, 5.42, 6.03, 7.04, 5.17, 7.6 , 7.9 , 7.91
+    ),
+    hours = rep(c(0, 1, 2, 4), each = 20)
+)
+```
+
+{{< pagebreak >}}
+
+Os dados acima referem a queda em percentual da densidade mineral dos ossos de pacientes com certa doença óssea após usarem um aparelho eletrônico que possivelmente poderia combater os sintomas da doença. 3 grupos de pacientes usaram o aparelho por 1, 2 e 4 horas por dia, e o grupo de controle utilizou um aparelho que não funciona, fazendo papel de placebo. Queremos testar se o aparelho ajuda a diminuir a queda da densidade mineral dos ossos.
+
+Temos 4 grupos com 20 observações cada e iremos realizar uma análise de variância (anova) para testar se há diferença na variável medida entre os grupos.
+
+$$
+y_{ij} = \mu + \tau_j + \varepsilon{ij}
+$$
+
+Seja o índice $i = \lbrace 1,2,\cdots,n_j \rbrace$ referente as observações e o índice $j = \lbrace 1,2,\cdots,g \rbrace$ sobre os grupos. A anova se baseia em decompor cada observação da variável medida $y_{ij}$ em uma média global $\mu$, uma mudança de média entre os grupos $\tau_j$ e um erro normal $\varepsilon_{ij} \sim \mathcal N(0,\sigma^2)$, assim podemos escrever as hipóteses do teste:
+
+$$
+\begin{cases}
+    \mathcal H_0: \mu_1 = \mu_2 = \cdots = \mu_g \\
+    \mathcal H_1: \mu_p \neq \mu_q, \; \text{para algum} \; p,q
+\end{cases} \Longrightarrow
+\begin{cases}
+    \mathcal H_0: \tau_1 = \tau_2 = \cdots = \tau_g = 0 \\
+    \mathcal H_1: \tau_j \neq 0, \; \text{para algum} \; j
+\end{cases}
+$$
+
+Com os dados em mão, é possível estimarmos estes componentes:
+
+::: {layout-ncol=4}
+$$
+n = \sum_{j = 1}^{g} n_j
+$$
+
+$$
+\mu = \sum_{j = 1}^g \sum_{i = 1}^{n_j} \dfrac{y_{ij}}{n}
+$$
+
+$$
+\mu_j = \sum_{i = 1}^{n_j} \dfrac{y_{ij}}{n_j}
+$$
+
+$$
+\tau_j = \mu_j - \mu
+$$
+:::
+
+Da mesma forma, podemos decompor a soma de quadrados total $\text{SS}_T$ na soma de quadrados devido aos grupos $\text{SS}_G$ e devido aos erros $\text{SS}_E$, estas somas de quadrados irão representar a variância devido a cada componente depois que dividirmos pelos graus de liberdade de cada um.
+
+$$
+\underbrace{\sum_{j = 1}^g \sum_{i = 1}^{n_j} (y_{ij} - \mu)^2}
+    _{\text{SS}_T, \; n - 1 \; \text{graus}} =
+\underbrace{\sum_{j = 1}^g \sum_{i = 1}^{n_j} (\mu_j - \mu)^2}
+    _{\text{SS}_G, \; g - 1 \; \text{graus}} +
+\underbrace{\sum_{j = 1}^g \sum_{i = 1}^{n_j} (y_{ij} - \mu_j)^2}
+    _{\text{SS}_E, \; n - g \; \text{graus}}
+$$
+
+Se a maior parte da soma dos quadrados totais é explicada pela soma devido aos grupos e menos pela soma devido aos erros, então temos que a diferença entre os grupos é significante e podemos rejeitar a hipótese nula, assim a estatística do teste é:
+
+$$
+F = \dfrac{\text{SS}_G / (g - 1)}{\text{SS}_E / (n - g)} \sim \mathcal F_{(g - 1, n - g)}
+$$
+
+Que tem distribuição F-Snedecor, rejeitamos a hipótese nula se a estatística F ultrapassa o quantil $\mathcal F_{(g - 1, n - g)}(1 - \alpha)$.
+
+{{< pagebreak >}}
+
+Com os dados em duas colunas: a variável medida e a qual grupo ela pertence, seja o nível se significância $\alpha = 0.05$, vamos primeiro estimar a média geral e a média de cada grupo.
+
+```{r}
+alpha <- 0.05
+g <- length(unique(data$hours))                       # 4
+n <- nrow(data)                                       # 80
+nj <- table(data$hours)                               # 20, 20, 20, 20
+mu <- mean(data$loss)                                 # 5.91
+muj <- tapply(data$loss, data$hours, mean)            # 5.67, 6.16, 5.47, 6.35
+```
+
+As somas de quadrados.
+
+```{r}
+SST <- sum((data$loss - mu)^2)                        # 206.1
+SSG <- sum((rep(muj - mu, nj[1]))^2)                  #  10.1
+SSE <- sum((data$loss - rep(muj, each = nj[1]))^2)    # 196.0
+```
+
+A estatística do teste, quantil da distribuição e p-valor.
+
+```{r}
+gl1 <- (g - 1)
+gl2 <- (n - g)
+F <- (SSG / gl1) / (SSE / gl2)                        # 1.298
+quantil <- qf(1 - alpha, gl1, gl2)                    # 2.725
+pvalor <- pf(F, gl1, gl2, lower.tail = FALSE)         # 0.281
+```
+
+Como a estatística do teste $F = 1.298$ não é mais extrema que o quantil da distribuição $\mathcal F = 2.725$, não há evidências para rejeitar a hipótese de que os grupos são iguais, ou seja, o aparelho não parece fazer efeito na redução da perda da densidade mineral dos ossos dos pacientes.
+
+Alternativamente, a função anova do `R` trás as mesmas somas de quadrados, estatística do teste e p-valor.
+
+```{r}
+#| output: false
+data$hours <- as.factor(data$hours)
+model <- lm(loss ~ hours, data)
+anova(model)
+```
+
+```{r}
+#| echo: false
+anova(model) |>
+    broom::tidy() |>
+    knitr::kable()
+```
