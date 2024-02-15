@@ -1,0 +1,162 @@
+---
+format:
+    revealjs:
+        theme: moon
+lang: pt
+title: Componentes principais e Análise fatorial
+subtitle: Análise Multivariada II
+author: Paulo Ricardo Seganfredo Campana
+date: today
+date-format: long
+callout-icon: false
+highlight-style: github
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
+geometry:
+    - top    = 2cm
+    - bottom = 2cm
+    - left   = 2cm
+    - right  = 2cm
+logo: includes/logo.png
+echo: true
+self-contained-math: true
+embed-resources: true
+---
+
+## Componentes principais
+Com a análise exploratória dos dados feita, vimos que há forte correlação entre grupos de variáveis, podemos aproveitar disso e reduzir a quantidade de variáveis a serem análisadas com componentes principais, obtendo um número menor de combinações lineares das mesmas que explicam a grande maioria da variância das 10 originais.
+
+```{r}
+library(tidyverse)
+
+data <- read_csv("includes/energy.csv")
+X <- data |>
+    select(-property_type, -stars) |>
+    as.matrix() |>
+    scale()
+```
+
+## Componentes principais
+Olhando para a proporção cumulativa, apenas 2 componentes conseguem explicar 82.5% da variância das 10 variáveis originais, as análises seguintes serão feitas com base nestes dois componentes, outra seleção interessante seria 4 componentes explicando 96%.
+
+```{r}
+#| echo: false
+options(digits = 3)
+theme_moon <- theme(
+    plot.background = element_rect("#002b36"),
+    panel.background = element_blank(),
+    panel.grid = element_line("#93a1a120"),
+    panel.grid.minor = element_blank(),
+    axis.ticks = element_line("#93a1a120"),
+    strip.background = element_rect("#104b56"),
+    text = element_text(colour = "#93a1a1"),
+    axis.text = element_text(colour = "#93a1a1"),
+    strip.text = element_text(colour = "#93a1a1"),
+    legend.background = element_blank(),
+    legend.key = element_blank(),
+)
+```
+
+```{r}
+#| collapse: true
+pca <- prcomp(X, scale. = TRUE)
+summary(pca)
+```
+
+## Gráfico biplot
+Pela cor de cada variável no gráfico, podemos notar que a maioria das variáveis foram bem representadas pelos dois primeiros componentes, o consumo de gás natural e pontuação de eficiencia energética foram menos representadas.
+
+```{r}
+#| fig-height: 6
+#| fig-width: 6.64
+#| fig-align: center
+#| output-location: slide
+factoextra::fviz_pca_var(
+    pca,
+    repel = TRUE,
+    col.var = "cos2",
+    col.circle = "#93a1a140"
+) +
+    scale_color_viridis_c(option = "E", begin = 0.15) +
+    labs(title = "") +
+    theme_moon
+```
+
+## Interpretação dos componentes
+Pelo gráfico anterior usando dois componentes, é possivel atribuir interpretação a cada um devido a concentração de diferentes tipos de variáveis nos eixos.
+
+* as variáveis `ghg_intensity`, `eui_site`, `eui_source`, `eui_site_wn` e `eui_source_wn` são todas normalizadas pela área da propriedade e estão relacionadas a um coeficiente negativo no primeiro componente.
+
+* `area`, `electricity`, `natural_gas` e `ghg_total` são valores brutos e possuem coeficiente positivo no segundo componente.
+
+## Interpretação dos componentes
+Assim, o primeiro componente tem a ver com a eficiência energética da construção, enquanto que o segundo componente com a escala da mesma, e estas duas características são independentes, pois é possivel ter grandes e pequenas construções energeticamente eficientes.
+
+## Análise Fatorial
+
+## 1 fator
+Vamos fazer uso da análise fatorial para verificar se esse agrupamento de variáveis feito pelos componentes principais realmente existe
+
+```{r}
+#| collapse: true
+fat1 <- factanal(X, factors = 1)
+fat1
+```
+
+## 2 fatores
+Um fator explicou apenas 50% da variabilidade total das 10 variável utilizadas, 2 fatores conseguem explicar mais, 78.5%. Este valor é menor doque o obtido com 2 componentes principais, porém a análise fatorial trás o poder da inferência para validar o uso dos fatores.
+
+```{r}
+#| collapse: true
+fat2 <- factanal(X, factors = 2, scores = "regression")
+fat2
+```
+
+## Teste de hipótese
+Acerca da análise fatorial com 2 fatores, o teste para verificar se estes são suficientes obteve uma estatística de 79792, sob a hipótese nula, essa estatítica tem distribuição qui-quadrado com 26 graus de liberdade.
+
+O valor da estatística de teste é muito extremo para a distribuição da hipótese nula, obtendo um p-valor extremamente próximo de 0, assim podemos concluir que 2 fatores são sim suficientes para representar a maior parte dos dados.
+
+## Comparação
+Plotando os dois compoententes/fatores de cada observação vemos uma semelhança entre o método de compontentes principais e análise fatorial.
+
+```{r}
+#| fig-height: 6
+#| out-width: 100%
+#| output-location: slide
+library(ggfortify)
+data8 <- data |>
+    mutate(property_type = fct_lump_n(property_type, 8))
+
+autoplot(
+    pca, data8,
+    colour = "property_type",
+    loadings = TRUE,
+    loadings.label = TRUE,
+    loadings.label.repel = TRUE,
+    loadings.colour = "#93a1a180",
+    loadings.label.colour = "#93a1a1",
+) + theme_moon + theme(legend.position = "top")
+```
+
+## Comparação
+Ambas capturam variáveis normalizadas por área da propriedade no primeiro componente/fator e variáveis brutas no segundo, portanto a interpretação dos fatores é similar aos dos componentes.
+
+Além disso, podemos ver certos agrupamentos de tipos de construções no gráfico, supermercados tem baixo consumo total mas alta intensidade energética, hospitais tem alto consumo total e média intensidade.
+
+```{r}
+#| fig-height: 6
+#| out-width: 100%
+#| output-location: slide
+autoplot(
+    fat2, data8,
+    colour = "property_type",
+    loadings = TRUE,
+    loadings.label = TRUE,
+    loadings.label.repel = TRUE,
+    loadings.colour = "#93a1a180",
+    loadings.label.colour = "#93a1a1",
+) + theme_moon + theme(legend.position = "top")
+```
+
+##
