@@ -1,0 +1,211 @@
+---
+format:
+    revealjs:
+        theme: moon
+lang: pt
+title: Dados sobre consumo de energia em Chicago
+subtitle: Análise Multivariada II
+author: Paulo Ricardo Seganfredo Campana
+date: today
+date-format: long
+callout-icon: false
+highlight-style: github
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
+geometry:
+    - top    = 2cm
+    - bottom = 2cm
+    - left   = 2cm
+    - right  = 2cm
+logo: includes/logo.png
+echo: true
+self-contained-math: true
+embed-resources: true
+---
+
+## Fonte
+Este conjunto de dados está disponível no site da prefeitura de Chicago^[https://data.cityofchicago.org/Environment-Sustainable-Development/Chicago-Energy-Benchmarking/xq83-jr8c/about_data] e contém informações coletadas pelo decreto *Energy Benchmarking*^[https://www.chicago.gov/city/en/progs/env/building-energy-benchmarking---transparency.html] da cidade.
+
+Para estarem de acordo com a lei, é obrigatório que todos as propriedades com área acima de $50000 \ \text{ft}^2$ ($4650 \ \text{m}^2$) reportem anualmente sobre o uso total de energia elétrica, gás natural, água e outros recursos.
+
+## Pontuação
+Com esse consumo de energia, é calculado uma pontuação de 0 a 100 e atribuido estrelinhas a cada construção, além disso, uma placa deve ser exposta contendo esta pontuação em um lugar proeminente.
+
+![](includes/plaque.png){fig-align=center}
+
+## Objetivo
+As construções afetadas por esse decreto são apenas 1% do total da cidade, porém consomem 20% de toda energia, com o objetivo de alcançar 100% de uso de energias renováveis na cidade até 2035, esse decreto busca aumentar a eficiência de construções para facilitar a transição energética. Foi observado que a cada ano, estas propriedades diminuem em média entre 1% a 2% o seu consumo de energia.^[https://www.chicago.gov/content/dam/city/progs/env/EnergyRating/2021_Chicago_Energy_Rating_System_Summary.pdf]
+
+## Dados
+São 24891 observações de 30 variáveis, cada observação corresponde a uma propriedade, o conjunto de dados contém variáveis como ano de coleta, ID, endereço, código postal, bairro, latitude e longitude que não serão usadas nas análises seguintes, as variávels selecionadas são dadas na lista a seguir
+
+## {.smaller}
+
+|Variável               |Descrição                                     |
+|:----------------------|:---------------------------------------------|
+|`Primary Property Type`|Qualificação da propriedade (residencial, escola, escritório, etc).|
+|`Chicago Energy Rating`|Escore em estrelas de 0 a 4 da eficiência energética.|
+|`ENERGY STAR Score`    |Pontuação de 0 a 100 da eficiência energética.|
+|`Gross Floor Area`     |Área da construção em pés quadrados.          |
+|`Total GHG Emissions`  |Emissões totais de gases do efeito estufa devido ao uso de energia em toneladas|
+|`GHG Intensity`        |Emissões totais dividido pela área            |
+
+## {.smaller}
+|Variável                       |Descrição                              |
+|:------------------------------|:--------------------------------------|
+|`Electricity Use`              |Consumo de energia elétrica em kBTUs   |
+|`Natural Gas Use`              |Consumo de gás natural em kBTUs        |
+|`Site EUI`                     |Uso anual de energia dividido pela área|
+|`Source EUI`                   |Inclui perdas de geração, transmissão e distribuição de energia|
+|`Weather Normalized Site EUI`  |Considerando a média climática dos últimos 30 anos|
+|`Weather Normalized Source EUI`||
+
+## Carregando os dados
+Podem ser baixados em formato `csv` pelo site^[https://data.cityofchicago.org/Environment-Sustainable-Development/Chicago-Energy-Benchmarking/xq83-jr8c] ou carregados diretamente pelo link da API.
+
+```{r}
+library(tidyverse)
+
+raw <- read_csv("https://data.cityofchicago.org/api/views/xq83-jr8c/rows.csv")
+```
+
+## Seleção de variáveis
+```{r}
+data <- raw |>
+    select(
+        property_type = `Primary Property Type`,
+        stars         = `Chicago Energy Rating`,
+        score         = `ENERGY STAR Score`,
+        area          = `Gross Floor Area - Buildings (sq ft)`,
+        ghg_total     = `Total GHG Emissions (Metric Tons CO2e)`,
+        ghg_intensity = `GHG Intensity (kg CO2e/sq ft)`,
+        electricity   = `Electricity Use (kBtu)`,
+        natural_gas   = `Natural Gas Use (kBtu)`,
+        eui_site      = `Site EUI (kBtu/sq ft)`,
+        eui_source    = `Source EUI (kBtu/sq ft)`,
+        eui_site_wn   = `Weather Normalized Site EUI (kBtu/sq ft)`,
+        eui_source_wn = `Weather Normalized Source EUI (kBtu/sq ft)`,
+    )
+```
+
+## Limpeza
+Poucas construções não reportaram seu consumo de energia, assim, não possuem dados para quase todas as colunas, então será retirado estas observações.
+
+```{r}
+data <- data |>
+    drop_na(everything()) |>
+    mutate(
+        property_type = fct_reorder(
+            property_type,
+            eui_source_wn,
+            .fun = mean,
+            .desc = TRUE,
+        ),
+        stars = as.factor(stars),
+    )
+
+write_csv(data, "energy.csv")
+
+X <- data |>
+    select(-property_type, -stars) |>
+    as.matrix() |>
+    scale()
+```
+
+## Correlação
+Vemos que algumas variáveis são altamente correlacionadas como as 4 variáveis sobre o consumo de energia anual, energia elétrica, área e emissões são correlacionadas, além de que a pontuação tem correlação negativa com muitas variáveis.
+
+```{r}
+#| output: false
+#| fig-height: 6
+#| out-width: 100%
+X |>
+    cor() |>
+    corrplot::corrplot(
+        method = "ellipse",
+        col = viridis::cividis(200),
+        tl.col = "black",
+        tl.pos = "l",
+        cl.ratio = 0.25,
+    )
+```
+
+##
+![](includes/corrplot.png)
+
+```{r}
+#| echo: false
+theme_moon <- theme(
+    plot.background = element_rect("#002b36"),
+    panel.background = element_blank(),
+    panel.grid = element_line("#93a1a120"),
+    panel.grid.minor = element_blank(),
+    axis.ticks = element_line("#93a1a120"),
+    strip.background = element_rect("#104b56"),
+    text = element_text(colour = "#93a1a1"),
+    axis.text = element_text(colour = "#93a1a1"),
+    strip.text = element_text(colour = "#93a1a1"),
+)
+```
+
+## Normalidade
+As variáveis não tem distribuição normal devido a grandes outliers e em alguns casos assimetria. As variáveis normalizadas por área como `eui_site` e `eui_source` são menos afetadas pela assimetria.
+
+```{r}
+#| fig-height: 6
+#| out-width: 100%
+#| output-location: slide
+data |>
+    pivot_longer(-c(property_type, stars)) |>
+    ggplot(aes(x = value)) +
+    facet_wrap(vars(name), nrow = 5, scales = "free", strip.position = "right") +
+    geom_density(color = "#93a1a1") +
+    labs(x = "Valor", y = "Densidade") +
+    theme(axis.text.y = element_blank()) +
+    theme_moon
+```
+
+## Relação com o tipo de propriedade
+Usando a variável `eui_source_wn` sobre o uso anual de energia por área, temos que *Data centers*, supermercados e hospitais requerem maior intensidade de energia doque outros tipos de construções, prédios residenciais e escolas no entanto usam pouca energia por metro quadrado.
+
+```{r}
+#| fig-height: 6
+#| out-width: 100%
+#| output-location: slide
+data |>
+    summarise(
+        eui_source_wn = mean(eui_source_wn),
+        .by = property_type,
+    ) |>
+    ggplot(aes(x = property_type, y = eui_source_wn, fill = property_type)) +
+    geom_col() +
+    scale_fill_viridis_d(option = "E", direction = -1, begin = 0.1) +
+    labs(x = "", y = "Uso normalizado de energia") +
+    theme(
+        axis.text.x = element_text(angle = 60, hjust = 1, size = 12),
+        legend.position = "none"
+    ) +
+    theme_moon
+```
+
+## Relação entre a pontuação e as variáveis contínuas
+Por si só, não há relação entre a pontuação em eficiência energética e variáveis como a área da propriedade ou o consumo total de energia e emissão de gases poluentes, porém existe relação direta com o uso de energia por metro quadrado, quanto menor este índice, maior será em média a pontuação de eficiência energética.
+
+```{r}
+#| fig-height: 6
+#| out-width: 100%
+#| output-location: slide
+data |>
+    pivot_longer(-c(property_type, stars, score)) |>
+    summarise(
+        value = mean(value),
+        .by = c(score, name),
+    ) |>
+    ggplot(aes(x = score, y = value)) +
+    facet_wrap(vars(name), scales = "free") +
+    geom_line(color = "#93a1a1") +
+    labs(x = "Pontuação", y = "Valor") +
+    theme_moon
+```
+
+##
