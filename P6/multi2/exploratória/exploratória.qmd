@@ -10,16 +10,10 @@ date: today
 date-format: long
 callout-icon: false
 highlight-style: github
-monofont: "Ubuntu Mono"
-monofontoptions: Scale = 1
-geometry:
-    - top    = 2cm
-    - bottom = 2cm
-    - left   = 2cm
-    - right  = 2cm
 logo: includes/logo.png
 echo: true
 self-contained-math: true
+self-contained: true
 embed-resources: true
 ---
 
@@ -61,7 +55,7 @@ São 24891 observações de 30 variáveis, cada observação corresponde a uma p
 |`Weather Normalized Source EUI`||
 
 ## Carregando os dados
-Podem ser baixados em formato `csv` pelo site^[https://data.cityofchicago.org/Environment-Sustainable-Development/Chicago-Energy-Benchmarking/xq83-jr8c] ou carregados diretamente pelo link da API.
+Podem ser baixados em formato `.csv` pelo site^[https://data.cityofchicago.org/Environment-Sustainable-Development/Chicago-Energy-Benchmarking/xq83-jr8c] ou carregados diretamente pelo link da API.
 
 ```{r}
 library(tidyverse)
