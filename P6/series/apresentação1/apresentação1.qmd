@@ -1,0 +1,201 @@
+---
+format:
+    revealjs:
+        theme: moon
+lang: pt
+title: Temperatura em Chicago
+subtitle: Séries temporais
+author: Paulo Ricardo Seganfredo Campana
+date: today
+date-format: long
+callout-icon: false
+highlight-style: github
+logo: includes/logo.png
+echo: true
+self-contained-math: true
+embed-resources: true
+cache: true
+---
+
+## Fonte
+Esta série temporal sobre o clima da cidade de Chicago está disponível no site da prefeitura^[https://data.cityofchicago.org/Parks-Recreation/Beach-Weather-Stations-Automated-Sensors/k7hf-8y75/about_data], os dados podem ser baixados em arquivo `.csv` ou carregados diretamente pelo link:
+
+```{r}
+library(tidyverse)
+library(tseries)
+library(seastests)
+
+raw <- read_csv(
+    "https://data.cityofchicago.org/api/views/k7hf-8y75/rows.csv"
+)
+```
+
+## Fonte
+São dados de uma estação climática no litoral do lago Michigan que coletam a cada hora do dia valores como temperatura do ar, humidade, pressão atmosférica, incidência solar, intensidade de chuva, velocidade e direção do vento.
+
+## Estação climática
+
+```{r}
+#| echo: false
+options(digits = 3)
+
+theme_moon <- theme(
+    plot.background = element_rect("#002b36"),
+    panel.background = element_blank(),
+    panel.grid = element_line("#93a1a120"),
+    panel.grid.minor = element_blank(),
+    axis.ticks = element_line("#93a1a120"),
+    strip.background = element_rect("#104b56"),
+    text = element_text(colour = "#93a1a1"),
+    axis.text = element_text(colour = "#93a1a1"),
+    strip.text = element_text(colour = "#93a1a1"),
+)
+
+leaflet::leaflet() |>
+    leaflet::addTiles() |>
+    leaflet::addMarkers(lng = -87.622817, lat = 41.901997) |>
+    leaflet::fitBounds(-90, -45, 90, 45)
+```
+
+## Preparação
+Renomeando as variáveis e salvando a série para ser utilizado nas próximas apresentações.
+
+```{r}
+data <- raw |>
+    filter(`Station Name` == "Oak Street Weather Station") |>
+    select(
+        date = `Measurement Timestamp`,
+        air_temperature = `Air Temperature`,
+        humidity = `Humidity`,
+        rain_interval = `Interval Rain`,
+        pressure = `Barometric Pressure`,
+        solar = `Solar Radiation`,
+        wet_bulb_temperature = `Wet Bulb Temperature`,
+        rain_intensity = `Rain Intensity`,
+        rain_total = `Total Rain`,
+        rain_type = `Precipitation Type`,
+        wind_direction = `Wind Direction`,
+        wind_speed = `Wind Speed`,
+    ) |>
+    mutate(date = mdy_hms(date))
+write_csv(data, "chicago.csv")
+```
+
+## Preparação
+Aqui irei focar apenas no mês de Outubro de 2023 devido a grande quantidade de dados, além disso, suavizei a série fazendo a média da temperatura do ar a cada duas horas, pois raramente não há informação durante uma hora.
+
+```{r}
+data23 <- data |>
+    filter(year(date) == 2023, month(date) == 10) |>
+    arrange(date) |>
+    mutate(date = make_datetime(
+        year = 2023, month = 10, day = day(date),
+        hour = 2 * (hour(date) %/% 2)
+    )) |>
+    summarise(
+        air_temperature = mean(air_temperature),
+        .by = date,
+    )
+```
+
+## Criando a série
+Pela suavização de 2 horas, temos então 12 observações no dia que será a frequência da série pois a sazonalidade é diária.
+
+A temperatura aumenta de dia e diminui durante a noite, ao decorrer do mês o inverno se aproxima e a temperatura média cai.
+
+```{r}
+#| output-location: slide
+#| out-width: 100%
+#| fig-height: 6
+#| fig-align: center
+series <- data23 |>
+    pull(air_temperature) |>
+    ts(frequency = 12, start = c(1, 0))
+
+data23 |>
+    ggplot(aes(x = date, y = air_temperature)) +
+    geom_line(color = "#93a1a1") +
+    labs(x = "Dia", y = "Temperatura") +
+    theme_moon
+```
+
+## Testes de Estacionariedade
+Os três testes vistos concordam com a hipótese de que a série temporal é não estacionária, colaborando com o resultado visto no gráfico anterior que no começo do mês a temperatura é em média 25ºC e decresce para cerca de 5ºC no final.
+
+|Teste          |Hipótese nula   |        p-valor|
+|:--------------|:---------------|--------------:|
+|KPSS           |estacionária    |      $< 0.010$|
+|Dickey-Fuller  |não-estacionaria|        $0.796$|
+|Phillips–Perron|não-estacionaria|        $0.279$|
+
+## Testes de Sazonalidade
+De forma similar, três testes de hipótese para a sazonalidade indicam que a série é de fato sazonal, pois a temperatura varia ao longo do dia e o comportamento se repete no próximo dia.
+
+|Teste          |Hipótese nula      |        p-valor|
+|:--------------|:------------------|--------------:|
+|Friedman       |não há sazonalidade|$3.33 \times 10^{-16}$|
+|Kruskall Wallis|não há sazonalidade|          $< 10^{-16}$|
+|ANOVA Welch    |não há sazonalidade|$3.25 \times 10^{-15}$|
+
+## Gráficos de Autocorrelação da série
+A autocorrelação entre uma observação e a as ultimas 24, ou seja, os ultimos 2 dias, são todas significativas possivelmente devido a sazonalidade.
+
+O gráfico da autocorrelação parcial trás esta medida decomposta, assim vemos uma forte correlação positiva entre a temperatura atual e a temperatura de 2 horas atrás e uma pequena mas significante correlação negativa com a temperatura de 4 horas atrás.
+
+```{r}
+#| fig-height: 3
+#| out-width: 100%
+#| layout-nrow: 2
+#| output-location: slide
+par(
+    bg = "#002b36",
+    fg = "#93a1a1",
+    col.axis = "#93a1a1",
+    col.lab = "#93a1a1",
+    col.main = "#93a1a1",
+    omi = rep(0, 4),
+    mar = rep(3, 4)
+)
+acf(series, main = "Função de Autocorrelação")
+pacf(series, main = "Função de Autocorrelação parcial")
+```
+
+## Decomposição da série
+Decompondo a série nas contribuições de tendência e sazonalidade vemos de maneira mais clara a tendência:
+
+Nos primeiros dias do mês a temperatura média é entre 25ºC a 30ºC, decresce e se mantêm em 10ºC na maior parte do mês até o dia 22, onde a temperatura sobe para 20ºC durante alguns dias e depois rapidamente decresce para abaixo de 5ºC no final do mês.
+
+```{r}
+#| fig-height: 6
+#| out-width: 100%
+#| output-location: slide
+dec_add <- decompose(series, type = "additive")
+par(
+    bg = "#002b36",
+    fg = "#93a1a1",
+    col.axis = "#93a1a1",
+    col.lab = "#93a1a1",
+    col.main = "#93a1a1"
+)
+plot(dec_add)
+```
+
+## Decomposição multiplicativa
+A decomposição multiplicativa não trás muita diferença além de uma pequena mudança na sazonalidade e nos resíduos, porém é dificil comprar os dois métodos já que a escala dos resíduos são diferentes.
+
+```{r}
+#| fig-height: 6
+#| out-width: 100%
+#| output-location: slide
+dec_mul <- decompose(series, type = "multiplicative")
+par(
+    bg = "#002b36",
+    fg = "#93a1a1",
+    col.axis = "#93a1a1",
+    col.lab = "#93a1a1",
+    col.main = "#93a1a1"
+)
+plot(dec_mul)
+```
+
+##
