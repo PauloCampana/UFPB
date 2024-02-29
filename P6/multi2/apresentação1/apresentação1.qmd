@@ -9,17 +9,11 @@ author: Paulo Ricardo Seganfredo Campana
 date: today
 date-format: long
 callout-icon: false
-highlight-style: github
-monofont: "Ubuntu Mono"
 monofontoptions: Scale = 1
-geometry:
-    - top    = 2cm
-    - bottom = 2cm
-    - left   = 2cm
-    - right  = 2cm
 logo: includes/logo.png
 echo: true
 self-contained-math: true
+self-contained: true
 embed-resources: true
 ---
 
@@ -29,7 +23,7 @@ Com a análise exploratória dos dados feita, vimos que há forte correlação e
 ```{r}
 library(tidyverse)
 
-data <- read_csv("includes/energy.csv")
+data <- read_csv("energy.csv")
 X <- data |>
     select(-property_type, -stars) |>
     as.matrix() |>
