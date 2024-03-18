@@ -1,5 +1,5 @@
 ---
-format: pdf
+format: docx
 lang: pt
 title: Trabalho 1
 subtitle: Análise de Variância
@@ -19,6 +19,11 @@ geometry:
 
 \pagestyle{empty}
 \thispagestyle{empty}
+
+```{r}
+#| echo: false
+options(digits = 4)
+```
 
 ::: callout-tip
 **Problem 3.6**. An article in Bioelectromagnetics ("Electromagnetic Effects on Forearm Disuse Osteopenia: A Randomized, Double-Blind, Sham-Controlled Study", Vol. 32, 2011, pp. 273-282) described a randomized, double-blind, sham-controlled, feasibility and dosing study to determine if a common pulsing electromagnetic field (PEMF) treatment could moderate the substantial osteopenia that occurs after forearm disuse. Subjects were randomized into four groups after a distal radius fracture, or carpal surgery requiring immobilization in a cast. Active or identical sham PEMF transducers were worn on the distal forearm for 1, 2, or 4h/day for 8 weeks starting after cast removal ("baseline") when bone density continues to decline. Bone mineral density (BMD) and bone geometry were measured in the distal forearm by
@@ -48,6 +53,7 @@ data <- data.frame(
 
 {{< pagebreak >}}
 
+# Teoria ANOVA
 Os dados acima referem a queda em percentual da densidade mineral dos ossos de pacientes com certa doença óssea após usarem um aparelho eletrônico que possivelmente poderia combater os sintomas da doença. 3 grupos de pacientes usaram o aparelho por 1, 2 e 4 horas por dia, e o grupo de controle utilizou um aparelho que não funciona, fazendo papel de placebo. Queremos testar se o aparelho ajuda a diminuir a queda da densidade mineral dos ossos.
 
 Temos 4 grupos com 20 observações cada e iremos realizar uma análise de variância (anova) para testar se há diferença na variável medida entre os grupos.
@@ -110,6 +116,7 @@ Que tem distribuição F-Snedecor, rejeitamos a hipótese nula se a estatística
 
 {{< pagebreak >}}
 
+# Teste no R
 Com os dados em duas colunas: a variável medida e a qual grupo ela pertence, seja o nível se significância $\alpha = 0.05$, vamos primeiro estimar a média geral e a média de cada grupo.
 
 ```{r}
@@ -154,5 +161,60 @@ anova(model)
 #| echo: false
 anova(model) |>
     broom::tidy() |>
+    knitr::kable()
+```
+
+{{< pagebreak >}}
+
+# Comparações múltiplas
+Como o teste ANOVA deu que as diferenças entre os tratamentos e o "placebo" não foram estatísticamente significantes, não é necessário efetuar as comparações múltiplas, pois a diferenças entre quaisquer subgrupos também não serão significantes, mesmo assim vamos fazer para praticar.
+
+Como é um caso onde temos um grupo de controle, faz sentido comparações múltiplas simples entre cada grupo de tratamento com o grupo de controle, ou seja testar as hipóteses:
+
+$$
+\begin{cases}
+    \mathcal H_0: \mu_1 = \mu_2 \\
+    \mathcal H_1: \mu_1 \neq \mu_2
+\end{cases} \qquad\qquad
+\begin{cases}
+    \mathcal H_0: \mu_1 = \mu_3 \\
+    \mathcal H_1: \mu_1 \neq \mu_3
+\end{cases} \qquad\qquad
+\begin{cases}
+    \mathcal H_0: \mu_1 = \mu_4 \\
+    \mathcal H_1: \mu_1 \neq \mu_4
+\end{cases}
+$$
+
+Existem vários testes de comparações multiplas, para o caso de grupos de controle vou utilizar o teste de Dunnett, neste teste a hipótese nula é rejeitada se:
+
+$$
+|\bar y_i - \bar y_1| > d_\alpha(g - 1, n - g) \sqrt{\dfrac{\text{SS}_E}{g - 1} \left( \dfrac{1}{n_i} + \dfrac{1}{n_1} \right)}, \quad i = \lbrace 2,3,\cdots,g \rbrace
+$$
+
+Onde $d_\alpha(g - 1, n - g)$ é o quantil de probabilidade $\alpha$ da distribuição do teste de Dunnett tabelada no apéncide VIII do livro. Para $g - 1 = 3$ e $n - g = 76$ com um nível de significancia de 5%, este quantil é aproximadamente 2.39 e como todos os grupos tem mesmo tamanho de amostra, a parte direita da inequação, o valor crítico dos testes, é constante.
+
+```{r}
+#| eval: false
+crítico <- 2.39 * sqrt(SSE / gl2 * (1 / nj[2] + 1 / nj[1])) # 1.214
+
+abs(muj[2] - muj[1]) # 0.493
+abs(muj[3] - muj[1]) # 0.195
+abs(muj[4] - muj[1]) # 0.678
+```
+
+A diferença absoluta de médias entre os tratamentos e o grupo controle são todas abaixo do valor crítico do teste como esperado, ou seja não há diferença estatísticamente significante nos tratamentos como esperado.
+
+Com a função deste teste no pacote `DescTools`, podemos ver também intervalos de confiança para a diferenças dos tratamentos com o controle e o p-valor do teste:
+
+```{r}
+#| output: false
+DescTools::DunnettTest(loss ~ hours, data)
+```
+
+```{r}
+#| echo: false
+DescTools::DunnettTest(loss ~ hours, data) |>
+    _$`0` |>
     knitr::kable()
 ```
