@@ -1,0 +1,241 @@
+---
+format: pdf
+lang: pt
+title: Avaliação 2
+subtitle: Regressão II
+author: Paulo Ricardo Seganfredo Campana
+date: today
+date-format: long
+callout-icon: false
+highlight-style: github
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
+geometry:
+    - top    = 2cm
+    - bottom = 2cm
+    - left   = 2cm
+    - right  = 2cm
+cache: true
+---
+
+\pagestyle{empty}
+\thispagestyle{empty}
+
+```{r}
+#| echo: false
+options(digits = 3)
+```
+
+::: callout-tip
+# **Questão 1.** O conjunto de dados descrito no arquivo `heartdis.txt` apresenta as variáveis `caso`, número do caso (desconsidere esta variável no modelo proposto) `x1`, pressão sistólica do sangue, `x2`, uma medida de colesterol, `x3`, variável dummy = 1 se há histórico na família de doenças cardíacas, `x4`, uma medida de obesidade, `x5`, idade e `HeartDisease`, se o paciente tem doença cardíaca (variável resposta).
+
+a) Realize o ajuste da regressão logística e selecione as variáveis. O modelo é adequado? Justifique sua escolha.
+
+b) Faça a curva ROC do modelo. O que você pode concluir sobre o ajuste do modelo?
+
+c) Construa um envelope para os resíduos. Há algum ponto que não pertence ao envelope? Se sim, qual(is)?
+
+d) Construa um intervalo de confiança de 90% para os parâmetros do modelo.
+
+e) Interprete o coeficiente $\beta_5$ da idade. Mantendo-se as outras varáveis constantes, o acréscimo de um ano na idade do paciente aumenta (ou diminui) em quanto a chance do paciente desenvolver uma doença cardíaca?
+:::
+
+```{r}
+#| collapse: true
+data1 <- read.csv("heartdis.txt")
+
+fit1 <- glm(HeartDisease ~ . - caso, family = binomial(link = "logit"), data1)
+fit1 <- step(fit1, trace = 0)
+
+summary(fit1)$coefficients
+```
+
+A seleção step-wise por AIC do modelo retirou as variáveis `x1` relacionado a pressão sanguínea e `x4` relacionada a obesidade do modelo por serem não significantes, o modelo de regressão logística é dado então por:
+
+$$
+\ln \left( \dfrac{\hat \mu}{1 - \hat \mu} \right) = -4.352 + 0.17 x_2 + 0.882 x_3 + 0.0548 x_5
+$$
+
+A função desvio do modelo tem valor menor do que o quantil de 95% de uma qui-quadrado, que seria a distribuição desta função sob a hipótese de que o modelo com 4 parâmetros é adequado, assim não rejeitamos esta hipótese e o modelo é aceito.
+
+```{r}
+desvio1 <- summary(fit1)$deviance / summary(fit1)$dispersion # 496.2
+q.quadr1 <- qchisq(0.95, summary(fit1)$df.residual)          # 508.9
+```
+
+O modelo possui uma área sob a curva ROC não tão alta de 0.769, o modelo serve para inferência sobre o efeito das variáveis na presença de doenças cardíacas, porém suas previsões não serão muito confiáveis.
+
+```{r}
+#| fig-heigth: 6
+#| out-width: 100%
+Epi::ROC(form = HeartDisease ~ x2 + x3 + x5, data = data1, plot = "ROC")
+```
+
+Não aparentam ter nenhuma observação com resíduo fora do envelope de confiança.
+
+```{r}
+#| echo: false
+#| fig-heigth: 4
+#| out-width: 100%
+X <- model.matrix(fit1)
+n <- nrow(X)
+p <- ncol(X)
+w <- fit1$weights
+W <- diag(w)
+H <- solve(t(X)%*%W%*%X)
+H <- sqrt(W)%*%X%*%H%*%t(X)%*%sqrt(W)
+h <- diag(H)
+td <- resid(fit1,type="deviance")/sqrt(1-h)
+e <- matrix(0,n,100)
+
+for(i in 1:100){
+    dif <- runif(n) - fitted(fit1)
+    dif[dif >= 0 ] <- 0
+    dif[dif<0] <- 1
+    nresp <- dif
+    fit <- glm(nresp ~ X, family=binomial)
+    w <- fit$weights
+    W <- diag(w)
+    H <- solve(t(X)%*%W%*%X)
+    H <- sqrt(W)%*%X%*%H%*%t(X)%*%sqrt(W)
+    h <- diag(H)
+    e[,i] <- sort(resid(fit,type="deviance")/sqrt(1-h))}
+
+e1 <- numeric(n)
+e2 <- numeric(n)
+
+for(i in 1:n){
+    eo <- sort(e[i,])
+    e1[i] <- (eo[2]+eo[3])/2
+    e2[i] <- (eo[97]+eo[98])/2}
+
+med <- apply(e,1,mean)
+faixa <- range(td,e1,e2)
+par(pty="s")
+qqnorm(td,xlab="Percentil da N(0,1)",
+       ylab="Componente do Desvio", ylim=faixa, pch=16, cex = 0.25)
+par(new=T)
+qqnorm(e1,axes=F,xlab="",ylab="",type="l",ylim=faixa,lty=1)
+par(new=T)
+qqnorm(e2,axes=F,xlab="",ylab="", type="l",ylim=faixa,lty=1)
+par(new=T)
+qqnorm(med,axes=F,xlab="", ylab="", type="l",ylim=faixa,lty=2)
+par(pty="m")
+```
+
+Todos os coeficientes do modelo são altamente significantes, com o intervalo não contendo 0, mesmo assim a variância dos coeficientes é alta.
+
+```{r}
+#| collapse: true
+confint(fit1, level = 0.90)
+```
+
+Como o a regressão logística modela o log da razão de chances de forma aditiva, temos que a exponencial do coeficiente da idade representa que a cada ano de vida do paciente, sua razão de chances de possuir doença cardíaca aumenta em aproximadamente 5.6%.
+
+$$
+\begin{aligned}
+    \ln \left( \dfrac{\hat \mu}{1 - \hat \mu} \right) &= -4.352 + 0.17 x_2 + 0.882 x_3 + 0.0548 x_5 \\
+    \ln \left( \dfrac{\hat \mu}{1 - \hat \mu} \right) &= C + 0.0548 x_5 \\
+    \dfrac{\hat \mu}{1 - \hat \mu} &= e^C e^{0.0548 x_5} \\
+    \dfrac{\hat \mu}{1 - \hat \mu} &\propto 1.056^{x_5}
+\end{aligned}
+$$
+
+{{< pagebreak >}}
+
+::: callout-tip
+# **Questão 2.** Considere o banco de dados `Prestige` do pacote `carData` do `R` que fornece 102 observações com seis variáveis das quais iremos utilizar apenas as variáveis: `prestige` (variável resposta) score de prestígio de Pineo-Porter para a ocupação, de uma pesquisa social feita nos meados dos anos 60, `income`, renda média, em dólares em 1971 e `education`, média, em anos, de estudo para a determinada educação.
+
+a) Faça o gráfico de dispersão da variável resposta `prestige` pelas variáveis explicativas `income` e `education`.
+
+b) Realize o ajuste de um modelo GAM com a variável resposta `prestige` tendo uma distribuição Normal. Faça o gráfico das funções de suavização.
+
+c) Faça uma análise de diagnósticos do modelo escolhido. O que você pode concluir do modelo?
+:::
+
+```{r}
+data2 <- carData::Prestige
+```
+
+O score de prestígio e a renda média parecem ter relações mais fortes porém não linear, com a variável de anos de educação, a relação é mais fraca e parece ser linear.
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-height: 4
+#| out-width: 100%
+library(tidyverse)
+
+data2 |>
+    select(prestige, income, education) |>
+    pivot_longer(-prestige) |>
+    mutate(name = factor(name, levels = c("income", "education"))) |>
+    ggplot(aes(x = value, y = prestige)) +
+    facet_wrap(vars(name), scales = "free") +
+    geom_point() +
+    labs(x = "") +
+    theme_bw()
+```
+
+```{r}
+#| warning: false
+#| layout-ncol: 2
+#| fig-height: 6
+#| out-width: 45%
+library(mgcv)
+fit2 <- gam(prestige ~ s(income) + s(education), data = data2)
+plot(fit2)
+```
+
+As funções estimadas são não lineares, assim a relação entre o score de prestígio e a renda é que o prestígio cresce rápidamente com a renda até por volta de 10 mil doláres, e acima disso ou cresce bem mais devagar ou não exerce influência, essa incerteza é devido a pouca quantidade de profissões observadas com alta renda. A relação com os anos de educação é quase linear, com desvios nas extremidades.
+
+```{r}
+#| fig-height: 3
+#| out-width: 100%
+#| results: hide
+par(mar = rep(2, 4))
+gam.check(fit2)
+```
+
+Os resíduos do modelo aparentam ter distribuição aproximadamente normal, os valores previstos são lineares em relação com os valores observados do score de prestígio e não vemos nenhuma heterocedasticidade no modelo conforme variam os preditores.
+
+::: callout-tip
+# **Questão 3.** Considere o banco de dados `fabric` do pacote `gamlss` do `R`. Em que `y` é o número de falhas em um rolo de tecido e `leng` é o comprimento do tecido. A variável `x`, que é o log de `leng` não usaremos na questão.
+
+a) Faça o gráfico de dispersão da variável resposta `y` pela variável explicativa (`leng`).
+
+b) Realize o ajuste de um modelo GAMLSS com a variável resposta `R` tendo uma distribuição Poisson.
+
+c) Faça uma análise de diagnósticos do modelo escolhido. O que você pode concluir do modelo?
+:::
+
+
+```{r}
+#| warning: false
+library(gamlss)
+data3 <- fabric
+```
+
+O comprimento do tecido tem relação não linear com o número de falhas em um rolo e esta relação não é tão forte. A variância do número de falhas também aparenta aumentar com o comprimento.
+
+```{r}
+#| echo: false
+#| out-width: 100%
+data3 |>
+    ggplot(aes(x = leng, y = y)) +
+    geom_point() +
+    labs(x = "Comprimento do tecido", y = "Número de falhas") +
+    theme_bw()
+```
+
+```{r}
+#| warning: false
+#| fig-height: 5
+#| out-width: 100%
+#| results: hide
+fit3 <- gamlss(y ~ cs(leng), ~leng, family = PO, data = data3)
+par(mar = rep(2, 4))
+plot(fit3)
+```
+
+Os resíduos do modelo não sofrem alteração na variância para diferentes valores de `y`, eles não são autocorrelacionados e tem distribuição aproximadamente normal.
