@@ -1,0 +1,163 @@
+---
+format:
+    revealjs:
+        theme: moon
+lang: pt
+title: Imposto sobre Circulação de Mercadorias e Serviços (ICMS) no Amapá
+subtitle: Séries temporais
+author: Paulo Ricardo Seganfredo Campana
+date: today
+date-format: long
+callout-icon: false
+highlight-style: github
+logo: includes/logo.png
+echo: true
+self-contained-math: true
+embed-resources: true
+---
+
+## Dados
+Extraidos do site do IPEA^[<http://www.ipeadata.gov.br/Default.aspx>], contem a quantidade em milhares de reais arrecadados pelo imposto do ICMS no Estado do Amapá.
+
+A série tem 372 observações em frequência mensal desde Janeiro de 1993 até Dezembro de 2023, usaremos apenas os valores apartir de 2000 porém, totalizando 288 observações.
+
+```{r}
+library(tidyverse)
+
+data <- read_csv("includes/icms_amapá.csv") |>
+    mutate(data = ym(as.character(data))) |>
+    filter(year(data) >= 2000)
+```
+
+```{r}
+#| echo: false
+options(digits = 3)
+
+theme_moon <- theme(
+    plot.background = element_rect("#002b36"),
+    panel.background = element_blank(),
+    panel.grid = element_line("#93a1a120"),
+    panel.grid.minor = element_blank(),
+    axis.ticks = element_line("#93a1a120"),
+    strip.background = element_rect("#104b56"),
+    text = element_text(colour = "#93a1a1"),
+    axis.text = element_text(colour = "#93a1a1"),
+    strip.text = element_text(colour = "#93a1a1"),
+    legend.background = element_blank(),
+    legend.key = element_blank(),
+)
+```
+
+## Gráfico da série
+Vemos a tendência de que o valor arrecadado deste imposto por mês é sempre crescente, mas sem a deflação fica difícil observar se essa tendência é devido a desvalorização do preço do real pela inflação ou se defato este imposto fica mais prevalente na ultima década.
+
+```{r}
+#| fig-height: 6
+#| out-width: 100%
+#| output-location: slide
+data |>
+    ggplot(aes(x = data, y = icms)) +
+    geom_line(color = "#93a1a1") +
+    scale_y_continuous(labels = \(x) format(x,
+        scientific = FALSE, big.mark = ",", zero.print = FALSE
+    )) +
+    labs(x = "Ano", y = "ICMS (1000 R$)") +
+    theme_moon
+```
+
+## Deflacionando a série
+Podemos deflacionar a série usando como ponto de referência alguns índices de inflação, como o (IPCA) ou o Índice nacional de preços do consumidor (INPC) do IGBE.
+
+```{r}
+#| warning: false
+data$icms_def <- deflateBR::deflate(data$icms, data$data, "01/2024")
+```
+
+```{r}
+#| fig-height: 6
+#| out-width: 100%
+#| output-location: slide
+data |>
+    pivot_longer(-data) |>
+    ggplot(aes(x = data, y = value, color = name)) +
+    geom_line() +
+    scale_color_manual(values = c("#93a1a1", "#e3f151")) +
+    scale_y_continuous(labels = \(x) format(x,
+        scientific = FALSE, big.mark = ",", zero.print = FALSE
+    )) +
+    labs(x = "Ano", y = "ICMS (1000 R$)") +
+    theme_moon
+```
+
+## Interpretação
+As duas séries, antes e depois da deflação parecem ter tendência crescente, mas é preciso realizar os testes de estacionariedade.
+
+Em geral, as duas séries são crescentes durante os anos 2000 à 2013, após isso, a série não deflacionda continua a crescer porém com a deflação se mantém na mesma média, cerca de um pouco mais de 100 milhões de Reais arrecadados por mês do ICMS no Estado do Amapá.
+
+Além disso, há um grande outlier em março de 2023, provavelmente devido a mudança do cálculo do imposto ICMS.
+
+## Tendência e Sazonalidade
+
+```{r}
+#| include: false
+tseries::kpss.test(data$icms)
+tseries::adf.test(data$icms)
+tseries::pp.test(data$icms)
+
+tseries::kpss.test(data$icms)
+tseries::adf.test(data$icms)
+tseries::pp.test(data$icms)
+```
+
+: Antes da deflação
+
+|Teste          |Hipótese nula   |        p-valor|
+|:--------------|:---------------|--------------:|
+|KPSS           |estacionária    |      $< 0.010$|
+|Dickey-Fuller  |não-estacionaria|      $< 0.010$|
+|Phillips–Perron|não-estacionaria|      $< 0.010$|
+
+: Depois da deflação
+
+|Teste          |Hipótese nula   |        p-valor|
+|:--------------|:---------------|--------------:|
+|KPSS           |estacionária    |      $< 0.010$|
+|Dickey-Fuller  |não-estacionaria|      $< 0.010$|
+|Phillips–Perron|não-estacionaria|      $< 0.010$|
+
+## Tendência e Sazonalidade
+Ambas as séries apresentam mesma conclusão nos três testes: O KPSS indica que a série tem tendência significativa enquando que os testes de Dickey-Fuller e Phillips-Perron indicam que as séries são estacionárias.
+
+```{r}
+#| fig-height: 6
+#| out-width: 100%
+#| output-location: slide
+data2 <- data |>
+    filter(year(data) < 2023)
+series <- ts(data2$icms, freq = 12, start = c(2000, 1))
+series_def <- ts(data2$icms_def, freq = 12, start = c(2000, 1))
+
+par(
+    bg = "#002b36", fg = "#93a1a1", cex.axis = 1.25,
+    col.axis = "#93a1a1", col.lab = "#93a1a1", col.main = "#93a1a1"
+)
+plot(stl(series, s.window = "periodic"))
+```
+
+## Tendência e Sazonalidade
+Como vimos antes no gráfico das séries, é possível ver a mudança de tendência entre as duas, a partir de 2013, a série deflacionada não parece possuir tendência. A sazonalidade é baixa, com uma diferença de 8 milhões de Reais arrecadados em média entre o primeiro e o segundo semestre do ano.
+
+Os gráficos de decomposição da série para ver a tendência foram feitos usando as observações até dezembro de 2022, pois o outlier em 2023 influência muito a sazonalidade em março.
+
+```{r}
+#| fig-height: 6
+#| out-width: 100%
+#| output-location: slide
+par(
+    bg = "#002b36", fg = "#93a1a1", cex.axis = 1.25,
+    col.axis = "#93a1a1", col.lab = "#93a1a1", col.main = "#93a1a1"
+)
+plot(stl(series_def, s.window = "periodic"))
+```
+
+##
