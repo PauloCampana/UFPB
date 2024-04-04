@@ -1,0 +1,403 @@
+---
+format:
+    revealjs:
+        theme: solarized
+lang: pt
+title: Análise de diferentes métodos de previsão
+subtitle: Séries temporais
+author:
+    - Jéssika Helen
+    - Paulo Campana
+    - Gabriel Jesus
+date: today
+date-format: long
+highlight-style: github
+echo: true
+embed-resources: true
+self-contained-math: true
+self-contained: true
+# cache: true
+---
+
+```{r}
+#| echo: false
+library(tidyverse)
+library(tidymodels)
+library(modeltime)
+library(fable)
+library(fabletools)
+library(timetk)
+library(smooth)
+
+theme_set(theme_bw())
+```
+
+## Dados
+Esta série é sobre a venda de cervejas, vinhos e outras bebidas alcoólicas em milhões de dólares nos Estados Unidos.
+
+Eles provêm do departamento de Censo dos Estados Unidos e estão disponíveis no site de dados de economia da reserva Federal (FRED)^[<https://fred.stlouisfed.org/series/S4248SM144NCEN>]
+
+```{r}
+data <- read_csv("drinks.csv") |>
+    rename(date = DATE, sales = S4248SM144NCEN) |>
+    filter(year(date) < 2020)
+antes <- data |>
+    filter(year(date) < 2019)
+depois <- data |>
+    filter(year(date) == 2019)
+```
+
+## Gráfico da série
+Vemos que os dados tem sazonalidade anual e tendência crescente.
+
+```{r}
+#| echo: false
+#| out-width: 100%
+#| fig-height: 4
+data |>
+    ggplot(aes(x = date, y = sales)) +
+    geom_line() +
+    theme_bw()
+```
+
+## Naïve
+O método Naïve é um dos métodos de previsão mais simples disponíveis. Sua lógica é direta: a previsão de um passo à frente é igual ao valor mais recente observado, representado pela equação:
+
+$$
+\hat y_t = y_{t - 1}
+$$
+
+Embora essa abordagem possa parecer simplista, há situações em que esse método é surpreendentemente eficaz. Na previsão de temperatura por exemplo, a melhor estimativa para a temperatura daqui a cinco minutos é pelo método Naïve: a temperatura esperada será simplesmente a mesma que a atual.
+
+## Naïve
+
+```{r}
+#| out-width: 100%
+#| fig-height: 4.5
+serie_antes <- ts(antes$sales, frequency = 12)
+naive <- forecast::naive(serie_antes, h = 12)
+autoplot(naive)
+```
+
+## Naïve
+Com esse método, os valores da raiz de erro quadrático e erro médio absoluto são relativamente altos, indicando que o método Naïve não está conseguindo prever os valores com grande precisão para o conjunto de dados. Isso é devido à simplicidade do método Naïve, que não leva em conta padrões de tendência ou sazonalidade nos dados.
+
+```{r}
+#| collapse: true
+rmse_vec(depois$sales, naive$mean)
+mae_vec(depois$sales, naive$mean)
+```
+
+## Naïve sazonal
+Já este método leva em consideração a sazonalidade dos dados, é uma extensão do método Naïve básico, em dados sazonais, usar o último valor pode não ser a melhor abordagem, pois os padrões sazonais tem uma influência significativa nos dados. Resolvemos isso ao prever o próximo valor usando o valor do mesmo período de uma temporada anterior.
+
+$$
+\hat y_t = y_{t - m}
+$$
+
+Em que $m$ é a frequência sazonal.
+
+Por exemplo, para prever os valores de janeiro de um ano, ele usará os valores de janeiro do ano anterior.
+
+## Naïve sazonal
+
+```{r}
+#| out-width: 100%
+#| fig-height: 4.5
+naive_sazonal <- forecast::snaive(serie_antes, h = 12)
+autoplot(naive_sazonal)
+previsao <- forecast(naive_sazonal, h = 12)
+```
+
+## Naïve sazonal
+A raiz do erro quadrático médio e o erro médio absoluto foi 826.4, 686.9, respectivamente. Além disso, observando os gráficos de previsões, vemos que o método conseguiu performar bem ao fazer previsões sobre a série temporal. Isso é devido a explicação da sazonalidade contida na série de bebidas.
+
+```{r}
+#| collapse: true
+rmse_vec(depois$sales, naive_sazonal$mean)
+mae_vec(depois$sales, naive_sazonal$mean)
+```
+
+## Média global
+De maneira similar ao método Naïve, as previsões do método de média global são todas iguais, porém se baseam em todas as observações da série até antes do momento da previsão, assim a relação é:
+
+$$
+\hat y_{t + 1} = \bar y = \dfrac{1}{t} \sum_{i = 0}^{t} y_i
+$$
+
+Em geral, esse método é melhor que o Naïve quando há estacionariedade pois a estimatíva da reta de previsão tem menor variância, porém quando há tendência na série, a média global não capta a mesma e o modelo por trás do método é invalido.
+
+## Média global
+Nestes dados, a previsão fica muito abaixo do valor observado pois a série possui tendência.
+
+```{r}
+media_global <- depois
+media_global$sales <- mean(antes$sales)
+```
+
+```{r}
+#| echo: false
+#| out-width: 100%
+#| fig-height: 3.5
+data |>
+    ggplot(aes(x = date, y = sales)) +
+    geom_line() +
+    geom_line(
+        data = media_global,
+        aes(x = date, y = sales),
+        color = "red", linewidth = 1,
+    ) +
+    theme_bw()
+```
+
+## Média global
+Comparando a previsão da média global com o valor observado, obtemos a raiz do erro quadrático médio e erro médio absoluto ambos acima de 5 bilhões de dólares.
+
+```{r}
+#| collapse: true
+rmse_vec(depois$sales, media_global$sales)
+mae_vec(depois$sales, media_global$sales)
+```
+
+## Média móvel simples
+O método da média móvel simples é um caso mais geral do método Naïve e da média global, ao invés de fazer a média com todas as observações da série, criamos uma "janela" de observações que entrarão no cálculo da média e essa janela move a cada etapa de tempo predita.
+
+$$
+\hat y_{t} = \dfrac{1}{m} \sum_{i = i}^{m} y_{t - i}
+$$
+
+
+$m$ é o parâmetro do modelo que representa o tamanho da janela, para $m = 1$ temos o método Naïve, para $m = t$ temos o método da média global.
+
+## Média móvel simples
+Levando em consideração apenas as últimas $m$ variáveis, é possível prever adequadamente séries com tendência.
+
+```{r}
+n <- nrow(data)
+media_movel <- depois
+media_movel$sales <- smooth::sma(antes$sales, order = 6, h = 12)$forecast
+```
+
+```{r}
+#| echo: false
+#| out-width: 100%
+#| fig-height: 3.5
+data |>
+    ggplot(aes(x = date, y = sales)) +
+    geom_line() +
+    geom_line(
+        data = media_movel,
+        aes(x = date, y = sales),
+        color = "red", size = 1,
+    ) +
+    theme_bw()
+```
+
+## Média móvel simples
+Dessa forma, a raiz do erro quadrático médio e o erro médio absoluto são muito menores, sendo 1478 e 1112 respectivamente.
+
+```{r}
+#| collapse: true
+rmse_vec(depois$sales, media_movel$sales)
+mae_vec(depois$sales, media_movel$sales)
+```
+
+## Tendência global
+O método de tendência global faz previsões da seguinte forma:
+
+$$
+\hat y_{t + h} = a_0 + a_1(t + h)
+$$
+
+em que $a_0$ é o intercepto e $a_1$ é a inclinação da tendência. Valores positivos para o slope implica que a série exibem crescimento, enquanto negativos significam decrescimento. O tamanho de $a_1$ afeta o declive da curva. Dessa forma, $\hat y_{t + h}$ é uma reta.
+
+## Tendência global
+
+```{r}
+modelo <- alm(sales ~ trend, data, subset = 1:324)
+previsoes <- modelo |>
+    forecast(tail(data, 12), h = 12) |>
+    (\(x) {
+        novo <- depois
+        novo$sales <- x$mean
+        novo
+    })()
+```
+
+```{r}
+#| echo: false
+#| out-width: 100%
+#| fig-height: 3.5
+data |>
+    ggplot(aes(x = date, y = sales)) +
+    geom_line() +
+    geom_line(
+        data = previsoes,
+        aes(x = date, y = sales),
+        color = "red", linewidth = 1,
+    ) +
+    theme_bw()
+```
+
+## Tendência global
+Assim, com a reta $\hat y_{t + h} = 3197 + 28.53\left(t + h\right)$, chegamos em resultados da raiz do erro quadrático médio e o erro médio absoluto de 1564 e 1302, respectivamente. Resultados justificados pela não captação da sazonalidade pelo método.
+
+```{r}
+#| collapse: true
+rmse_vec(depois$sales, previsoes$sales)
+mae_vec(depois$sales, previsoes$sales)
+```
+
+## Suavização exponencial de Holt (SEH) {.smaller}
+O método de SEH consegue analisar as séries temporais que apresentam tendência, mas que não possuem sazonalidade. O método suaviza o nível e utiliza uma constante de suavização para "modelar" a tendência da série. A previsão para $Z_{t + h}$ pode ser feito da seguinte forma:
+
+$$
+\hat Z_{t + 1} (h - 1) = \bar Z_{t + 1} + (h - 1) \hat T_{t + 1}, \quad \forall h > 0
+$$
+
+em que $\bar Z_t$ são os valores do nível e $\hat T_t$ o valor estimado da tendência da série, para $h$ passos a frente.
+
+$$
+\bar Z_{t + 1} = A Z_{t + 1} + (1 - A) (\bar Z_t + \hat T_t), \quad 0 < A < 1, t = 2, \cdots, N
+$$
+
+$$
+\hat T_{t + 1} = C (\bar Z_{t + 1} - \bar Z_t) + (1 - C) \hat T_t, \quad 0 < C < 1, t = 2, \cdots, N
+$$
+
+Sendo A e C constantes de suavização.
+
+## Suavização exponencial de Holt
+
+Como o Naïve sazonal e sem sazonalidade, o *exp_smoothing* implementa os métodos de suavização exponencial. O *set_engine*, nesse caso tem como argumento o **ets**, que utiliza por trás a função ets do pacote forecast.
+
+```{r}
+model_fit_ets <- exp_smoothing(
+    seasonal_period = 12, season = "none",
+    trend = "multiplicative",
+    error = "auto"
+) |>
+    set_engine("ets") |>
+    fit(sales ~ date, data = antes)
+model_tbl <- modeltime_table(model_fit_ets)
+```
+
+```{r}
+#| output-location: slide
+#| out-width: 100%
+#| fig-height: 6
+model_tbl |>
+    modeltime_calibrate(new_data = depois) |>
+    modeltime_forecast(
+        new_data = depois,
+        actual_data = data
+    ) |>
+    plot_modeltime_forecast(.interactive = FALSE, .title = "")
+```
+
+## Suavização exponencial de Holt
+Como o método de Holt não consegue captar as mudanças sazonais, não conseguimos bons resultados com o método. A raiz do erro quadrático médio foi 1401 e o erro médio absoluto foi 1082, respectivamente.
+
+```{r}
+#| collapse: true
+previsoes <- model_tbl |>
+    modeltime_calibrate(new_data = depois)
+rmse_vec(depois$sales, previsoes$.calibration_data[[1]]$.prediction)
+mae_vec(depois$sales, previsoes$.calibration_data[[1]]$.prediction)
+```
+
+## Holt-Winters {.smaller}
+O método de Holt-Winters, diferente da suavização de Holt, consegue captar as diferenças sazonais e as tendências. Este método pode funcionar para casos de série sazonal multiplicativa ou aditiva. Nesse caso, foi utilizado a multiplicativa.
+
+As previsões são feitas da seguinte forma:
+
+$$
+\hat Z_{t + 1} (h - 1) = (\bar Z_{t + 1} + (h - 1) \hat T_{t + 1}) \hat F_{t + 1 + h - 2s}
+$$
+
+em que $\hat T_{t + 1}$, $\bar Z_{t + 1}$ e $\hat F$ é a estimativa da tendência, nível e do fator sazonal, respectivamente.
+
+$$
+\hat F_{t + 1} = D \frac{Z_{t + 1}}{\bar Z_{t + 1}} + (1 - D) \hat F_{t + 1 - s}
+$$
+
+$$
+\bar Z_{t + 1} = A \frac{Z_{t + 1}}{\bar F_{t + 1 - s}} + (1 - A) (\bar Z_t + \hat T_t),
+$$
+
+$$
+\hat T_{t + 1} = C (\bar Z_{t + 1} - \bar Z_t) + (1 - C) \hat T_t,
+$$
+
+A, C e D são componentes de suavização.
+
+## Holt-Winters
+
+Assim como o método SEH, podemos utilizar o *exp_smoothing* para aplicar o método de suavização exponencial, basta adicionar o tipo de sazonalidade.
+
+```{r}
+model_fit_ets <- exp_smoothing(
+    seasonal_period = 12,
+    season = "multiplicative",
+    trend = "multiplicative",
+    error = "auto",
+) |>
+    set_engine("ets") |>
+    fit(sales ~ date, data = antes)
+model_tbl <- modeltime_table(model_fit_ets)
+```
+
+```{r}
+#| warning: false
+#| output-location: slide
+#| out-width: 100%
+#| fig-height: 6
+model_tbl |>
+    modeltime_calibrate(new_data = depois) |>
+    modeltime_forecast(
+        new_data = depois,
+        actual_data = data
+) |>
+plot_modeltime_forecast(.interactive = FALSE, .title = "")
+```
+
+## Holt-Winters
+
+A raiz do erro quadrático médio e o erro médio absoluto foi 450.6 e 392.8, respectivamente. Vemos que agora utilizando um método que consegue captar a tendência e sazonalidade, conseguimos resultados bem melhores. Assim, o método de Holt-Winters é melhor para séries com padrão de comportamento mais gerais.
+
+```{r}
+#| collapse: true
+previsoes <- model_tbl |>
+    modeltime_calibrate(new_data = depois)
+rmse_vec(depois$sales, previsoes$.calibration_data[[1]]$.prediction)
+mae_vec(depois$sales, previsoes$.calibration_data[[1]]$.prediction)
+```
+
+## Comparação entre as previsões
+Resumindo as métricas de performance dos métodos acima resulta na seguinte tabela:
+
+|Método                |              REQM|               EMA|
+|:---------------------|-----------------:|-----------------:|
+|Naïve                 |$2394\phantom{.0}$|$2015\phantom{.0}$|
+|Naïve Sazonal         | $826.4$          | $686.9$          |
+|Média Global          |$5611\phantom{.0}$|$5402\phantom{.0}$|
+|Média Móvel           |$1478\phantom{.0}$|$1112\phantom{.0}$|
+|Tendência Global      |$1564\phantom{.0}$|$1302\phantom{.0}$|
+|Suavização Exponencial|$1401\phantom{.0}$|$1082\phantom{.0}$|
+|Holt-Winters          | $450.6$          | $392.8$          |
+
+## Comparação entre as previsões
+Devido a série temporal utilizada possuir sazonalidade muito proeminente, apenas os métodos que levam em consideração a sazonalidade obteram as métricas inferiores a 1000, isso significa um erro absoluto médio de menos de 1 bilhão de dólares.
+
+Os métodos mais simples: Naïve e Média Global obteram os maiores erros e aqueles que levam em consideração apenas a tendência foram similares na performance.
+
+<!--
+paulo: começo
+jéssika: naive
+jéssika: naive sazonal
+paulo: média global
+paulo: médias móveis
+gabriel: tendência global
+gabriel: outros
+jéssika: comparação
+-->
