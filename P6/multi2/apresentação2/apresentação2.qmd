@@ -1,0 +1,259 @@
+---
+format:
+    revealjs:
+        theme: moon
+lang: pt
+title: Métodos de classificação
+subtitle: Análise Multivariada II
+author: Paulo Ricardo Seganfredo Campana
+date: today
+date-format: long
+callout-icon: false
+highlight-style: github
+monofontoptions: Scale = 1
+logo: includes/logo.png
+echo: true
+self-contained-math: true
+self-contained: true
+embed-resources: true
+# cache: true
+---
+
+## Resumo dos dados
+Os dados são sobre o consumo de energia elétrica, gás natural e emissões de gases do efeito estufa em prédios e construções grandes na cidade de Chicago.
+
+Cada construção é categorizada em um tipo não exaustívo, escolhi 3 tipos de construções para serem categorizadas: supermercados, hoteis e escolas.
+
+Temos dois principais tipos de variáveis neste banco:
+
+* Variáveis de medida bruta (consumo de energia elétrica, gás natural, gases).
+* Variáveis normalizadas pela área da construção (consumo por metro quadrado).
+
+## Resumo dos dados
+No total são 274 hoteis, 1483 escolas e 168 supermercados, e temos 9 variáveis contínuas que serão padronizadas.
+
+```{r}
+#| warning: false
+library(tidyverse)
+library(cluster)
+library(factoextra)
+library(mclust)
+
+data <- read_csv("energy.csv") |>
+    filter(property_type %in% c(
+        "Hotel", "K-12 School", "Supermarket/Grocery Store"
+    )) |>
+    mutate(property_type = factor(property_type,
+        labels = c("Hotel", "Escola", "Supermercado"),
+    ))
+
+X <- data |>
+    mutate(across(area:eui_source_wn, scale)) |>
+    select(-property_type, -stars, -score) |>
+    as.matrix()
+```
+
+```{r}
+#| echo: false
+options(digits = 3)
+set.seed(0)
+
+theme_moon <- theme(
+    plot.background = element_rect("#002b36"),
+    panel.background = element_blank(),
+    panel.grid = element_line("#93a1a120"),
+    panel.grid.minor = element_blank(),
+    axis.ticks = element_line("#93a1a120"),
+    strip.background = element_rect("#104b56"),
+    text = element_text(colour = "#93a1a1"),
+    axis.text = element_text(colour = "#93a1a1"),
+    strip.text = element_text(colour = "#93a1a1"),
+    legend.background = element_blank(),
+    legend.key = element_blank(),
+)
+```
+
+## Classificação Hierárquica
+Usei a distância euclidiana e o método de Ward para a classificação hierárquica com 3 clusters. As cores do dendograma significam:
+
+* 🟨 Amarelo: hoteis
+* 🟩 Verde: escolas
+* 🟥 Vermelho: supermercados
+
+```{r}
+#| output-location: slide
+#| out-width: 100%
+#| fig-height: 6
+dist_euc <- dist(X, method = "euclidian")
+clust <- hclust(dist_euc, method = "ward.D")
+par(bg = "#002b36", fg = "#93a1a1", mar = rep(0, 4))
+plot(
+    clust, hang = 0,
+    labels = c("🟨", "🟩", "🟥")[data$property_type],
+    axes = FALSE, ann = FALSE
+)
+rect.hclust(clust, k = 3, border = c("#7cb342", "#f44336", "#ffcc32"))
+```
+
+## Comparação de métodos
+O método Ward foi selecionado pois faz correspondência melhor com o tipo de propriedade, todos os métodos testados produzem altos coeficientes de aglomeração porém resultam em clusters muito assimétricos, onde basicamente todas as observações pertêncem há um só cluster.
+
+```{r}
+#| collapse: true
+sapply(
+    c("average", "single", "complete", "ward"),
+    function(m) agnes(X, method = m)$ac
+)
+```
+
+## Eficiência da classificação
+De modo geral pela matriz de confusão, as escolas são classificadas no 1º cluster, os supermercados no 3°, porém os hoteis estão divididos entre o 1º e 3º cluster.
+
+```{r}
+#| collapse: true
+table(data.frame(
+    tipo = data$property_type,
+    classe = cutree(clust, k = 3)
+))
+```
+
+```{r}
+#| output-location: slide
+#| out-width: 100%
+#| fig-height: 6
+fviz_cluster(
+    list(
+        data = X,
+        cluster = c("Escola", "Supermercado", "Hotel")[cutree(clust, k = 3)]
+    ),
+    show.clust.cent = FALSE, geom = "point",
+    colour = c("#ffcc32", "#7cb342", "#f44336")[data$property_type],
+) + scale_color_manual(
+    values = c("#7cb342", "#ffcc32", "#f44336"),
+    aesthetics = c("colour", "fill")
+) + theme_moon
+```
+
+## K-means
+Utilizando agora a classificação não-hierárquica com K-means, escolhi 3 grupos com o centroide inicial baseado na média de todas as variáveis numéricas por tipo de construção. Porém usando uma semente aleatória, a classificação foi exatamente a mesma.
+
+```{r}
+km <- data |>
+    mutate(across(area:eui_source_wn, scale)) |>
+    summarise(across(area:eui_source_wn, mean), .by = property_type) |>
+    select(-property_type) |>
+    kmeans(X, centers = _)
+
+## Within cluster sum of squares by cluster:
+## [1] 2725 1724 2334
+##  (between_SS / total_SS =  60.8 %)
+```
+
+## Eficiência da classificação
+A correspondência entre tipo da propriedade e a classe atribuida é a mesma do método hierárquico, porém uma maior parte dos hoteis são errôneamente classificados como escola.
+
+```{r}
+#| collapse: true
+table(data.frame(
+    tipo = data$property_type,
+    classe = km$cluster
+))
+```
+
+```{r}
+#| output-location: slide
+#| out-width: 100%
+#| fig-height: 6
+fviz_cluster(
+    list(
+        data = X,
+        cluster = c("Escola", "Hotel", "Supermercado")[km$cluster]
+    ),
+    show.clust.cent = FALSE, geom = "point",
+    colour = c("#ffcc32", "#7cb342", "#f44336")[data$property_type],
+) + scale_color_manual(
+    values = c("#7cb342", "#ffcc32", "#f44336"),
+    aesthetics = c("colour", "fill")
+) + theme_moon
+```
+
+## Mistura Gaussiana
+Dos diversos modelos de mistura Gaussiana ajustados, decidi apresentar dois modelos, ambos com 3 grupos, os modelo "VVV" selecionado pelo critério BIC e o modelo "EVI" que decidi ser o melhor na classificação do tipo de construção.
+
+O modelo "VVV" é tem todos os parâmetros de volume, forma e orientação livres enquanto que o "EVI" tem orientação fixa e volumes iguais.
+
+```{r}
+#| warning: false
+#| output-location: slide
+#| out-width: 100%
+#| fig-height: 6
+bic <- mclustBIC(X)
+par(
+    bg = "#002b36", fg = "#93a1a1",
+    col.axis = "#93a1a1", col.lab = "#93a1a1"
+)
+plot(bic)
+```
+
+## Eficiência da classificação
+O modelo "EVI" classifica melhor as escolas em apenas uma classe.
+
+```{r}
+#| collapse: true
+vvv <- Mclust(X, G = 3, modelNames = "VVV")
+table(data.frame(
+    tipo = data$property_type,
+    classe = vvv$classification
+))
+```
+
+```{r}
+#| collapse: true
+evi <- Mclust(X, G = 3, modelNames = "EVI")
+table(data.frame(
+    tipo = data$property_type,
+    classe = evi$classification
+))
+```
+
+## Modelo VVV
+Este modelo não apresenta boa classificação para hoteis e escolas e todos os clusters apresentam grande quantidade de observações de tipos diferentes de construções.
+
+```{r}
+#| output-location: slide
+#| out-width: 100%
+#| fig-height: 6
+fviz_cluster(
+    list(
+        data = X,
+        cluster = c("Escola", "Hotel", "Supermercado")[vvv$classification]
+    ),
+    show.clust.cent = FALSE, geom = "point",
+    colour = c("#ffcc32", "#7cb342", "#f44336")[data$property_type],
+) + scale_color_manual(
+    values = c("#7cb342", "#ffcc32", "#f44336"),
+    aesthetics = c("colour", "fill")
+) + theme_moon
+```
+
+## Modelo EVI
+Já o modelo "EVI" classifica bem escolas e supermercados porém metade dos hoteis continuam sendo confundidos com escolas.
+
+```{r}
+#| output-location: slide
+#| out-width: 100%
+#| fig-height: 6
+fviz_cluster(
+    list(
+        data = X,
+        cluster = c("Escola", "Hotel", "Supermercado")[evi$classification]
+    ),
+    show.clust.cent = FALSE, geom = "point",
+    colour = c("#ffcc32", "#7cb342", "#f44336")[data$property_type],
+) + scale_color_manual(
+    values = c("#7cb342", "#ffcc32", "#f44336"),
+    aesthetics = c("colour", "fill")
+) + theme_moon
+```
+
+##
