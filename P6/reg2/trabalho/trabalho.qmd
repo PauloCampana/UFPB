@@ -1,0 +1,217 @@
+---
+format: pdf
+documentclass: scrreprt
+lang: pt
+bibliography: includes/bib.bibtex
+toc: true
+title: |
+    ![](includes/ufpb.png){width=0.65in}
+    ![](includes/de.png){width=1in}
+
+    Modelos aditivos generalizados aplicados na eficiência energética de processadores
+subtitle: Universidade Federal da Paraíba - CCEN
+author: Paulo Ricardo Seganfredo Campana
+date: 2024-04-29
+date-format: long
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
+fig-cap-location: top
+warning: false
+echo: false
+cache: true
+---
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(kableExtra)
+
+options(digits = 4)
+set.seed(0)
+
+theme_kek <- theme_bw() +
+    theme(text = element_text(family = "Times"))
+```
+
+```{r}
+data <- openintro::cpu |>
+    as_tibble() |>
+    drop_na(l3_cache, boost_clock)
+folds <- vfold_cv(data, v = 10, repeats = 10)
+```
+
+# Resumo
+texto
+
+# Introdução
+texto
+
+# Metodologia
+
+## Dados
+O conjunto de dados provêm do site de entusiastas de hardware *TechPowerUp* e está disponível no pacote `openintro` do software R pelo nome `cpu`, ele contêm informações sobre 875 processadores lançados entre 2010 e 2020, é composto por 12 colunas, nas quais 4 são nominais, 7 são numéricas e uma temporal: a data do lançamento, as variáveis são as seguintes:
+
+**Empresa:** Responsável pela tecnologia, design e lançamento do produto, são apenas duas empresas que nas últimas décadas competem na venda de processadores para o consumidor comum, Intel e AMD.
+
+**Nome:** Nome do processador, é unico para cada observação do banco e diz a respeito sobre o uso recomendado, a classe de performance e geração do processador.
+
+**Codinome:** Nome de uso interno, único para cada geração de processadores de cada empresa.
+
+**Cores**: Núcleos físicos de processamento contídos na CPU.
+
+**Threads:** Núcleos virtuais de processamento, é comum ser o dobro do número de cores pela técnica de "hyper-threading", aumentando a capacidade de processamento paralelo.
+
+**Base Clock:** Frequência de operação padrão do processador, medida em gigahertz (GHz), todas as instruções do processador seguem esse rítmo para sincronização de operações.
+
+**Boost Clock:** Frequência de operação máxima do processador, é atingida temporariamente durante operações intensivas, está apenas disponível em alguns processadores que contém essa tecnologia.
+
+**Encaixe:** Tipo de conexão física do processador, indica quais placas-mães são compatíveis com o produto.
+
+**Processo:** Termo de marketing usado para designar a geração da tecnologia de fabricação do chip, é medido em nanometros (nm) porém essa quantidade não possui relação certeira com as dimensões físicas das menores partes do chip.
+
+**Cache L3:** Tamanho de armazenamento da terceira camada de cache do processador, medido em megabytes (Mb), é usado para acelerar a transferência de dados entre o processador e a memória RAM.
+
+**TDP:** Do inglês "Thermal Design Power" é a quantidade máxima de energia dissipada pelo processador como calor, medida em Watts (W), é usado como indicação do tipo de sistema de refrigeramento recomendado.
+
+**Lançamento:** Data de lançamento do processador.
+
+A seguir está a estrutura das primeiras 8 observações do conjunto de dados em ordem decrescente de lançamento:
+
+```{r}
+data |>
+    arrange(desc(released)) |>
+    select(released, company, name, codename, socket, process) |>
+    head(8) |>
+    kbl(
+        col.names = c(
+            "Lançamento", "Empresa", "Nome",
+            "Codinome", "Encaixe", "Processo"
+        ),
+        booktabs = TRUE,
+        linesep = ""
+    ) |>
+    kable_styling(latex_options = "hold_position")
+
+data |>
+    arrange(desc(released)) |>
+    select(cores, threads, base_clock, boost_clock, l3_cache, tdp) |>
+    head(8) |>
+    kbl(
+        col.names = c(
+            "Cores", "Threads", "Base Clock",
+            "Boost Clock", "Cache L3", "TDP"
+        ),
+        booktabs = TRUE,
+        linesep = ""
+    ) |>
+    kable_styling(latex_options = "hold_position")
+```
+
+Todas as variáveis foram testadas para inclusão no modelo final, exceto o nome, codinome, encaixe e data de lançamento do processados pois além de não exercerem influência direta na eficiência energética do processador, são variáveis nominais que possuem muitos valores únicos, inviabilizando a utilização de métodos como variáveis dummy para serem inclusas no modelo de regressão.
+
+Além disso, alguns processadores mais antigos não possuem as tecnologias de Boost Clock e terceira camada de cache, para o uso destes regressores no modelo, foram excluidos do banco de dados os processadores sem estas informações.
+
+{{< pagebreak >}}
+
+## Modelo aditivo generalizado
+Quando a variável resposta do modelo de regressão linear não tem distribuição normal, podemos partir para modelos lineares generalizados, que produzem melhores inferencias doque transformações na variável resposta. A eficiência energética dos processadores não possui distribuição normal como pode ser visto no gráfico de densidade:
+
+```{r}
+#| out-width: 100%
+#| fig-height: 2.5
+#| label: fig-densidade
+#| fig-cap: Densidade da distribuição da variável resposta do modelo, a eficiência energética do processador.
+data |>
+    ggplot(aes(x = tdp)) +
+    geom_density() +
+    labs(x = "TDP", y = "Densidade") +
+    theme_kek +
+    theme(
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+    )
+```
+
+Porém quando a contribuição de cada regressor na variável resposta não tem relação linear, este modelo não é valido, uma boa alternativa é o uso dos modelos aditivos generalizados, principalmente quando não conhecemos a formula da relação exata para o uso de um modelo de regressão não linear.
+
+O modelo aditivo generalizado tem a seguinte forma:
+
+$$
+g(\mu) = \beta_0 + f_1(x_1) + f_2(x_2) + \cdots + \varepsilon
+$$
+
+Onde $g(\mu)$ representa a função de ligação entre a média da variável resposta e os preditores, $\beta_0$ representa um intercepto e as funções $f_1, f_2, \cdots$ são funções não paramétricas que podem ser estimadas ou especificadas como lineares, e atuam em sua variável regressora correspondente.
+
+Na prática, estas funções são suavizações baseadas nos dados que podem assumir formas como suavização por regressão local, *b-splines*, *splines* cúbicas ou polinômios ortogonais.
+
+{{< pagebreak >}}
+
+## Validação do modelo
+Foram usados três métricas para avaliação da performance do modelo: raiz do erro quadrático médio ($\hat \sigma$), erro médio absoluto (EMA) e coeficiente de determinação (R$^2$) com suas formas dadas a seguir, onde $\hat y$ são as previsões do modelo e $\hat \rho$ é o coeficiente de correlação de Pearson.
+
+::: {layout-ncol=3}
+$$\hat \sigma = \sqrt{\dfrac{1}{n} \sum_{i = 1}^n (y_i - \hat y_i)^2 }$$
+
+$$\text{EMA} = \dfrac{1}{n} \sum_{i = 1}^n |y_i - \hat y_i|$$
+
+$$\text{R}^2 = \hat \rho_{y \hat y}^2$$
+:::
+
+As previsões usadas no cálculo das métricas provem da separação do conjunto de dados em uma parte usada para ajuste do modelo e outra para estimação das métricas, utilizando a abordagem de validação cruzada com 10 *folds* e 10 repetições, assim obtemos não só uma estimativa pontual para as métricas como também erro padrão e intervalo de confiânça.
+
+Também é necessário que o modelo cumpra algumas suposições como a normalidade dos resíduos, <!-- será?? --> ausência de auto correlação nos resíduos, além de que a contribuição de cada regressor seja significante para obtermos um modelo válido. Tudo isso será verificado com testes de hipótese.
+
+<!-- falar do R, tidymodels, mgcv -->
+Os resultados a seguir foram obtidos no software estatístico e linguagem de programação R [@R] fazendo uso dos pacotes `tidymodels` [@tidymodels] para validação cruzada e estimação das métricas de performance, e `mgcv` [@mgcv] que implementa os modelos aditivos generalizados.
+
+# Resultados
+Pelo gráfico de densidade da variável resposta na @fig-densidade, vemos que está é uma variável com distribuição positiva e assimétrica, portanto a distribuição Gama é uma boa escolha para a parte generalizada do modelo aditivo, a função de ligação logarítimica apresentou melhores resultados de performance do modelo portanto foi escolhida, assim temos um modelo em que o logarítimo da esperança condicional da eficiência energética é explicada por uma combinação aditiva entre regressores, o intercepto e um erro com distribuição normal.
+
+$$
+\log \mu = \beta_0 + f_1(x_1) + f_2(x_2) + \cdots + \varepsilon
+$$
+
+O tipo de função suavizadora escolhida foi *splines* isotrópicas de baixo posto, o padrão da função `s()` do pacote `mgcv` pois de certa forma é a melhor suavização segundo @suav. Essa suavização é aplicada nos regressores *cores*, *base clock*, *boost clock* e *cache L3*, não foi aplicada no regressor *processo* pois esta apresenta uma relação com a variável resposta que reduz a uma estimação linear nas *splines*.
+
+O regressor *empresa* foi transformado em variável dummy sem interação para uso no modelo, pois há diferença significativa na eficiência energética de processadores Intel e AMD nesta década.
+
+
+```{r}
+model <- gen_additive_mod() |>
+    set_engine("mgcv", family = Gamma(link = "log")) |>
+    set_mode("regression")
+
+recipe <- recipe(tdp ~ ., data)
+
+workflow <- workflow() |>
+    add_model(
+        model,
+        formula = tdp ~ company + process - 1 +
+        s(cores) + s(base_clock) + s(boost_clock) + s(l3_cache)
+    ) |>
+    add_recipe(recipe)
+
+fit <- workflow |>
+    fit_resamples(folds)
+
+mgcv <- workflow |>
+    fit(data) |>
+    extract_fit_engine()
+```
+
+```{r}
+fit |>
+    collect_metrics()
+```
+
+```{r}
+summary(mgcv)
+```
+
+```{r}
+mgcv::plot.gam(mgcv, residuals = TRUE, shade = TRUE)
+```
+
+```{r}
+mgcv::gam.check(mgcv)
+```
