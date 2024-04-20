@@ -1,0 +1,276 @@
+---
+format: pdf
+lang: pt
+title: Trabalho 2
+subtitle: Experimentos com quadrados latinos e ANOVA de medidas repetidas
+author: Paulo Ricardo Seganfredo Campana
+date: today
+date-format: long
+callout-icon: false
+highlight-style: github
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
+geometry:
+    - top    = 2cm
+    - bottom = 2cm
+    - left   = 2cm
+    - right  = 2cm
+---
+
+\pagestyle{empty}
+\thispagestyle{empty}
+
+```{r}
+#| echo: false
+options(digits = 4)
+```
+
+Em experimentos com quadrados latinos temos a seguinte situação: um conjunto de dados com $p^2$ observações, sendo elas classificadas em 3 variáveis categóricas cada uma com $p$ categorias distintas, a primeira variável categórica é a variável da "linha" $i$, a segunda da "coluna" $j$ e a terceira é a variável "tratamento" de interesse $k$, porém com a restrição de que não temos observações duplicadas em conjuntos de variáveis como por exemplo medições da variável resposta na mesma linha, coluna e tratamento. Sendo assim dividimos a contribuição do valor da variável resposta em 5 componentes:
+
+$$
+y_{ijk} = \mu + \alpha_i + \beta_j + \tau_k + \varepsilon_{ijk}, \quad i,j,k \in \{1, \cdots, p\}
+$$
+
+* $\mu$: o componente da média geral
+* $\alpha_i$: o componente relacionado ao efeito da linha $i$
+* $\beta_j$: o componente relacionado ao efeito da coluna $j$
+* $\tau_j$: o componente relacionado ao tratamento $k$
+* $\varepsilon_{ijk}$: o componente relacionado ao efeito aleatório
+
+Da mesma maneira com os modelos ANOVA, iremos trabalhar em cima da soma de quadrados de cada componente para medir se as componentes são significantes em relação ao erro, a decomposição fica:
+
+$$
+\text{SS}_\text{total} = \text{SS}_\text{linha} + \text{SS}_\text{coluna} + \text{SS}_\text{tratamento} + \text{SS}_\text{erro}
+$$
+
+$$
+\underbrace{\sum_{i = 1}^p \sum_{j = 1}^p \sum_{k = 1}^p (y_{ijk} - \bar y)^2}
+    _{\text{SS}_\text{total}, \; p^2 - 1 \; \text{graus}} =
+\underbrace{p \sum_{i = 1}^p (\bar y_i - \bar y)^2}
+    _{\text{SS}_\text{linha}, \; p - 1 \; \text{graus}} +
+\underbrace{p \sum_{j = 1}^p (\bar y_j - \bar y)^2}
+    _{\text{SS}_\text{coluna}, \; p - 1 \; \text{graus}} +
+\underbrace{p \sum_{k = 1}^p (\bar y_k - \bar y)^2}
+    _{\text{SS}_\text{tratamento}, \; p - 1 \; \text{graus}} +
+\underbrace{\sum_{i = 1}^p \sum_{j = 1}^p \sum_{k = 1}^p \hat \varepsilon_{ijk}^2}
+    _{\text{SS}_\text{erro}, \; (p - 2)(p - 1) \; \text{graus}}
+$$
+
+padronizando as somas de quadrados pelos seus graus de liberdade temos a média de quadrados, a estatística F que será usada para decisão do teste é a razão entre a média de quadrado dos tratamentos e dos erros, é possível testar também a significância da variável da linha e da coluna.
+
+$$
+F = \dfrac{\text{SS}_\text{tratamento} / ( p - 1)}{\text{SS}_\text{erro} / (p - 2)(p - 1)} ~ \mathcal F_{p - 1, (p - 2)(p - 1)}
+$$
+
+{{< pagebreak >}}
+
+::: callout-tip
+# **4.23.** An industrial engineer is investigating the effect of four assembly methods (A, B, C, D) on the assembly time for a color television component. Four operators are selected for the study. Furthermore, the engineer knows that each assembly method produces such fatigue that the time required for the last assembly may be greater than the time required for the first, regardless of the method. That is, a trend develops in the required assembly time. To account for this source of variability, the engineer uses the Latin square design shown below. \newline Analyze the data from this experiment ($\alpha = 0.05$) and draw appropriate conclusions.
+
+```{r}
+#| collapse: true
+data <- data.frame(
+    order = rep(1:4, times = 4),
+    operator = rep(1:4, each = 4),
+    method = c(
+        "C", "B", "A", "D",
+        "D", "C", "B", "A",
+        "A", "D", "C", "B",
+        "B", "A", "D", "C"
+    ),
+    time = c(
+        10,  7,  5, 10,
+        14, 18, 10, 10,
+         7, 11, 11, 12,
+         8,  8,  9, 14
+    )
+)
+
+head(data, 8)
+```
+:::
+
+{{< pagebreak >}}
+
+### ExpDes
+Usando o pacote `ExpDes` temos todos os resultados úteis para a análise de experimentos com quadrados latinos:
+
+```{r}
+#| collapse: true
+ExpDes::latsd(
+    treat = data$method,
+    row = data$order,
+    column = data$operator,
+    resp = data$time
+)
+```
+
+Pelo p-valor do teste F, temos que os tratamentos (método de montagem) e as colunas (operador) são significantes ao influenciar o tempo de montagem das televisões com p-valores 0.04 e 0.01 respectivamente, porém a variável da linha (ordem dos operarios) não é significante com p-valor 0.09.
+
+Adicionalmente, temos testes de normalidade dos resíduos que não rejeitam a hipótese de normalidade, assim o modelo tem suas suposições validadas, além disso o pacote proporciona testes de comparações múltimas, com o padrão de teste de Tukey, isso nos mostra que a ordem dos métodos de montagem com menor tempo gasto é A, B, D e C.
+
+{{< pagebreak >}}
+
+### Na mão
+Exemplificando os cálculos no R, obtemos os mesmos resultados da tabela ANOVA:
+
+```{r}
+p <- 4
+ybar   <- mean(data$time)                        # 10.25
+ybar_i <- tapply(data$time, data$order, mean)    # 9.75 11.00  8.75 11.50
+ybar_j <- tapply(data$time, data$operator, mean) # 8.00 13.00 10.25  9.75
+ybar_k <- tapply(data$time, data$method, mean)   # 7.50  9.25 13.25 11.00
+
+SS_tot        <- sum((data$time - ybar)^2)                     # 153
+SS_linha      <- p * sum((ybar_i - ybar)^2)                    # 18.5
+SS_coluna     <- p * sum((ybar_j - ybar)^2)                    # 51.5
+SS_tratamento <- p * sum((ybar_k - ybar)^2)                    # 72.5
+SS_erro       <- SS_tot - SS_linha - SS_coluna - SS_tratamento # 10.5
+
+df_erro <- (p - 2) * (p - 1)
+MSE_erro <- SS_erro / df_erro
+
+F_linha      <- (SS_linha      / (p - 1)) / MSE_erro # 3.52
+F_coluna     <- (SS_coluna     / (p - 1)) / MSE_erro # 9.80
+F_tratamento <- (SS_tratamento / (p - 1)) / MSE_erro # 13.81
+
+pval_linha      <- pf(F_linha, p - 1, df_erro, lower.tail = FALSE)      # 0.0885
+pval_coluna     <- pf(F_coluna, p - 1, df_erro, lower.tail = FALSE)     # 0.0099
+pval_tratamento <- pf(F_tratamento, p - 1, df_erro, lower.tail = FALSE) # 0.0042
+```
+
+{{< pagebreak >}}
+
+# ANOVA de medidas repetidas
+Acontece quando os "tratamentos" que queremos testar a significância com ANOVA são medidas de um mesmo indivíduo em tempos diferentes ou espaços diferentes por exemplo. Quando as medidas são de um mesmo indivíduo, temos uma menor variância devido ao componente aleatório e assim o teste é mais poderoso.
+
+Assim, podemos representar esse experimento com o seguinte modelo: onde,
+
+$$
+y_{ij} = \mu + \beta_i + \tau_j + \varepsilon_{ij}, \quad i \in \{1, \cdots, n\}, \quad j \in \{1, \cdots, g\}
+$$
+
+* $\mu$: o componente da média geral
+* $\beta_i$: o componente relacionado ao efeito do indivíduo $i$
+* $\tau_j$: o componente relacionado ao efeito do tratamento $j$
+* $\varepsilon_{ij}$: o componente relacionado ao efeito aleatório
+
+E a hipótese a ser testada é
+
+$$
+\begin{cases}
+    \mathcal H_0: \tau_1 = \tau_2 = \cdots = \tau_g \\
+    \mathcal H_1: \exists a,b \ ; \tau_a \neq \tau_b\\
+\end{cases}
+$$
+
+A soma de quadrados totais é decomposta na contribuição de cada componente
+
+$$
+\text{SS}_\text{total} = \text{SS}_\text{indivíduos} + \text{SS}_\text{tratamento} + \text{SS}_\text{erro}
+$$
+
+$$
+\underbrace{\sum_{i = 1}^n \sum_{j = 1}^g (y_{ij} - \bar y)^2}
+    _{\text{SS}_\text{total}, \; rk - 1 \; \text{graus}} =
+\underbrace{g \sum_{i = 1}^n (\bar y_i - \bar y)^2}
+    _{\text{SS}_\text{indivíduos}, \; n - 1 \; \text{graus}} +
+\underbrace{n \sum_{j = 1}^g (\bar y_j - \bar y)^2}
+    _{\text{SS}_\text{tratamento}, \; g - 1 \; \text{graus}} +
+\underbrace{\sum_{i = 1}^n \sum_{j = 1}^g \hat \varepsilon_{ij}^2}
+    _{\text{SS}_\text{erro}, \; (n - 1)(g - 1) \; \text{graus}}
+$$
+
+A estatística do teste para verificar se há diferença entre os tratamentos é dado pela razão da soma de quadrados dos tratamentos e dos erros padronizada pelos seus graus de liberdade.
+
+$$
+F = \dfrac{\text{SS}_\text{tratamento} / (g - 1)}{\text{SS}_\text{erro} / (n - 1)(g - 1)} ~ \mathcal F_{g - 1, (n - 1)(g - 1)}
+$$
+
+Também é possível testar se há diferenças significantivas entre os indivíduos utilizado a soma de quadrados dos invidívuos e seus graus de liberdade ao invés dos tratamentos.
+
+{{< pagebreak >}}
+
+::: callout-tip
+# Apresenta-se a seguir os resultados obtidos nos testes A, B e C  por nove indivíduos. Pode-se afirmar que os testes A, B e C apresentam resultados iguais? Faça uma análise desse experimento utilizando medidas repetidas.
+
+```{r}
+#| collapse: true
+data <- data.frame(
+    individuo = rep(1:9, each = 3),
+    teste = rep(c("A", "B", "C"), times = 9),
+    resultado = c(
+        98, 95, 77,
+        95, 71, 79,
+        76, 80, 91,
+        95, 81, 84,
+        83, 77, 80,
+        99, 70, 93,
+        82, 80, 87,
+        75, 72, 81,
+        88, 81, 83
+    )
+)
+
+head(data, 9)
+```
+:::
+
+{{< pagebreak >}}
+
+### Com ANOVA
+Primeiramente devemos testar as hipóteses de normalidade e esfericidade do modelo:
+
+```{r}
+#| warning: false
+#| collapse: true
+library(rstatix)
+
+data |>
+    group_by(teste) |>
+    shapiro_test(resultado)
+
+anova_test(
+    data,
+    dv = resultado,
+    wid = individuo,
+    within = teste
+)$Mauchly
+```
+
+Temos p-valores superiores ao nível de significância adotado de 5% para todos os testes, assim temos as suposições de normalidade e esfericidade. Então construimos o modelo anova de dois fatores sem iteração.
+
+```{r}
+#| collapse: true
+mod <- lm(resultado ~ as.factor(individuo) + as.factor(teste), data)
+anova(mod)
+```
+
+E vemos que as diferenças tanto entre os indivíduos como entre os testes não são significativas pelo p-valor superior a 5%, assim é possível afirmar que os testes A, B e C apresentam resultados iguais.
+
+{{< pagebreak >}}
+
+### Na mão
+Exemplificando os cálculos no R, obtemos os mesmos resultados da tabela ANOVA:
+
+```{r}
+n <- 9
+g <- 3
+ybar   <- mean(data$resultado)                         # 83.44
+ybar_i <- tapply(data$resultado, data$individuo, mean) # 90.00 81.67 82.33 ...
+ybar_j <- tapply(data$resultado, data$teste, mean)     # 87.89 78.56 83.89
+
+SS_tot        <- sum((data$resultado - ybar)^2)        # 1789
+SS_individuo  <- g * sum((ybar_i - ybar)^2)            # 422
+SS_tratamento <- n * sum((ybar_j - ybar)^2)            # 394.7
+SS_erro       <- SS_tot - SS_individuo - SS_tratamento # 972
+
+df_erro <- (n - 1) * (g - 1)
+MSE_erro <- SS_erro / df_erro
+
+F_individuo  <- (SS_individuo  / (n - 1)) / MSE_erro # 0.8683
+F_tratamento <- (SS_tratamento / (g - 1)) / MSE_erro # 3.248
+
+pval_individuo  <- pf(F_individuo, n - 1, df_erro, lower.tail = FALSE)  # 0.5616
+pval_tratamento <- pf(F_tratamento, g - 1, df_erro, lower.tail = FALSE) # 0.06547
+```
