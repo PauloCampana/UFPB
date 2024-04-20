@@ -1,0 +1,409 @@
+---
+format:
+    revealjs:
+        theme: moon
+lang: pt
+title: Temperatura em Chicago
+subtitle: Séries temporais
+author: Paulo Ricardo Seganfredo Campana
+date: today
+date-format: long
+highlight-style: github
+logo: includes/logo.png
+echo: true
+# embed-resources: true
+# self-contained-math: true
+# self-contained: true
+cache: true
+---
+
+## Fonte
+Esta série temporal sobre o clima na cidade de Chicago está disponível no site da prefeitura^[<https://data.cityofchicago.org/Parks-Recreation/Beach-Weather-Stations-Automated-Sensors/k7hf-8y75/about_data>]. São dados de uma estação climática no litoral do lago Michigan que coletam a cada hora do dia valores como temperatura do ar, humidade, pressão atmosférica, incidência solar, intensidade de chuva, velocidade e direção do vento.
+
+```{r}
+library(tidyverse)
+library(tseries)
+library(seastests)
+library(forecast)
+```
+
+## Estação climática
+
+```{r}
+#| echo: false
+#| out-width: 100%
+#| fig-height: 6
+options(digits = 3)
+
+theme_moon <- theme(
+    plot.background = element_rect("#002b36"),
+    panel.background = element_blank(),
+    panel.grid = element_line("#93a1a120"),
+    panel.grid.minor = element_blank(),
+    axis.ticks = element_line("#93a1a120"),
+    strip.background = element_rect("#104b56"),
+    text = element_text(colour = "#93a1a1"),
+    axis.text = element_text(colour = "#93a1a1"),
+    strip.text = element_text(colour = "#93a1a1"),
+)
+
+leaflet::leaflet() |>
+    leaflet::addTiles() |>
+    leaflet::addMarkers(lng = -87.622817, lat = 41.901997) |>
+    leaflet::setView(lng = -87.622817, lat = 41.901997, zoom = 9)
+```
+
+## Preparação
+Focaremos em apenas um mês devido a grande quantidade de dados: Outubro de 2023 pois neste mês é claro a influência sazonal e a tendência na série da temperatura do ar.
+
+```{r}
+data <- read_csv("chicago.csv") |>
+    filter(year(date) == 2023, month(date) == 10)
+```
+
+## Preparação
+Infelizmente, cerca de 3% das horas não há informação nenhuma das variáveis medidas talvez devido a manutenção do equipamento, assim esses valores foram imputados de maneira linear.
+
+```{r}
+all_time <- make_datetime(
+    year = 2023, month = 10,
+    day = rep(1:31, each = 24),
+    hour = rep(0:23, times = 24)
+)
+
+data <- data |>
+    right_join(tibble(all_time), by = join_by(date == all_time)) |>
+    arrange(date) |>
+    mutate(across(
+        where(is.numeric),
+        \(x) as.numeric(zoo::na.approx(zoo::zoo(x, date)))
+    ))
+```
+
+## Série
+Com observações de hora em hora, temos uma frequência de 24 para observar a sazonalidade diária.
+
+```{r}
+#| output-location: slide
+#| out-width: 100%
+#| fig-height: 6
+series <- data |>
+    pull(air_temperature) |>
+    ts(frequency = 24, start = c(1, 0))
+
+data |>
+    ggplot(aes(x = date, y = air_temperature)) +
+    geom_line(color = "#93a1a1") +
+    labs(x = "Dia", y = "Temperatura") +
+    theme_moon
+```
+
+A temperatura aumenta de dia e diminui durante a noite, ao decorrer do mês o inverno se aproxima e a temperatura média cai.
+
+## Decomposição clássica
+Usei a decomposição clássica aditiva da série pois a multiplicativa apresenta resíduos desproponcionalmente maiores no final do mês, por esse gráfico vemos melhor a tendência e sazonalidade da série.
+
+```{r}
+#| output-location: slide
+#| out-width: 100%
+#| fig-height: 6.5
+dec <- decompose(series, type = "additive")
+par(
+    bg = "#002b36", fg = "#93a1a1",
+    col.axis = "#93a1a1", col.lab = "#93a1a1", col.main = "#93a1a1"
+)
+plot(dec)
+```
+
+## Testes de Estacionariedade
+Os três testes vistos concordam com a hipótese de que a série temporal é não estacionária, colaborando com o resultado visto no gráfico anterior pois no começo do mês a temperatura é em média 25ºC e decresce para cerca de 5ºC no final.
+
+|Teste          |Hipótese nula   |$p$-valor|
+|:--------------|:---------------|--------:|
+|KPSS           |estacionária    |$< 0.010$|
+|Dickey-Fuller  |não-estacionaria|  $0.525$|
+|Phillips–Perron|não-estacionaria|  $0.250$|
+
+## Testes de Sazonalidade
+De forma similar, três testes de hipótese para a sazonalidade indicam que a série é de fato sazonal, pois a temperatura varia ao longo do dia e o comportamento se repete no próximo dia.
+
+|Teste          |Hipótese nula      |$p$-valor|
+|:--------------|:------------------|--------:|
+|Friedman       |não há sazonalidade|$< 0.001$|
+|Kruskall Wallis|não há sazonalidade|$< 0.001$|
+|ANOVA Welch    |não há sazonalidade|$< 0.001$|
+
+## Modelos SARIMA
+Devido a sazonalidade e tendência da série, vamos usar um modelo SARIMA para inferência, usando a seleção de modelos pelos critérios AIC, AICc e BIC chegamos no mesmo seguinte modelo:
+
+```{r}
+#| collapse: true
+sarima_aicc <- auto.arima(series)
+sarima_aicc
+```
+
+## Modelos SARIMA
+Porém este modelo SARIMA (2,1,1)(2,0,0) selecionado possui um coeficiente não significativo.
+
+|Coeficiente|Estimativa|Erro padrão|$p$-valor|
+|:----------|---------:|----------:|--------:|
+|AR1        |     0.294|      0.020|  < 0.001|
+|AR2        |     0.168|      0.026|  < 0.001|
+|MA1        |     0.023|      0.040|    0.566|
+|SAR1       |     0.076|      0.034|    0.025|
+|SAR2       |     0.218|      0.026|  < 0.001|
+
+## Modelos SARIMA
+Buscando manualmente um modelo melhor, cheguei em um SARIMA (2,1,0)(1,0,1), este novo modelo possui critérios de seleção melhores (AIC de 1301 contra 1326) e variância estimada mais baixa ($\sigma^2$ de 0.328 contra 0.344).
+
+```{r}
+#| collapse: true
+sarima <- Arima(
+    series,
+    order = c(2, 1, 0), seasonal = c(1, 0, 1)
+)
+sarima
+```
+
+## Modelos SARIMA
+Além de que agora todos os coeficientes são significantes e temos uma menor quantidade deles.
+
+|Coeficiente|Estimativa|Erro padrão|$p$-valor|
+|:----------|---------:|----------:|--------:|
+|AR1        |     0.284|      0.037|  < 0.001|
+|AR2        |     0.124|      0.037|    0.001|
+|SAR1       |     0.987|      0.014|  < 0.001|
+|SMA1       |    -0.930|      0.041|  < 0.001|
+
+## Modelo SARIMAX
+Como temos informações de outras medidas, é possivel a especificação de um modelo SARIMAX, testando diferentes variáveis disponíveis, a humidade do ar é a que mais ajuda na previsão da temperatura.
+
+```{r}
+#| collapse: true
+sarimax <- Arima(
+    series, xreg = data$humidity,
+    order = c(2, 1, 0), seasonal = c(1, 0, 1)
+)
+sarimax
+```
+
+## Modelo SARIMAX
+Este modelo apresenta critérios de seleção ainda melhores, variância mais baixa e coeficientes significativos, porém agora é necessário a informação sobre a humidade do ar para serem feitas previsões.
+
+|Coeficiente|Estimativa|Erro padrão|$p$-valor|
+|:----------|---------:|----------:|--------:|
+|AR1        |     0.329|      0.036|  < 0.001|
+|AR2        |     0.207|      0.036|  < 0.001|
+|SAR1       |     0.996|      0.013|  < 0.001|
+|SMA1       |    -0.965|      0.054|  < 0.001|
+|Humidade   |    -0.100|      0.004|  < 0.001|
+
+## Suposições dos modelos SARIMA e SARIMAX
+Temos que conferir as suposições de independência dos resíduos do modelo, isso é feito com os testes de Box-Pierce e Box-Ljung.
+
+|Modelo |Teste     |Hipótese nula|$p$-valor|
+|:------|:---------|:------------|--------:|
+|SARIMA |Box-Pierce|idependência |    0.996|
+|SARIMA |Box-Ljung |idependência |    0.996|
+|SARIMAX|Box-Pierce|idependência |    0.592|
+|SARIMAX|Box-Ljung |idependência |    0.591|
+
+Nenhum teste rejeita a independência dos resíduos de ambos os modelos.
+
+## Suposições dos modelos SARIMA e SARIMAX
+Também é testado a normalidade dos resíduos através dos testes de Lilliefors e Shapiro-Wilk.
+
+|Modelo |Teste       |Hipótese nula|$p$-valor|
+|:------|:-----------|:------------|--------:|
+|SARIMA |Lilliefors  |normalidade  |  < 0.001|
+|SARIMA |Shapiro-Wilk|normalidade  |  < 0.001|
+|SARIMAX|Lilliefors  |normalidade  |  < 0.001|
+|SARIMAX|Shapiro-Wilk|normalidade  |  < 0.001|
+
+Desta vez rejeitamos a hipótese nula então os resíduos não tem distribuição normal, com essa suposição violada, os testes $t$ para a significância dos coeficientes necessitam de grandes amostras para terem a distribuição correta.
+
+## Suposições dos modelos SARIMA e SARIMAX
+A falta de normalidade pode ser vista nos histogramas dos resíduos:
+
+```{r}
+#| echo: false
+#| out-width: 100%
+#| fig-height: 4.5
+data.frame(
+    SARIMA = scale(residuals(sarima)),
+    SARIMAX = scale(residuals(sarimax))
+) |>
+    pivot_longer(everything()) |>
+    ggplot(aes(x = value)) +
+    facet_grid(cols = vars(name)) +
+    geom_histogram(aes(y = after_stat(density)), fill = "#00000000", color = "#93a1a1") +
+    geom_function(fun = dnorm, color = "#ff4040", alpha = 0.75) +
+    labs(x = "Resíduos", y = "Densidade") +
+    theme_moon +
+    theme(
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+    )
+```
+
+## Previsões
+Vamos usar diferentes modelos e métodos para fazer previsões sobre a temperatura no primeiro dia do mês de Novembro, as previsões são feitas para 3, 6, 12 e 24 horas deste dia pois diferentes modelos podem ser melhores para previsões de curta ou longa duração.
+
+Será usado os modelos SARIMA e SARIMAX, alisamento exponencial de Holt-Winters, modelo ETS e os métodos de previsão simples Naïve sazonal e médias móveis simples.
+
+```{r}
+verdadeiro <- read_csv("chicago.csv") |>
+    filter(year(date) == 2023, month(date) == 11, day(date) == 1)
+```
+
+## Métricas de comparação
+Para comparação das previsões será usado a raiz do erro quadrático médio (RMSE) e o erro médio absoluto padronizado (MASE). O erro percentual é problemático para dados de temperatura pois não é uma escala absoluta e ocorre problemas de divisão por zero quando um dos valores verdadeiros são zero.
+
+$$
+\text{MASE} = \dfrac
+{\dfrac{1}{h} \displaystyle \sum_{i = 1}^h |y_{T + i} - y_{T + i}|}
+{\dfrac{1}{T-1} \displaystyle \sum_{t = 2}^T |y_t - y_{t - 1}|}
+$$
+
+## Previsão com modelos SARIMA e SARIMAX
+É preciso passar a informação da humidade do ar das horas a serem previstas para o modelo SARIMAX.
+
+```{r}
+pred_sarima <- lapply(
+    c(3, 6, 12, 24),
+    \(h) forecast(sarima, h)$mean
+)
+pred_sarimax <- lapply(
+    c(3, 6, 12, 24),
+    \(h) forecast(sarimax, h, xreg = verdadeiro$humidity[1:h])$mean
+)
+```
+
+## Previsão com método Holt-Winters
+O método foi feio com sazonalidade aditiva, selecionada a partir do gráfico de decomposição clássica da série e a tendência é amortecida pois resultou em previsões significativamente melhores.
+
+```{r}
+hw <- hw(
+    series, h = 24,
+    seasonal = "additive",
+    damped = TRUE,
+)
+pred_hw <- lapply(
+    c(3, 6, 12, 24),
+    \(h) forecast(hw, h = h)$mean
+)
+```
+
+## Previsão com modelo ETS
+A estimação do modelo ETS com o critério de seleção AICc e AIC retorna um modelo em que as três componentes de erro, tendência e sazonalidade são aditivas, com tendência amortecida, assim esse modelo é idêntico ao Holt-Winters anterior.
+
+```{r}
+#| output: false
+ets <- ets(series)
+ets
+## ETS(A,Ad,A)
+##
+## sigma:  0.591
+##  AIC AICc  BIC
+## 4168 4170 4306
+pred_ets <- lapply(
+    c(3, 6, 12, 24),
+    \(h) forecast(ets, h = h)$mean
+)
+```
+
+## Previsão com métodos simples
+Estes métodos mais simples servirão como base na comparação dos modelos e métodos.
+
+Para as médias móveis simples, a ordem estimada pelos critérios de seleção foi 1, assim o método é equivalente ao Naïve não-sazonal.
+
+```{r}
+snaive <- snaive(series, h = 24)
+pred_snaive <- lapply(
+    c(3, 6, 12, 24),
+    \(h) forecast(snaive, h = h)$mean
+)
+
+sma <- smooth::sma(series, h = 24)
+pred_sma <- lapply(
+    c(3, 6, 12, 24),
+    \(h) forecast(sma, h = h)$mean
+)
+```
+
+## Comparação por RMSE {.smaller}
+Pela raiz do erro quadrático médio, temos que a curto prazo, o método Naïve obtem a melhor previsão, para médio prazo são os modelos SARIMA, Holt-Winters e ETS enquanto que para longo prazo o modelo SARIMAX foi disparadamente melhor.
+
+```{r}
+#| include: false
+library(yardstick)
+truth <- list(
+    verdadeiro$air_temperature[1:3],
+    verdadeiro$air_temperature[1:6],
+    verdadeiro$air_temperature[1:12],
+    verdadeiro$air_temperature[1:24]
+)
+
+data.frame(
+    sarima  = sapply(1:4, \(i) rmse_vec(truth[[i]], pred_sarima[[i]])),
+    sarimax = sapply(1:4, \(i) rmse_vec(truth[[i]], pred_sarimax[[i]])),
+    hw      = sapply(1:4, \(i) rmse_vec(truth[[i]], pred_hw[[i]])),
+    ets     = sapply(1:4, \(i) rmse_vec(truth[[i]], pred_ets[[i]])),
+    snaive  = sapply(1:4, \(i) rmse_vec(truth[[i]], pred_snaive[[i]])),
+    sma     = sapply(1:4, \(i) rmse_vec(truth[[i]], pred_sma[[i]]))
+) |>
+    t() |>
+    knitr::kable()
+```
+
+|Método       |3 passos|6 passos|12 passos|24 passos|
+|:------------|-------:|-------:|--------:|--------:|
+|SARIMA       |   0.417|   0.337|    1.097|    2.700|
+|SARIMAX      |   0.293|   0.676|    0.806|    0.739|
+|Holt-Winters |   0.594|   0.499|    0.945|    2.028|
+|ETS          |   0.594|   0.499|    0.945|    2.028|
+|Naïve sazonal|   0.707|   0.850|    1.367|    2.657|
+|Naïve        |   0.183|   0.706|    1.232|    2.815|
+
+
+## Comparação por MASE {.smaller}
+Com esta outra medida de acurácia, vemos a quase mesma situação, o método Naïve é ótimo para previsões a curto prazo, o Naïve sazonal não foi bom em geral pois a sazonalidade do ultimo dia da série não foi muito representativa, o modelo SARIMA é o melhor para médio prazo, SARIMAX para longo prazo e o alisamento exponencial é competitivo com o SARIMA.
+
+```{r}
+#| include: false
+data.frame(
+    sarima  = sapply(1:4, \(i) mase_vec(truth[[i]], pred_sarima[[i]])),
+    sarimax = sapply(1:4, \(i) mase_vec(truth[[i]], pred_sarimax[[i]])),
+    hw      = sapply(1:4, \(i) mase_vec(truth[[i]], pred_hw[[i]])),
+    ets     = sapply(1:4, \(i) mase_vec(truth[[i]], pred_ets[[i]])),
+    snaive  = sapply(1:4, \(i) mase_vec(truth[[i]], pred_snaive[[i]])),
+    sma     = sapply(1:4, \(i) mase_vec(truth[[i]], pred_sma[[i]]))
+) |>
+    t() |>
+    knitr::kable()
+```
+
+|Método       |3 passos|6 passos|12 passos|24 passos|
+|:------------|-------:|-------:|--------:|--------:|
+|SARIMA       |   1.878|   1.141|    1.185|    6.017|
+|SARIMAX      |   1.048|   2.136|    1.277|    1.736|
+|Holt-Winters |   2.705|   1.768|    1.268|    4.718|
+|ETS          |   2.705|   1.768|    1.268|    4.718|
+|Naïve sazonal|   3.333|   3.141|    2.253|    6.602|
+|Naïve        |   0.667|   2.115|    1.864|    6.791|
+
+## Conclusão
+No geral, o modelo SARIMAX é tem maior poder de predição que os outros modelos, porém sua limitação é de precisar do valor da humidade do ar na hora da predição.
+
+```{r}
+#| echo: false
+#| out-width: 100%
+#| fig-height: 5
+verdadeiro |>
+    mutate(sarima = as.numeric(pred_sarimax[[4]])) |>
+    ggplot(aes(x = date, y = air_temperature)) +
+    geom_line(color = "#93a1a1") +
+    geom_line(aes(y = sarima), color = "#ff4040") +
+    labs(x = "Hora", y = "Temperatura") +
+    theme_moon
+```
