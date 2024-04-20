@@ -1,0 +1,115 @@
+---
+format: pdf
+lang: pt
+title: Lista 2
+subtitle: Modelos de regressão logísticos e aditivos
+author: Paulo Ricardo Seganfredo Campana
+date: today
+date-format: long
+callout-icon: false
+highlight-style: github
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
+geometry:
+    - top    = 2cm
+    - bottom = 2cm
+    - left   = 2cm
+    - right  = 2cm
+df-print: kable
+---
+
+\pagestyle{empty}
+\thispagestyle{empty}
+
+::: callout-tip
+# **Questão 1.** O conjunto de dados descrito no arquivo brown.txt (Brown, 1980) apresenta as variáveis `cancer`, se o paciente possui ou não cancer de próstata (variável resposta), `acip`, nível de fostafase ácida no sangue, `xray`, se há presença de manchas no raio-x, `estagio`, estágio do câncer, `grau`, grau do cancer e `idade`, idade do paciente.
+
+a) Realize o ajuste da regressão logística e selecione as variáveis. O modelo é adequado? Justifique sua escolha.
+
+b) Construa um envelope para os resíduos. Há algum ponto que não pertence ao envelope? Se sim, qual(is)?
+
+c) Construa um intervalo de confiança de 98% para os parâmetros do modelo.
+:::
+
+```{r}
+#| warning: false
+library(tidyverse)
+options(digits = 3)
+
+data1 <- read_csv("data/brown.csv")
+
+menor <- glm(cancer ~ 1, family = binomial(link = "logit"), data1)
+maior <- glm(cancer ~ ., family = binomial(link = "logit"), data1)
+fit1 <- step(menor, scope = list(upper = maior), direction = "both", trace = 0)
+# broom::tidy(step1)
+
+# fit1 <- glm(cancer ~ xray + estagio, family = binomial(link = "logit"), data1)
+# broom::tidy(fit1)
+```
+
+Por minimização do AIC, foram selecionados as variáveis `xray`, `estagio` e `acip` para explicar a variavel `cancer` no modelo de regressão logística, porém `acip` não é significante a um nível de 5%, portanto escolhi um modelo apenas com `xray` e `estagio`.
+
+```{r}
+#| echo: false
+X <- model.matrix(fit1)
+n <- nrow(X)
+p <- ncol(X)
+w <- fit1$weights
+W <- diag(w)
+H <- solve(t(X) %*% W %*% X)
+H <- sqrt(W) %*% X %*% H %*% t(X) %*% sqrt(W)
+h <- diag(H)
+td <- resid(fit1, type="deviance") / sqrt(1 - h)
+e <- matrix(0, n, 100)
+
+for(i in 1:100) {
+    dif <- runif(n) - fitted(fit1)
+    dif[dif >= 0 ] <- 0
+    dif[dif < 0] <- 1
+    nresp <- dif
+    fit <- glm(nresp ~ X, family = binomial)
+    w <- fit$weights
+    W <- diag(w)
+    H <- solve(t(X) %*% W %*% X)
+    H <- sqrt(W) %*% X %*% H %*% t(X) %*% sqrt(W)
+    h <- diag(H)
+    e[ ,i] <- sort(resid(fit, type="deviance") / sqrt(1 - h))
+}
+
+e1 <- numeric(n)
+e2 <- numeric(n)
+
+for(i in 1:n) {
+    eo <- sort(e[i, ])
+    e1[i] <- (eo[2] + eo[3]) / 2
+    e2[i] <- (eo[97] + eo[98]) / 2
+}
+
+med <- apply(e, 1, mean)
+faixa <- range(td, e1, e2)
+```
+
+
+```{r}
+#| echo: false
+#| fig-height: 5
+#| out-width: 100%
+par(pty = "s")
+qqnorm(td,xlab="Percentil da N(0,1)",
+       ylab="Componente do Desvio", ylim=faixa, pch=16)
+
+par(new=T)
+
+qqnorm(e1,axes=F,xlab="",ylab="",type="l",ylim=faixa,lty=1)
+par(new=T)
+qqnorm(e2,axes=F,xlab="",ylab="", type="l",ylim=faixa,lty=1)
+par(new=T)
+qqnorm(med,axes=F,xlab="", ylab="", type="l",ylim=faixa,lty=2)
+```
+
+Apenas um ponto está na borda do envelope de confiança para os resíduos do modelo
+
+
+```{r}
+confint(fit1, level = 0.98)
+```
