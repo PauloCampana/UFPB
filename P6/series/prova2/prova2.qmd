@@ -1,0 +1,261 @@
+---
+format: pdf
+lang: pt
+title: Segunda Avaliação
+subtitle: Séries Temporais
+author: Paulo Ricardo Seganfredo Campana
+date: today
+date-format: long
+highlight-style: github
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
+geometry:
+    - top    = 2cm
+    - bottom = 2cm
+    - left   = 2cm
+    - right  = 2cm
+warning: false
+---
+
+\pagestyle{empty}
+\thispagestyle{empty}
+
+```{r}
+#| echo: false
+library(ggplot2)
+theme_set(theme_bw())
+options(digits = 4)
+```
+
+Considere a série temporal chicken, preço de aves inteiras, do pacote astsa. Este série é mensal com início em agosto de 2001 até julho de 2016, totalizando 180 observações.
+
+1. Apresente a analise descritiva da série. Comente os resultados.
+
+Primeiramente, a série tem frequência anual:
+
+```{r}
+#| collapse: true
+library(forecast)
+library(ggplot2)
+
+chicken <- astsa::chicken
+frequency(chicken)
+```
+
+Pelo gráfico da série podemos ver que o preço mensal em centavos de dólar por libra de galinha tem tendência crescente e pouca ou nenhuma sazonalidade. O preço médio varia de 61 centavos de dólar em dezembro de 2002 até 116 centavos em junho de 2015.
+
+```{r}
+#| out-width: 100%
+#| fig-height: 2.5
+autoplot(chicken) +
+    labs(x = "Tempo", y = "Preço")
+```
+
+2. Explore e descreva todas a informações/características relevantes sobre a série em questão.
+(a) Apresente e analise os gráficos da série e os teste de hipótese que sejam relevantes para descrever a série. Vale ressaltar aqui que todos testes de hipóteses que você considerar, é preciso descrever as hipóteses nula e alternativa, nível de significância adotado e a conclusão do teste.
+
+Isso é sugerido também pelo gráfico da decomposição clássica da série, separando os componentes de tendência, sazonalidade e aleatoriedade, a sazonalidade detectada pela decomposição é fraca: há uma discrepância de cerca de 3 centavos entre os pontos mínimos e máximos da sazonalidade, comparado com uma média global de cerca de 80 centavos.
+
+```{r}
+#| out-width: 100%
+#| fig-height: 3
+decomp <- decompose(chicken, type = "additive")
+autoplot(decomp) +
+    labs(x = "Tempo", title = NULL)
+```
+
+Com um nível de significância de 5%, pelo p-valor, o teste KPSS rejeita a hipótese de estacionariedade e os testes de Dickey-Fuller e Phillips–Perron não rejeitam a hipótese de não estacionariedade, assim concluímos que a série tem tendência de fato.
+
+```{r}
+#| collapse: true
+tseries::kpss.test(chicken)$p.value
+tseries::adf.test(chicken)$p.value
+tseries::pp.test(chicken)$p.value
+```
+
+Surpreendentemente, todos os testes de sazonalidade do pacote `seastests` rejeitam a hipótese de não haver sazonalidade na série, assim as pequenas mudanças de mês em mês são significantes.
+
+```{r}
+#| collapse: true
+seastests::qs(chicken)$Pval
+seastests::fried(chicken)$Pval
+seastests::kw(chicken)$Pval
+seastests::seasdum(chicken)$Pval
+seastests::welch(chicken)$Pval
+```
+
+3. Utilize a função auto.arima do pacote forecast para selecionar os ordens dos modelos ARIMA/SARIMA.
+(a) Quais os modelos ARIMA/SARIMA que minimizam os critérios AIC e BIC?
+(b) Os coeficientes dos parâmetros dos modelos estimados são significativos? Comente, argumente e descreva passo a passo com detalhes.
+
+Ajustando dois modelos com e sem sazonalidade, temos que aqueles que minimizaram os critérios de seleção foram um ARIMA de ordem (2,1,1) e um SARIMA de ordem (2,1,1)(0,0,1). O modelo SARIMA obteve melhores AIC e BIC em geral.
+
+```{r}
+#| layout-ncol: 2
+arima <- auto.arima(chicken, seasonal = FALSE)
+sarima <- auto.arima(chicken, seasonal = TRUE)
+arima
+sarima
+```
+
+Pelo teste de significância dos coeficientes do modelo ARIMA, todos eles rejeitam a hipótese do seu coeficiente ser igual a 0, assim são todos significativos.
+
+```{r}
+#| collapse: true
+lmtest::coeftest(arima)
+```
+
+Porém no modelo SARIMA o coeficiente relacionado a médias móveis de ordem 1 e a constante aditiva do modelo não são significantes, com p-valores 0.1177 e 0.0777 respectivamente.
+
+```{r}
+#| collapse: true
+lmtest::coeftest(sarima)
+```
+
+Deste modo, o modelo SARIMA deve ser refeito para que não haja coeficientes não significantes. A remoção destes parâmetros não impacta muito os critérios de seleção.
+
+```{r}
+#| collapse: true
+sarima <- Arima(
+    chicken,
+    order = c(2, 1, 0),
+    seasonal = c(0, 0, 1),
+    include.drift = FALSE,
+)
+sarima
+lmtest::coeftest(sarima)
+```
+
+4. Cheque a qualidade do ajuste do(s) modelo(s) selecionado(s) no item anterior e explique cada os resultados obtidos para avaliar a qualidade do ajuste.
+(a) Qual a conclusão do teste de Ljung e Box (apresente as hipótese)? Comente.
+(b) Apresente os gráficos do diagnóstico. Interprete e comente.
+
+Gráficamente, os resíduos parecem com ruído branco por serem independentes e normalmente distribuidos, as autocorrelações entre os resíduos só são significantes para alguns lags altos.
+
+```{r}
+#| layout-ncol: 2
+#| out-width: 100%
+#| fig-height: 5
+checkresiduals(arima, test = FALSE)
+checkresiduals(sarima, test = FALSE)
+```
+
+Verificando a independência dos resíduos do modelo pelos testes de Box-Pierce e Box-Ljung, não rejeitamos a hipótese de que os resíduos são independentes em ambos os modelos.
+
+```{r}
+#| collapse: true
+Box.test(arima$residuals, type = "Box-Pierce")$p.value
+Box.test(arima$residuals, type = "Ljung-Box")$p.value
+Box.test(sarima$residuals, type = "Box-Pierce")$p.value
+Box.test(sarima$residuals, type = "Ljung-Box")$p.value
+```
+
+Também não rejeitamos a hipótese de normalidade dos resíduos, ambos os modelos são válidos.
+
+```{r}
+#| collapse: true
+shapiro.test(arima$residuals)$p.value
+nortest::lillie.test(arima$residuals)$p.value
+shapiro.test(sarima$residuals)$p.value
+nortest::lillie.test(sarima$residuals)$p.value
+```
+
+5. Exclua as 12 ultimas observações da série temporal e faça previsão considerando a série truncada (`chicken.truc`).
+
+```{r}
+n <- length(chicken)
+chicken.trunc <- ts(chicken[1:(n - 12)], freq = 12, start = c(2001, 8))
+```
+
+(a) Considere a série (`chicken.truc`) e apresente os valores previstos 12 passos a frente considerando os modelos ARIMA/SARIMA. Importante: Note que é preciso buscar novos ajustes/checar qualidade do ajuste para chicken.truc, e depois fazer as previsões.
+
+A ordem estimada do modelo ARIMA, a significância de seus coeficientes e as hipóteses de independência e normalidade dos resíduos continuam as mesmas.
+
+```{r}
+#| collapse: true
+#| out-width: 100%
+#| fig-height: 3
+arima.trunc <- auto.arima(chicken.trunc, seasonal = FALSE)
+lmtest::coeftest(arima.trunc)
+checkresiduals(arima.trunc, test = FALSE)
+```
+
+O mesmo acontece para o modelo SARIMA, as ordens estimadas são as mesmas e possui coeficientes não significantes que foram removidos da mesma forma.
+
+```{r}
+#| collapse: true
+#| out-width: 100%
+#| fig-height: 3
+sarima.trunc <- Arima(
+    chicken.trunc,
+    order = c(2, 1, 0),
+    seasonal = c(0, 0, 1),
+    include.drift = FALSE,
+)
+lmtest::coeftest(sarima.trunc)
+checkresiduals(sarima.trunc, test = FALSE)
+```
+
+Os valores previstos dos modelos ARIMA e SARIMA para o ano retirado da série truncada são:
+
+```{r}
+#| collapse: true
+arima.predict <- forecast(arima.trunc, h = 12)$mean
+sarima.predict <- forecast(sarima.trunc, h = 12)$mean
+arima.predict
+sarima.predict
+```
+
+(b) Considere a série (`chicken.truc`) e apresente os valores previstos 12 passos a frente considerando o algoritmo de alisamento exponencial.
+
+```{r}
+#| collapse: true
+holt <- hw(chicken.trunc)
+holt.predict <- forecast(holt, h = 12)$mean
+holt.predict
+```
+
+(c) De acordo com as características da série, utilize os métodos simples de previsão considerando a série `chicken.truc` e apresente os valores previstos 12 passos a frente.
+
+O método de média global não é valido pois a série possui tendência e o Naïve não é adequato pois a série truncada acaba no auge da sazonalidade, assim as previsões serão mais altas que o normal.
+
+```{r}
+#| collapse: true
+snaive <- snaive(chicken.trunc, h = 12)
+snaive.predict <- forecast(snaive, h = 12)$mean
+snaive.predict
+
+sma <- smooth::sma(chicken.trunc, order = 6, h = 12)
+sma.predict <- forecast(sma, h = 12)$mean
+sma.predict
+```
+
+(d) Calcule e compare os erro quadrático médio e o erro médio percentual (ver função `accuracy`) das previsões obtidas via modelos ARIMA, alisamento exponencial e métodos simples de previsão (utilizados no item anterior). O que você pode concluir?
+
+```{r}
+verdadeiro <- ts(chicken[(n - 11):n], freq = 12, start = c(2015, 8))
+```
+
+Para previsão de 12 passos a frente, os modelos ARIMA e SARIMA tiveram pior raiz do erro quadrático médio e média do erro absoluto percentual, o método de alisamento exponencial de Holt-Winters e Naïve sazonal obtiveram os menores erros.
+
+O método de Naïve sazonal obteve a menor raiz do erro quadrático médio.
+
+```{r}
+#| collapse: true
+yardstick::rmse_vec(verdadeiro, arima.predict)
+yardstick::rmse_vec(verdadeiro, sarima.predict)
+yardstick::rmse_vec(verdadeiro, holt.predict)
+yardstick::rmse_vec(verdadeiro, snaive.predict)
+yardstick::rmse_vec(verdadeiro, sma.predict)
+```
+
+O método de Holt-Winters obteve a menor média do erro absoluto percentual.
+
+```{r}
+#| collapse: true
+yardstick::mape_vec(verdadeiro, arima.predict)
+yardstick::mape_vec(verdadeiro, sarima.predict)
+yardstick::mape_vec(verdadeiro, holt.predict)
+yardstick::mape_vec(verdadeiro, snaive.predict)
+yardstick::mape_vec(verdadeiro, sma.predict)
+```
