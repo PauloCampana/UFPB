@@ -1,0 +1,102 @@
+---
+format: pdf
+lang: pt
+title: Lista 1
+subtitle: Séries Temporais
+author: Paulo Ricardo Seganfredo Campana
+date: today
+date-format: long
+callout-icon: false
+highlight-style: github
+monofont: "Ubuntu Mono"
+monofontoptions: Scale = 1
+geometry:
+    - top    = 2cm
+    - bottom = 2cm
+    - left   = 2cm
+    - right  = 2cm
+---
+
+\pagestyle{empty}
+\thispagestyle{empty}
+
+```{r}
+#| echo: false
+options(digits = 3)
+set.seed(1717)
+```
+
+::: callout-tip
+# **Questão 2.** Gere 100 observações não correlacionadas a partir da distribuição $\mathcal N(0,1)$. O que você pode concluir?
+
+```{r}
+#| collapse: true
+x <- rnorm(100, 0, 1);
+head(x, n = 20)
+```
+
+As observações são prediminantementes próximas de 0, tem sinal aleatório e variam em geral no máximo entre $[-3,3]$.
+:::
+
+::: callout-tip
+# **Questão 3.** Gere 100 observações $Y_t$ de acordo com o processo: $Y_t = Y_{t-1} + e_t, \quad e_t \sim \mathcal N(0,(0.1)^2)$. O que você pode concluir?
+
+```{r}
+#| collapse: true
+y <- Reduce(
+    \(a, b) a + rnorm(1, 0, 0.1^2),
+    numeric(100),
+    accumulate = TRUE,
+)
+head(y, n = 21)
+```
+
+São muito mais próximas de 0 devido a menor variância, o sinal é aleatório, porém tende a manter o mesmo de uma iteração para outra.
+:::
+
+::: callout-tip
+# **Questão 5.** Gere 60 observações do seguinte passeio aleatório $Y_t = 1 + Y_{t-1} + e_t , \quad e_t \sim \mathcal N(0,1)$. Use a função `ts` do R para transformar os dados em uma série temporal mensal iniciando em janeiro de 2017. O que você pode concluir?
+
+```{r}
+#| collapse: true
+y <- Reduce(
+    \(a, b) 1 + a + rnorm(1, 0, 1),
+    numeric(60),
+    accumulate = TRUE,
+)
+head(y, n = 20)
+
+ts(y, start = c(2017, 1), frequency = 12)
+```
+
+A série constantemente cresce em média 1 unidade por mês com baixa aleatoriedade.
+:::
+
+::: callout-tip
+# **Questão 6.** Considere o processo $Y_t = 0.8 Y_{t-1} + e_t, \quad t = \lbrace 1,\cdots,30 \rbrace$, suponha que o valor de $Y_t$ é igual a zero, até que no terceiro ano houve um choque positivo, i.e., $e_t = 20$. O que ocorrerá nos anos seguintes admitindo que $e_t = 0$ para os demais anos?
+
+```{r}
+#| collapse: true
+y <- Reduce(
+    \(a, b) {
+        e <- if (b < 3 * 12) 0 else 20
+        0.8 * a + e
+    },
+    0:59,
+    accumulate = TRUE,
+)
+tail(y, n = 30)
+```
+
+```{r}
+#| echo: false
+library(ggplot2)
+ggplot(data.frame(n = seq_along(y), y), aes(n, y)) +
+    geom_line(color = "#02b875") +
+    geom_point(color = "#02b875") +
+    labs(x = "Mês") +
+    theme_bw()
+```
+
+A série inicia constante igual a 0, no terceiro ano o valor rapidamente sobe até se estabilizar em 100 de maneira geométrica.
+:::
