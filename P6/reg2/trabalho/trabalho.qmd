@@ -3,6 +3,7 @@ format: pdf
 documentclass: scrreprt
 lang: pt
 bibliography: includes/bib.bibtex
+linkcolor: black
 toc: true
 title: |
     ![](includes/ufpb.png){width=0.65in}
@@ -19,6 +20,11 @@ fig-cap-location: top
 warning: false
 echo: false
 cache: true
+include-in-header:
+    - text: |
+        \usepackage{pdflscape}
+        \newcommand{\blandscape}{\begin{landscape}}
+        \newcommand{\elandscape}{\end{landscape}}
 ---
 
 ```{r}
@@ -26,7 +32,7 @@ library(tidyverse)
 library(tidymodels)
 library(kableExtra)
 
-options(digits = 4)
+options(digits = 3)
 set.seed(0)
 
 theme_kek <- theme_bw() +
@@ -36,7 +42,8 @@ theme_kek <- theme_bw() +
 ```{r}
 data <- openintro::cpu |>
     as_tibble() |>
-    drop_na(l3_cache, boost_clock)
+    drop_na(l3_cache, boost_clock) |>
+    arrange(released)
 folds <- vfold_cv(data, v = 10, repeats = 10)
 ```
 
@@ -83,43 +90,42 @@ data |>
     select(released, company, name, codename, socket, process) |>
     head(8) |>
     kbl(
+        booktabs = TRUE, linesep = "",
         col.names = c(
             "Lançamento", "Empresa", "Nome",
             "Codinome", "Encaixe", "Processo"
         ),
-        booktabs = TRUE,
-        linesep = ""
+        format.args = list(decimal.mark = ",")
     ) |>
     kable_styling(latex_options = "hold_position")
-
 data |>
     arrange(desc(released)) |>
     select(cores, threads, base_clock, boost_clock, l3_cache, tdp) |>
     head(8) |>
     kbl(
+        booktabs = TRUE, linesep = "",
         col.names = c(
             "Cores", "Threads", "Base Clock",
             "Boost Clock", "Cache L3", "TDP"
         ),
-        booktabs = TRUE,
-        linesep = ""
+        format.args = list(decimal.mark = ",")
     ) |>
     kable_styling(latex_options = "hold_position")
 ```
 
-Todas as variáveis foram testadas para inclusão no modelo final, exceto o nome, codinome, encaixe e data de lançamento do processados pois além de não exercerem influência direta na eficiência energética do processador, são variáveis nominais que possuem muitos valores únicos, inviabilizando a utilização de métodos como variáveis dummy para serem inclusas no modelo de regressão.
+Todas as variáveis foram testadas para inclusão no modelo final, exceto o nome, codinome, encaixe e data de lançamento do processados pois além de não exercerem influência direta na eficiência energética do processador, são variáveis nominais que possuem muitos valores únicos, inviabilizando a utilização de métodos como variáveis *dummy* para serem inclusas no modelo de regressão.
 
-Além disso, alguns processadores mais antigos não possuem as tecnologias de Boost Clock e terceira camada de cache, para o uso destes regressores no modelo, foram excluidos do banco de dados os processadores sem estas informações.
+Além disso, alguns processadores mais antigos não possuem as tecnologias de Boost Clock e terceira camada de cache, para o uso destes regressores no modelo, foram excluidos do banco de dados os processadores sem estas informações, assim o banco de dados usado para modelagem terá 472 observações.
 
 {{< pagebreak >}}
 
 ## Modelo aditivo generalizado
-Quando a variável resposta do modelo de regressão linear não tem distribuição normal, podemos partir para modelos lineares generalizados, que produzem melhores inferencias doque transformações na variável resposta. A eficiência energética dos processadores não possui distribuição normal como pode ser visto no gráfico de densidade:
+Quando a variável resposta do modelo de regressão linear não tem distribuição normal, podemos partir para modelos lineares generalizados, que produzem melhores inferencias do que transformações na variável resposta. A eficiência energética dos processadores não possui distribuição normal como pode ser visto no gráfico da @fig-densidadetdp:
 
 ```{r}
 #| out-width: 100%
 #| fig-height: 2.5
-#| label: fig-densidade
+#| label: fig-densidadetdp
 #| fig-cap: Densidade da distribuição da variável resposta do modelo, a eficiência energética do processador.
 data |>
     ggplot(aes(x = tdp)) +
@@ -146,11 +152,11 @@ Na prática, estas funções são suavizações baseadas nos dados que podem ass
 
 {{< pagebreak >}}
 
-## Validação do modelo
-Foram usados três métricas para avaliação da performance do modelo: raiz do erro quadrático médio ($\hat \sigma$), erro médio absoluto (EMA) e coeficiente de determinação (R$^2$) com suas formas dadas a seguir, onde $\hat y$ são as previsões do modelo e $\hat \rho$ é o coeficiente de correlação de Pearson.
+## Validação
+Foram usados três métricas para avaliação da performance do modelo: raiz do erro quadrático médio (REQM), erro médio absoluto (EMA) e coeficiente de determinação (R$^2$) com suas formas dadas a seguir, onde $\hat y$ são as previsões do modelo e $\hat \rho$ é o coeficiente de correlação de Pearson.
 
 ::: {layout-ncol=3}
-$$\hat \sigma = \sqrt{\dfrac{1}{n} \sum_{i = 1}^n (y_i - \hat y_i)^2 }$$
+$$\text{RMSE} = \sqrt{\dfrac{1}{n} \sum_{i = 1}^n (y_i - \hat y_i)^2 }$$
 
 $$\text{EMA} = \dfrac{1}{n} \sum_{i = 1}^n |y_i - \hat y_i|$$
 
@@ -159,22 +165,28 @@ $$\text{R}^2 = \hat \rho_{y \hat y}^2$$
 
 As previsões usadas no cálculo das métricas provem da separação do conjunto de dados em uma parte usada para ajuste do modelo e outra para estimação das métricas, utilizando a abordagem de validação cruzada com 10 *folds* e 10 repetições, assim obtemos não só uma estimativa pontual para as métricas como também erro padrão e intervalo de confiânça.
 
-Também é necessário que o modelo cumpra algumas suposições como a normalidade dos resíduos, <!-- será?? --> ausência de auto correlação nos resíduos, além de que a contribuição de cada regressor seja significante para obtermos um modelo válido. Tudo isso será verificado com testes de hipótese.
+Também é necessário que o modelo cumpra algumas suposições como a normalidade dos resíduos, <!-- será?? --> ausência de autocorrelação nos resíduos além de que a contribuição de cada regressor seja significante para obtermos um modelo válido. Tudo isso será verificado com testes de hipótese. Os resíduos utilizados para os testes são os resíduos de desvio definidos por
 
-<!-- falar do R, tidymodels, mgcv -->
-Os resultados a seguir foram obtidos no software estatístico e linguagem de programação R [@R] fazendo uso dos pacotes `tidymodels` [@tidymodels] para validação cruzada e estimação das métricas de performance, e `mgcv` [@mgcv] que implementa os modelos aditivos generalizados.
+$$
+r_{D_i} = \text{sng}(y_i - \hat \mu_i) \sqrt{2}
+\sqrt{y_i (\hat \theta_i^0 - \hat \theta_i) + b(\hat \theta_i) - b(\hat \theta_i^0)}
+$$
+
+Os resultados a seguir foram obtidos no software estatístico e linguagem de programação R [@R] fazendo uso dos pacotes `tidymodels` [@tidymodels] para validação cruzada e estimação das métricas de performance, e `mgcv` [@mgcv] que implementa os modelos aditivos generalizados. O relatório foi feito no sistema de escrita e publicação científica Quarto [@quarto]
 
 # Resultados
-Pelo gráfico de densidade da variável resposta na @fig-densidade, vemos que está é uma variável com distribuição positiva e assimétrica, portanto a distribuição Gama é uma boa escolha para a parte generalizada do modelo aditivo, a função de ligação logarítimica apresentou melhores resultados de performance do modelo portanto foi escolhida, assim temos um modelo em que o logarítimo da esperança condicional da eficiência energética é explicada por uma combinação aditiva entre regressores, o intercepto e um erro com distribuição normal.
+\vspace{-24pt}
+
+## Especificação
+Pelo gráfico de densidade da variável resposta na @fig-densidadetdp, vemos que está é uma variável com distribuição positiva e assimétrica, portanto escolhi a distribuição Gama para a parte generalizada do modelo aditivo, e foi usado a função de ligação logarítimica pois apresentou melhores resultados de performance do modelo, assim temos um modelo em que o logarítimo da esperança condicional da eficiência energética é explicada por uma combinação aditiva entre regressores, o intercepto e um erro com distribuição normal.
 
 $$
 \log \mu = \beta_0 + f_1(x_1) + f_2(x_2) + \cdots + \varepsilon
 $$
 
-O tipo de função suavizadora escolhida foi *splines* isotrópicas de baixo posto, o padrão da função `s()` do pacote `mgcv` pois de certa forma é a melhor suavização segundo @suav. Essa suavização é aplicada nos regressores *cores*, *base clock*, *boost clock* e *cache L3*, não foi aplicada no regressor *processo* pois esta apresenta uma relação com a variável resposta que reduz a uma estimação linear nas *splines*.
+O tipo de função suavizadora usada foi *splines* isotrópicas de baixo posto, o padrão da função `s()` do pacote `mgcv` pois de certa forma é a melhor suavização segundo @suav. Essa suavização é aplicada nos regressores *cores*, *base clock*, *boost clock* e *cache L3*, não foi aplicada no regressor *processo* pois esta apresenta uma relação com a variável resposta que reduz a uma estimação linear nas *splines*.
 
-O regressor *empresa* foi transformado em variável dummy sem interação para uso no modelo, pois há diferença significativa na eficiência energética de processadores Intel e AMD nesta década.
-
+O regressor *empresa* foi transformado em variável *dummy* sem interação para uso no modelo, pois há diferença significativa na eficiência energética de processadores Intel e AMD nesta década.
 
 ```{r}
 model <- gen_additive_mod() |>
@@ -192,26 +204,247 @@ workflow <- workflow() |>
     add_recipe(recipe)
 
 fit <- workflow |>
-    fit_resamples(folds)
+    fit_resamples(
+        folds,
+        metrics = metric_set(rmse, mae, rsq)
+    )
+```
 
+\vspace{-12pt}
+
+## Performance
+Fazendo o ajuste do modelo com a validação cruzada, temos as estimativas pontuais, os erros padrões das estimatívas e intervalos de confiança para as medidas de desempenho do modelo aditivo generalizado dadas na @tbl-metricas.
+
+```{r}
+#| label: tbl-metricas
+#| tbl-cap: Métricas de performance do modelo por validação cruzada.
+fit |>
+    collect_metrics(summarize = FALSE, type = "wide") |>
+    select(REQM = rmse, EMA = mae, `R²` = rsq) |>
+    sapply(\(x) {
+        t <- t.test(x)
+        c(t$estimate, t$stderr, t$conf.int)
+    }) |>
+    t() |>
+    kbl(
+        digits = 3,
+        booktabs = TRUE, linesep = "",
+        col.names = c(
+            "Métrica", "Média", "Erro padrão",
+            "Inferior", "Superior"
+        ),
+        format.args = list(decimal.mark = ",")
+    ) |>
+    add_header_above(c(" " = 3, "Intervalo de Confiança" = 2))
+```
+
+Assim vemos que o modelo utilizado se adequa bem ao modelar a eficiência energética dos processadores pois o erro médio absoluto estimado de 12,6 é pequeno comparado com a escala de consumo de energia dos processadores, além do coeficiente de determinação R$^2$ ser bastante alto, acima de 90%.
+
+Vemos também pelo gráfico de densidade das medidas na @fig-densidademetricas que não há grandes outliers na estimativa das métricas, isso indíca que o modelo é capaz de fazer previsões boas para diferentes tipos processadores e também que não ocorre *overfitting* para certos tipos.
+
+```{r}
+#| out-width: 100%
+#| fig-height: 2.5
+#| label: fig-densidademetricas
+#| fig-cap: Densidade da distribuição amostral das métricas de performance do modelo.
+fit |>
+    collect_metrics(summarize = FALSE) |>
+    mutate(.metric = factor(.metric, levels = c("rmse", "mae", "rsq"))) |> ggplot(aes(x = .estimate)) +
+    facet_wrap(
+        vars(.metric),
+        scales = "free", strip.position = "bottom",
+        labeller = as_labeller(c(
+            "rmse" = "REQM",
+            "mae" = "EMA",
+            "rsq" = "R²"
+        ))
+    ) +
+    geom_density() +
+    labs(x = NULL, y = "Densidade") +
+    theme_kek +
+    theme(
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+    )
+```
+
+```{r}
 mgcv <- workflow |>
     fit(data) |>
     extract_fit_engine()
 ```
 
+## Modelo final
+Ajustando o modelo novamente, agora com todas as observações, obtemos as equações da relação entre a eficiência energética dos processadores e as variáveis regressoras utilizadas, as duas equações se referem a processadores Intel e AMD devido ao uso de transformação em variável *dummy*.
+
+$$
+\begin{aligned}
+    \log \hat \mu_\text{Intel} &= 3,\!965 + 0,\!021 \text{processo} +
+    \hat f_1(\text{cores}) +
+    \hat f_2(\text{base clock}) +
+    \hat f_3(\text{boost clock}) +
+    \hat f_4(\text{cache L3}) \\
+    \log \mu_\text{AMD} &= 3,\!653 + 0,\!021 \text{processo} +
+    \hat f_1(\text{cores}) +
+    \hat f_2(\text{base clock}) +
+    \hat f_3(\text{boost clock}) +
+    \hat f_4(\text{cache L3})
+\end{aligned}
+$$
+
+Onde as funções $\hat f_1$, $\hat f_2$, $\hat f_3$ e $\hat f_4$ foram estimadas e estão apresentadas na @fig-f, a área sombreada representa a região de confiança da função e os pontos do gráfico são os resíduos parciais de cada observação.
+
+\blandscape
 ```{r}
-fit |>
-    collect_metrics()
+#| layout-nrow: 2
+#| out-width: 100%
+#| fig-height: 3.5
+#| label: fig-f
+#| fig-cap: Funções não paramétricas estimadas
+#| fig-subcap:
+#|   - $\hat f_1$ associada ao regressor *cores*.
+#|   - $\hat f_2$ associada ao regressor *base clock*.
+#|   - $\hat f_3$ associada ao regressor *boost clock*.
+#|   - $\hat f_4$ associada ao regressor *cache L3*.
+par(mar = c(5,5,1,1), mex = 0.5, family = "serif")
+mgcv::plot.gam(
+    mgcv, select = 1,
+    residuals = TRUE, shade = TRUE, rug = FALSE,
+    ylab = expression(hat(f[1])), xlab = "cores"
+)
+
+mgcv::plot.gam(
+    mgcv, select = 2,
+    residuals = TRUE, shade = TRUE, rug = FALSE,
+    ylab = expression(hat(f[2])), xlab = "base clock"
+)
+
+mgcv::plot.gam(
+    mgcv, select = 3,
+    residuals = TRUE, shade = TRUE, rug = FALSE,
+    ylab = expression(hat(f[3])), xlab = "boost clock"
+)
+
+mgcv::plot.gam(
+    mgcv, select = 4,
+    residuals = TRUE, shade = TRUE, rug = FALSE,
+    ylab = expression(hat(f[4])), xlab = "cache L3"
+)
 ```
+\elandscape
+
+## Interpretação
+Pelo mesmo gŕafico da @fig-f é possível interpretar a contribuição de cada regressor pois representa o efeito parcial da variável na eficiência energética do processador, ou seja, o efeito quando é fixado o valor dos outros regressores.
+
+* Na @fig-f-1 vemos que quanto mais núcleos físicos de processamento o CPU tem, maior é a demanda energética do processador, porém a relação não é linear e se estabiliza para processadores com grande quantidade de núcleos.
+
+* Na @fig-f-2 a relação é quase linear entre a frequência de operação padrão e a demanda energética do processador pois para rodar um processador em maior frequência, é necessário uma maior voltagem para mantê-lo estável e isso aumenta o consumo de energia.
+
+* Na @fig-f-3 o efeito é inverso: processadores com maior frequência máxima exibem melhor eficiência energética, isso acontece pois esta tecnologia permite que o processador funcione em uma velocidade mais baixa para uso comum, salvando as frequências mais altas com maiores demandas energéticas para momentos oportunos, diminuindo o consumo geral.
+
+* Na @fig-f-4 a relação também é não linear, para valores baixos da capacidade do cache L3, a relação entre a capacidade e a demanda energética é crescente, porém processadores com capacidade muito alta (maior que 64MB) não observam esse aumento no consumo de energia.
+
+O coeficiente para o regressor *processo* foi de 0,021, isso indica que os chips mais novos fabricados em processos menores em tamanho exibem menor consumo máximo de energia, porém esse efeito não é muito grande.
+
+Adicionalmente, o intercepto de 3,965 pra processadores Intel e 3,653 para a marca AMD mostra que há diferença neste quesito entre os chips das duas empresas caso este coeficiente do modelo seja significativo.
+
+## Significância
+A @tbl-param e @tbl-nparam abaixo mostram os resultados dos testes de hipótese para significância de cada regressor do modelo, para testar os coeficientes da parte linear do modelo foi usado o teste $t$ comparando o coeficiente com o valor 0, para a significância das funções não paramétricas estimadas é usado os precedimentos descritos em @testenparam.
+
+: Testes $t$ para significância dos coeficientes lineares {#tbl-param}
+
+|Coeficiente     |Estimativa|Erro padrão|Estatística $t$|  $p$-valor|
+|:---------------|---------:|----------:|--------------:|----------:|
+|Intercepto Intel|     3,965|     0,0345|          106,0|$< 0,\!001$|
+|Intercepto AMD  |     3,653|     0,0325|          122,1|$< 0,\!001$|
+|Processo        |     0,021|     0,0016|           13,2|$< 0,\!001$|
+
+: Testes para significância dos regressores suavizados {#tbl-nparam}
+
+|Coeficiente|Graus de liberdade efetivo|Estatística $F$|  $p$-valor|
+|:----------|-------------------------:|--------------:|----------:|
+|Cores      |                      7,47|           52,8|$< 0,\!001$|
+|Base Clock |                      3,51|          209,0|$< 0,\!001$|
+|Boost Clock|                      5,18|           13,1|$< 0,\!001$|
+|Cache L3   |                      4,11|           13,2|$< 0,\!001$|
+
+Assim, todos os regressores do modelo são altamente significantes, os graus de liberdade utilizados pela estimativa das suaviações *spline* são relativamente baixos, o suficiente para não ocorrer *overfitting* no modelo como visto nos gráficos da @fig-f.
+
+## Suposições
+Com os resíduos de desvios obtidos do modelo, os resultados de diferentes testes de normalidade e autocorrelação dos mesmos estão dados na @tbl-norm e @tbl-auto respectivamente.
+
+: Testes para normalidade dos resíduos de desvio {#tbl-norm}
+
+|Teste              |Hipótese nula|           Estatística|  $p$-valor|
+|:------------------|:------------|---------------------:|----------:|
+|Anderson-Darling   |Normalidade  |$A = \phantom{0}4,398$|$< 0,\!001$|
+|Lilliefors         |Normalidade  |$D = \phantom{0}0,075$|$< 0,\!001$|
+|Shapiro-Wilk       |Normalidade  |$W =           49,492$|$< 0,\!001$|
+|$\chi^2$ de Pearson|Normalidade  |$P = \phantom{0}0,962$|$< 0,\!001$|
+
+: Testes para autocorrelação dos resíduos de desvio {#tbl-auto}
+
+|Teste          |Hipótese nula     |       Estatística|  $p$-valor|
+|:--------------|:-----------------|-----------------:|----------:|
+|Breusch-Godfrey|sem autocorrelação|$BG =     155,862$|$< 0,\!001$|
+|Durbin-Watson  |sem autocorrelação|$DW = \quad 0,862$|$< 0,\!001$|
+
+Os testes da @tbl-auto rejeitam a hipótese nula indicando que os resíduos do modelo são sim autocorrelacionados, isso é esperado pois os processadores do banco de dados estão ordenados por data de lançamento e através dos anos houve mudança estatísticamente significativa na eficiência energética dos processadores.
+
+O mesmo acontece com a normalidade, todos os testes rejeitam a hipótese de normalidade dos resíduos de desvio, a distribuição verdadeira parece ter uma curtose maior como visto no gráfico de densidade dos resíduos da figura @fig-densidaderesiduo.
 
 ```{r}
-summary(mgcv)
+#| out-width: 100%
+#| fig-height: 3
+#| label: fig-densidaderesiduo
+#| fig-cap: Densidade da distribuição dos resíduos de desvio do modelo.
+r <- residuals(mgcv)
+data |>
+    ggplot(aes(x = r)) +
+    geom_density() +
+    geom_function(fun = \(x) dnorm(x, mean(r), sd(r)), alpha = 0.25) +
+    labs(x = "Resíduos de desvio", y = "Densidade") +
+    theme_kek +
+    theme(
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+    )
 ```
 
+O impacto do não cumprimento destas duas suposições é que a estimativa dos coeficientes lineares não é a mais eficiente e também que os testes de hipóteses pela distribuição $t$ agora requerem um tamanho de amostra suficiente para que os coeficientes tenham distribuição normal pelo teorema central do limite.
+
+
+
+
+
 ```{r}
-mgcv::plot.gam(mgcv, residuals = TRUE, shade = TRUE)
+#| out-width: 100%
+#| fig-height: 3
+#| label: fig-linear
+#| fig-cap: relação entre a eficiência energética verdadeira e prevista pelo modelo.
+data |>
+    ggplot(aes(x = fitted(mgcv), y = tdp)) +
+    geom_point(alpha = 0.5) +
+    geom_abline(alpha = 0.25) +
+    tune::coord_obs_pred() +
+    labs(x = "TDP previsto", y = "TDP verdadeiro") +
+    theme_kek
 ```
+
+
+```{r}
+data |>
+    ggplot(aes(x = fitted(mgcv), y = residuals(mgcv))) +
+    geom_point(alpha = 0.5) +
+    theme_kek
+```
+
+
+\newpage
+
+
 
 ```{r}
 mgcv::gam.check(mgcv)
+plot(1:472, fitted(mgcv))
 ```
