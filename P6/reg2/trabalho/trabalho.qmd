@@ -3,6 +3,7 @@ format: pdf
 documentclass: scrreprt
 lang: pt
 bibliography: includes/bib.bibtex
+csl: includes/ufpe-abnt.csl
 linkcolor: black
 toc: true
 title: |
@@ -47,11 +48,20 @@ data <- openintro::cpu |>
 folds <- vfold_cv(data, v = 10, repeats = 10)
 ```
 
-# Resumo
-texto
-
 # Introdução
-texto
+Desde a década de 60 cientistas e engenheiros que trabalhavam na indústria de chips e circuitos integrados sabiam de uma coisa sobre o futuro [@moore]: o processo de fabricação dos mesmos só tem a melhorar, era observado que o número de componentes por circuito dobrava comparado com o ano anterior, isso ficou conhecido como a Lei de Moore.
+
+Estes componentes se tornavam menores em tamanho físico e utilizavam menos energia. Isso combinado com a tendência de diminuição do custo de fabricação dos circuitos e aumento do rendimento do processo estar aumentando só indicava o crescimento da indústria, até mesmo nessa época já se imaginava conceitos do último século como carros autônomos e celulares.
+
+Esta tendência exponencial durou muitas décadas porém era inevitável sua continuação perpétua, desvios da Lei de Moore foram avistados na década de 2010, em 2022 CEO da NVIDIA Jensen Huang disse que a lei já está morta [-@dead].
+
+Ainda é possível hoje em dia a fabricação de processadores com cada vez mais transistores porém outra tendência vista na última década é o aumento do consumo de energia dos mesmos, em 2012 na segunda geração de processadores Intel Core, o processador mais poderoso lançado foi projetado para emitir 95 Watts de calor, em 2021 na década segunda geração o processador equivalente emite 240W.
+
+O foco na diminuição do consumo de energia nos processadores será essencial para o avanço no poder de processamento das CPUs, computadores de mesa conseguem lidar com algumas centenas de Watts de calor emitido porém essa quantidade é inviável para notebooks e celulares e assim vemos disparidade de performance entre os dispositivos.
+
+Assim este trabalho visa modelar quais características de um processador influenciam em sua eficiência energética e como influenciam, para isso será utilizado modelos de regressão aditivos generalizados, com um conjunto de dados de centenas de processadores lançados entre 2010 a 2020.
+
+As características do modelo proposto serão então apresentadas em tabelas e gráficos como as medidas de acurácia do modelo, influência dos regressores na eficiência energética e teste de hipótese para significância do modelo e suas suposições.
 
 # Metodologia
 
@@ -60,25 +70,25 @@ O conjunto de dados provêm do site de entusiastas de hardware *TechPowerUp* e e
 
 **Empresa:** Responsável pela tecnologia, design e lançamento do produto, são apenas duas empresas que nas últimas décadas competem na venda de processadores para o consumidor comum, Intel e AMD.
 
-**Nome:** Nome do processador, é unico para cada observação do banco e diz a respeito sobre o uso recomendado, a classe de performance e geração do processador.
+**Nome:** Nome do processador, é único para cada observação do banco e diz a respeito sobre o uso recomendado, a classe de performance e geração do processador.
 
 **Codinome:** Nome de uso interno, único para cada geração de processadores de cada empresa.
 
-**Cores**: Núcleos físicos de processamento contídos na CPU.
+**Cores**: Núcleos físicos de processamento contidos na CPU.
 
 **Threads:** Núcleos virtuais de processamento, é comum ser o dobro do número de cores pela técnica de "hyper-threading", aumentando a capacidade de processamento paralelo.
 
-**Base Clock:** Frequência de operação padrão do processador, medida em gigahertz (GHz), todas as instruções do processador seguem esse rítmo para sincronização de operações.
+**Base Clock:** Frequência de operação padrão do processador, medida em gigahertz (GHz), todas as instruções do processador seguem esse ritmo para sincronização de operações.
 
 **Boost Clock:** Frequência de operação máxima do processador, é atingida temporariamente durante operações intensivas, está apenas disponível em alguns processadores que contém essa tecnologia.
 
 **Encaixe:** Tipo de conexão física do processador, indica quais placas-mães são compatíveis com o produto.
 
-**Processo:** Termo de marketing usado para designar a geração da tecnologia de fabricação do chip, é medido em nanometros (nm) porém essa quantidade não possui relação certeira com as dimensões físicas das menores partes do chip.
+**Processo:** Termo de marketing usado para designar a geração da tecnologia de fabricação do chip, é medido em nanômetros (nm) porém essa quantidade não possui relação certeira com as dimensões físicas das menores partes do chip.
 
-**Cache L3:** Tamanho de armazenamento da terceira camada de cache do processador, medido em megabytes (Mb), é usado para acelerar a transferência de dados entre o processador e a memória RAM.
+**Cache L3:** Tamanho de armazenamento da terceira camada de cache do processador, medido em megabytes (MB), é usado para acelerar a transferência de dados entre o processador e a memória RAM.
 
-**TDP:** Do inglês "Thermal Design Power" é a quantidade máxima de energia dissipada pelo processador como calor, medida em Watts (W), é usado como indicação do tipo de sistema de refrigeramento recomendado.
+**TDP:** Do inglês "Thermal Design Power" é a quantidade máxima de energia dissipada pelo processador como calor, medida em Watts (W), é usado como indicação do tipo de sistema de refrigeração recomendado.
 
 **Lançamento:** Data de lançamento do processador.
 
@@ -115,12 +125,12 @@ data |>
 
 Todas as variáveis foram testadas para inclusão no modelo final, exceto o nome, codinome, encaixe e data de lançamento do processados pois além de não exercerem influência direta na eficiência energética do processador, são variáveis nominais que possuem muitos valores únicos, inviabilizando a utilização de métodos como variáveis *dummy* para serem inclusas no modelo de regressão.
 
-Além disso, alguns processadores mais antigos não possuem as tecnologias de Boost Clock e terceira camada de cache, para o uso destes regressores no modelo, foram excluidos do banco de dados os processadores sem estas informações, assim o banco de dados usado para modelagem terá 472 observações.
+Além disso, alguns processadores mais antigos não possuem as tecnologias de *Boost Clock* e terceira camada de cache, para o uso destes regressores no modelo, foram excluídos do banco de dados os processadores sem estas informações, assim o banco de dados usado para modelagem terá 472 observações.
 
 {{< pagebreak >}}
 
 ## Modelo aditivo generalizado
-Quando a variável resposta do modelo de regressão linear não tem distribuição normal, podemos partir para modelos lineares generalizados, que produzem melhores inferencias do que transformações na variável resposta. A eficiência energética dos processadores não possui distribuição normal como pode ser visto no gráfico da @fig-densidadetdp:
+Quando a variável resposta do modelo de regressão linear não tem distribuição normal, podemos partir para modelos lineares generalizados, que produzem melhores inferências do que transformações na variável resposta. A eficiência energética dos processadores não possui distribuição normal como pode ser visto no gráfico da @fig-densidadetdp:
 
 ```{r}
 #| out-width: 100%
@@ -163,7 +173,7 @@ $$\text{EMA} = \dfrac{1}{n} \sum_{i = 1}^n |y_i - \hat y_i|$$
 $$\text{R}^2 = \hat \rho_{y \hat y}^2$$
 :::
 
-As previsões usadas no cálculo das métricas provem da separação do conjunto de dados em uma parte usada para ajuste do modelo e outra para estimação das métricas, utilizando a abordagem de validação cruzada com 10 *folds* e 10 repetições, assim obtemos não só uma estimativa pontual para as métricas como também erro padrão e intervalo de confiânça.
+As previsões usadas no cálculo das métricas provem da separação do conjunto de dados em uma parte usada para ajuste do modelo e outra para estimação das métricas, utilizando a abordagem de validação cruzada com 10 *folds* e 10 repetições, assim obtemos não só uma estimativa pontual para as métricas como também erro padrão e intervalo de confiança.
 
 Também é necessário que o modelo cumpra algumas suposições como a normalidade dos resíduos, <!-- será?? --> ausência de autocorrelação nos resíduos além de que a contribuição de cada regressor seja significante para obtermos um modelo válido. Tudo isso será verificado com testes de hipótese. Os resíduos utilizados para os testes são os resíduos de desvio definidos por
 
@@ -172,13 +182,13 @@ r_{D_i} = \text{sng}(y_i - \hat \mu_i) \sqrt{2}
 \sqrt{y_i (\hat \theta_i^0 - \hat \theta_i) + b(\hat \theta_i) - b(\hat \theta_i^0)}
 $$
 
-Os resultados a seguir foram obtidos no software estatístico e linguagem de programação R [@R] fazendo uso dos pacotes `tidymodels` [@tidymodels] para validação cruzada e estimação das métricas de performance, e `mgcv` [@mgcv] que implementa os modelos aditivos generalizados. O relatório foi feito no sistema de escrita e publicação científica Quarto [@quarto]
+Os resultados abaixo foram obtidos no software estatístico e linguagem de programação R [@R] fazendo uso dos pacotes `tidymodels` [@tidymodels] para validação cruzada e estimação das métricas de performance, e `mgcv` [@mgcv] que implementa os modelos aditivos generalizados. O relatório foi feito no sistema de escrita e publicação científica Quarto [@quarto].
 
 # Resultados
 \vspace{-24pt}
 
 ## Especificação
-Pelo gráfico de densidade da variável resposta na @fig-densidadetdp, vemos que está é uma variável com distribuição positiva e assimétrica, portanto escolhi a distribuição Gama para a parte generalizada do modelo aditivo, e foi usado a função de ligação logarítimica pois apresentou melhores resultados de performance do modelo, assim temos um modelo em que o logarítimo da esperança condicional da eficiência energética é explicada por uma combinação aditiva entre regressores, o intercepto e um erro com distribuição normal.
+Pelo gráfico de densidade da variável resposta na @fig-densidadetdp, vemos que está é uma variável com distribuição positiva e assimétrica, portanto escolhi a distribuição Gama para a parte generalizada do modelo aditivo, e foi usado a função de ligação logarítmica pois apresentou melhores resultados de performance do modelo, assim temos um modelo em que o logaritmo da esperança condicional da eficiência energética é explicada por uma combinação aditiva entre regressores, o intercepto e um erro com distribuição normal.
 
 $$
 \log \mu = \beta_0 + f_1(x_1) + f_2(x_2) + \cdots + \varepsilon
@@ -213,7 +223,7 @@ fit <- workflow |>
 \vspace{-12pt}
 
 ## Performance
-Fazendo o ajuste do modelo com a validação cruzada, temos as estimativas pontuais, os erros padrões das estimatívas e intervalos de confiança para as medidas de desempenho do modelo aditivo generalizado dadas na @tbl-metricas.
+Fazendo o ajuste do modelo com a validação cruzada, temos as estimativas pontuais, os erros padrões das estimativas e intervalos de confiança para as medidas de desempenho do modelo aditivo generalizado dadas na @tbl-metricas.
 
 ```{r}
 #| label: tbl-metricas
@@ -238,9 +248,9 @@ fit |>
     add_header_above(c(" " = 3, "Intervalo de Confiança" = 2))
 ```
 
-Assim vemos que o modelo utilizado se adequa bem ao modelar a eficiência energética dos processadores pois o erro médio absoluto estimado de 12,6 é pequeno comparado com a escala de consumo de energia dos processadores, além do coeficiente de determinação R$^2$ ser bastante alto, acima de 90%.
+Assim vemos que o modelo utilizado se adéqua bem ao modelar a eficiência energética dos processadores pois o erro médio absoluto estimado de 12,6 é pequeno comparado com a escala de consumo de energia dos processadores, além do coeficiente de determinação R$^2$ ser bastante alto, acima de 90%.
 
-Vemos também pelo gráfico de densidade das medidas na @fig-densidademetricas que não há grandes outliers na estimativa das métricas, isso indíca que o modelo é capaz de fazer previsões boas para diferentes tipos processadores e também que não ocorre *overfitting* para certos tipos.
+Vemos também pelo gráfico de densidade das medidas na @fig-densidademetricas que não há grandes outliers na estimativa das métricas, isso indica que o modelo é capaz de fazer previsões boas para diferentes tipos de processadores e também que não ocorre *overfitting* para certos tipos.
 
 ```{r}
 #| out-width: 100%
@@ -284,7 +294,7 @@ $$
     \hat f_2(\text{base clock}) +
     \hat f_3(\text{boost clock}) +
     \hat f_4(\text{cache L3}) \\
-    \log \mu_\text{AMD} &= 3,\!653 + 0,\!021 \text{processo} +
+    \log \hat \mu_\text{AMD} &= 3,\!653 + 0,\!021 \text{processo} +
     \hat f_1(\text{cores}) +
     \hat f_2(\text{base clock}) +
     \hat f_3(\text{boost clock}) +
@@ -334,7 +344,7 @@ mgcv::plot.gam(
 \elandscape
 
 ## Interpretação
-Pelo mesmo gŕafico da @fig-f é possível interpretar a contribuição de cada regressor pois representa o efeito parcial da variável na eficiência energética do processador, ou seja, o efeito quando é fixado o valor dos outros regressores.
+Pelo mesmo gráfico da @fig-f é possível interpretar a contribuição de cada regressor pois representa o efeito parcial da variável na eficiência energética do processador, ou seja, o efeito quando é fixado o valor dos outros regressores.
 
 * Na @fig-f-1 vemos que quanto mais núcleos físicos de processamento o CPU tem, maior é a demanda energética do processador, porém a relação não é linear e se estabiliza para processadores com grande quantidade de núcleos.
 
@@ -346,10 +356,15 @@ Pelo mesmo gŕafico da @fig-f é possível interpretar a contribuição de cada 
 
 O coeficiente para o regressor *processo* foi de 0,021, isso indica que os chips mais novos fabricados em processos menores em tamanho exibem menor consumo máximo de energia, porém esse efeito não é muito grande.
 
-Adicionalmente, o intercepto de 3,965 pra processadores Intel e 3,653 para a marca AMD mostra que há diferença neste quesito entre os chips das duas empresas caso este coeficiente do modelo seja significativo.
+Adicionalmente, o intercepto de 3,965 pra processadores Intel e 3,653 para a marca AMD significa que, pela transformação inversa da função de ligação, os processadores Intel emitem cerca de 37% mais energia na forma de calor comparados com a marca AMD segundo o modelo.
 
 ## Significância
 A @tbl-param e @tbl-nparam abaixo mostram os resultados dos testes de hipótese para significância de cada regressor do modelo, para testar os coeficientes da parte linear do modelo foi usado o teste $t$ comparando o coeficiente com o valor 0, para a significância das funções não paramétricas estimadas é usado os precedimentos descritos em @testenparam.
+
+```{r}
+#| output: false
+summary(mgcv)
+```
 
 : Testes $t$ para significância dos coeficientes lineares {#tbl-param}
 
@@ -368,10 +383,22 @@ A @tbl-param e @tbl-nparam abaixo mostram os resultados dos testes de hipótese 
 |Boost Clock|                      5,18|           13,1|$< 0,\!001$|
 |Cache L3   |                      4,11|           13,2|$< 0,\!001$|
 
-Assim, todos os regressores do modelo são altamente significantes, os graus de liberdade utilizados pela estimativa das suaviações *spline* são relativamente baixos, o suficiente para não ocorrer *overfitting* no modelo como visto nos gráficos da @fig-f.
+Assim, todos os regressores do modelo são altamente significantes, os graus de liberdade utilizados pela estimativa das suavizações *spline* são relativamente baixos, o suficiente para não ocorrer *overfitting* no modelo como visto nos gráficos da @fig-f.
 
 ## Suposições
 Com os resíduos de desvios obtidos do modelo, os resultados de diferentes testes de normalidade e autocorrelação dos mesmos estão dados na @tbl-norm e @tbl-auto respectivamente.
+
+```{r}
+#| output: false
+r <- residuals(mgcv)
+nortest::ad.test(r)
+nortest::lillie.test(r)
+shapiro.test(r)
+nortest::pearson.test(r)
+
+lmtest::bgtest(mgcv)
+lmtest::dwtest(mgcv)
+```
 
 : Testes para normalidade dos resíduos de desvio {#tbl-norm}
 
@@ -389,7 +416,7 @@ Com os resíduos de desvios obtidos do modelo, os resultados de diferentes teste
 |Breusch-Godfrey|sem autocorrelação|$BG =     155,862$|$< 0,\!001$|
 |Durbin-Watson  |sem autocorrelação|$DW = \quad 0,862$|$< 0,\!001$|
 
-Os testes da @tbl-auto rejeitam a hipótese nula indicando que os resíduos do modelo são sim autocorrelacionados, isso é esperado pois os processadores do banco de dados estão ordenados por data de lançamento e através dos anos houve mudança estatísticamente significativa na eficiência energética dos processadores.
+Os testes da @tbl-auto rejeitam a hipótese nula indicando que os resíduos do modelo são sim autocorrelacionados, isso é esperado pois os processadores do banco de dados estão ordenados por data de lançamento e através dos anos houve mudança estatisticamente significativa na eficiência energética dos processadores.
 
 O mesmo acontece com a normalidade, todos os testes rejeitam a hipótese de normalidade dos resíduos de desvio, a distribuição verdadeira parece ter uma curtose maior como visto no gráfico de densidade dos resíduos da figura @fig-densidaderesiduo.
 
@@ -398,7 +425,6 @@ O mesmo acontece com a normalidade, todos os testes rejeitam a hipótese de norm
 #| fig-height: 3
 #| label: fig-densidaderesiduo
 #| fig-cap: Densidade da distribuição dos resíduos de desvio do modelo.
-r <- residuals(mgcv)
 data |>
     ggplot(aes(x = r)) +
     geom_density() +
@@ -413,38 +439,66 @@ data |>
 
 O impacto do não cumprimento destas duas suposições é que a estimativa dos coeficientes lineares não é a mais eficiente e também que os testes de hipóteses pela distribuição $t$ agora requerem um tamanho de amostra suficiente para que os coeficientes tenham distribuição normal pelo teorema central do limite.
 
+## Diagnóstico
+Para verificar se a escolha da distribuição utilizada no modelo foi correta, olhamos para o gráfico de resíduos versus valores estimados $\hat \mu_i$ ou versus a componente sistemática do modelo $g(\hat \mu_i) = \log \hat \mu_i$, esperamos que os resíduos não sejam influenciados pelos valores estimados nem em média ou variância para um modelo com distribuição adequada.
 
-
-
+Já para validação da função de ligação é possível ver para o $\text{R}^2$ do modelo ou pelo gráfico de valores estimados $\hat \mu_i$ versus valores observados $y_i$, um modelo com função de ligação adequada apresenta $R^2$ significante e uma disposição de pontos no gráfico próximas da reta $y = x$.
 
 ```{r}
+#| layout-ncol: 2
 #| out-width: 100%
-#| fig-height: 3
-#| label: fig-linear
-#| fig-cap: relação entre a eficiência energética verdadeira e prevista pelo modelo.
+#| fig-height: 4.5
+#| label: fig-diag
+#| fig-cap: Gráficos de diagnóstico de especificação do modelo.
+#| fig-subcap:
+#|   - Relação entre os resíduos e a componente sistemática.
+#|   - Relação entre os valores estimados e observados.
+data |>
+    ggplot(aes(x = log(fitted(mgcv)), y = residuals(mgcv))) +
+    geom_point(alpha = 0.5) +
+    labs(x = "log(TDP estimado)", y = "Resíduos de desvio") +
+    theme_kek
+
 data |>
     ggplot(aes(x = fitted(mgcv), y = tdp)) +
     geom_point(alpha = 0.5) +
     geom_abline(alpha = 0.25) +
     tune::coord_obs_pred() +
-    labs(x = "TDP previsto", y = "TDP verdadeiro") +
+    labs(x = "TDP estimado", y = "TDP verdadeiro") +
     theme_kek
 ```
 
+É difícil notar alguma relação entre as medidas na @fig-diag-1, as extremidades laterais da componente sistemática aparentam ter menor variância nos resíduos de desvio porém isso pode ser devido a menor quantidade de observações nestas extremidades.
+
+O coeficiente de determinação $\text{R}^2$ do modelo é bastante alto como visto na @tbl-metricas e pelo gráfico da @fig-diag-2 temos uma relação linear entre a eficiência energética verdadeira e a estimada pelo modelo. Assim a escolha da distribuição Gama e função de ligação logarítmica é adequada.
+
+# Conclusão
+Com essas informações, vimos que a especificação do modelo é adequada em relação ao modelo aditivo pois os regressores contribuem não linearmente na eficiência energética e em relação a escolha da distribuição, função de ligação e seleção de variáveis do modelo visto que os resíduos estão bem distribuídos para diferentes tipos de processadores e todas os regressores do modelo são altamente significativos.
+
+O modelo também apresenta boas medidas de acurácia, com erro médio absoluto estimado de 12,6 comparado com a média de 100W no TDP dos processadores e também correlação acima de 90% entre os valores verdadeiros e estimados pelo modelo.
+
+Infelizmente o modelo não cumpre as suposições de normalidade e falta de autocorrelação dos resíduos de desvio e com isso as estimativas dos coeficientes não são as mais eficientes.
+
+Pelos gráficos da @fig-f onde vemos a contribuição de cada regressor no consumo de energia nos leva a pensar quais as características que lavariam a um processador de alta eficiência energética, uma possível abordagem seria um processador fabricado em um processo moderno, com baixa frequência base porém alta frequência *boost*, usando o modelo para prever a eficiência energética de um processador com as seguintes características:
+
+* Empresa: AMD,
+* Processo: 3nm
+* *Cores*: 6
+* *Base Clock*: 2GHz
+* *Boost Clock*: 5GHz
+* *Cache L3*: 32MB
 
 ```{r}
-data |>
-    ggplot(aes(x = fitted(mgcv), y = residuals(mgcv))) +
-    geom_point(alpha = 0.5) +
-    theme_kek
+#| output: false
+predict(mgcv, newdata = data.frame(
+    company = "AMD", process = 3,
+    cores = 6, l3_cache = 32,
+    base_clock = 2, boost_clock = 5
+)) |> exp()
 ```
 
+É estimado pelo modelo que este processador atinga um TDP de apenas 24W, bastante abaixo da média porém mantendo uma performance muito boa para uso geral do processador, principalmente em notebooks onde um baixo consumo de energia é mais importante.
 
-\newpage
-
-
-
-```{r}
-mgcv::gam.check(mgcv)
-plot(1:472, fitted(mgcv))
-```
+# Referências
+::: {#refs}
+:::
