@@ -354,9 +354,19 @@ Pelo mesmo gráfico da @fig-f é possível interpretar a contribuição de cada 
 
 * Na @fig-f-4 a relação também é não linear, para valores baixos da capacidade do cache L3, a relação entre a capacidade e a demanda energética é crescente, porém processadores com capacidade muito alta (maior que 64MB) não observam esse aumento no consumo de energia.
 
-O coeficiente para o regressor *processo* foi de 0,021, isso indica que os chips mais novos fabricados em processos menores em tamanho exibem menor consumo máximo de energia, porém esse efeito não é muito grande.
+```{r}
+#| output: false
+exp(0.021 * (32 - 7))
+```
 
-Adicionalmente, o intercepto de 3,965 pra processadores Intel e 3,653 para a marca AMD significa que, pela transformação inversa da função de ligação, os processadores Intel emitem cerca de 37% mais energia na forma de calor comparados com a marca AMD segundo o modelo.
+O coeficiente para o regressor *processo* foi de 0,021, isso indica que os chips mais novos fabricados em processos menores em tamanho exibem menor consumo máximo de energia, este coeficiente nos diz que em média um processador fabricado no processo de 32nm consome 70% mais energia do que outro de processo 7nm.
+
+```{r}
+#| output: false
+exp(3.965 - 3.653)
+```
+
+Adicionalmente, o intercepto de 3,965 pra processadores Intel e 3,653 para a marca AMD significa que, pela transformação inversa da função de ligação, os processadores Intel emitem cerca de 36% mais energia na forma de calor comparados com a marca AMD segundo o modelo.
 
 ## Significância
 A @tbl-param e @tbl-nparam abaixo mostram os resultados dos testes de hipótese para significância de cada regressor do modelo, para testar os coeficientes da parte linear do modelo foi usado o teste $t$ comparando o coeficiente com o valor 0, para a significância das funções não paramétricas estimadas é usado os precedimentos descritos em @testenparam.
