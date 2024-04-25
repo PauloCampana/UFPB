@@ -11,14 +11,13 @@ date-format: long
 highlight-style: github
 logo: includes/logo.png
 echo: true
-# embed-resources: true
-# self-contained-math: true
-# self-contained: true
-cache: true
+embed-resources: true
+self-contained-math: true
+self-contained: true
 ---
 
 ## Fonte
-Esta série temporal sobre o clima na cidade de Chicago está disponível no site da prefeitura^[<https://data.cityofchicago.org/Parks-Recreation/Beach-Weather-Stations-Automated-Sensors/k7hf-8y75/about_data>]. São dados de uma estação climática no litoral do lago Michigan que coletam a cada hora do dia valores como temperatura do ar, humidade, pressão atmosférica, incidência solar, intensidade de chuva, velocidade e direção do vento.
+Esta série temporal sobre o clima na cidade de Chicago está disponível no site da prefeitura^[<https://data.cityofchicago.org/Parks-Recreation/Beach-Weather-Stations-Automated-Sensors/k7hf-8y75/about_data>]. São dados de uma estação climática no litoral do lago Michigan que coletam a cada hora do dia valores como temperatura do ar, umidade, pressão atmosférica, incidência solar, intensidade de chuva, velocidade e direção do vento.
 
 ```{r}
 library(tidyverse)
@@ -101,7 +100,7 @@ data |>
 A temperatura aumenta de dia e diminui durante a noite, ao decorrer do mês o inverno se aproxima e a temperatura média cai.
 
 ## Decomposição clássica
-Usei a decomposição clássica aditiva da série pois a multiplicativa apresenta resíduos desproponcionalmente maiores no final do mês, por esse gráfico vemos melhor a tendência e sazonalidade da série.
+Usei a decomposição clássica aditiva da série pois a multiplicativa apresenta resíduos desproporcionalmente maiores no final do mês, por esse gráfico vemos melhor a tendência e sazonalidade da série.
 
 ```{r}
 #| output-location: slide
@@ -176,7 +175,7 @@ Além de que agora todos os coeficientes são significantes e temos uma menor qu
 |SMA1       |    -0.930|      0.041|  < 0.001|
 
 ## Modelo SARIMAX
-Como temos informações de outras medidas, é possivel a especificação de um modelo SARIMAX, testando diferentes variáveis disponíveis, a humidade do ar é a que mais ajuda na previsão da temperatura.
+Como temos informações de outras medidas, é possível a especificação de um modelo SARIMAX, testando diferentes variáveis disponíveis, a umidade do ar é a que mais ajuda na previsão da temperatura.
 
 ```{r}
 #| collapse: true
@@ -188,7 +187,7 @@ sarimax
 ```
 
 ## Modelo SARIMAX
-Este modelo apresenta critérios de seleção ainda melhores, variância mais baixa e coeficientes significativos, porém agora é necessário a informação sobre a humidade do ar para serem feitas previsões.
+Este modelo apresenta critérios de seleção ainda melhores, variância mais baixa e coeficientes significativos, porém agora é necessário a informação sobre a umidade do ar para serem feitas previsões.
 
 |Coeficiente|Estimativa|Erro padrão|$p$-valor|
 |:----------|---------:|----------:|--------:|
@@ -196,17 +195,17 @@ Este modelo apresenta critérios de seleção ainda melhores, variância mais ba
 |AR2        |     0.207|      0.036|  < 0.001|
 |SAR1       |     0.996|      0.013|  < 0.001|
 |SMA1       |    -0.965|      0.054|  < 0.001|
-|Humidade   |    -0.100|      0.004|  < 0.001|
+|Umidade    |    -0.100|      0.004|  < 0.001|
 
 ## Suposições dos modelos SARIMA e SARIMAX
 Temos que conferir as suposições de independência dos resíduos do modelo, isso é feito com os testes de Box-Pierce e Box-Ljung.
 
 |Modelo |Teste     |Hipótese nula|$p$-valor|
 |:------|:---------|:------------|--------:|
-|SARIMA |Box-Pierce|idependência |    0.996|
-|SARIMA |Box-Ljung |idependência |    0.996|
-|SARIMAX|Box-Pierce|idependência |    0.592|
-|SARIMAX|Box-Ljung |idependência |    0.591|
+|SARIMA |Box-Pierce|independência|    0.996|
+|SARIMA |Box-Ljung |independência|    0.996|
+|SARIMAX|Box-Pierce|independência|    0.592|
+|SARIMAX|Box-Ljung |independência|    0.591|
 
 Nenhum teste rejeita a independência dos resíduos de ambos os modelos.
 
@@ -266,7 +265,7 @@ $$
 $$
 
 ## Previsão com modelos SARIMA e SARIMAX
-É preciso passar a informação da humidade do ar das horas a serem previstas para o modelo SARIMAX.
+É preciso passar a informação da umidade do ar das horas a serem previstas para o modelo SARIMAX.
 
 ```{r}
 pred_sarima <- lapply(
@@ -332,7 +331,7 @@ pred_sma <- lapply(
 ```
 
 ## Comparação por RMSE {.smaller}
-Pela raiz do erro quadrático médio, temos que a curto prazo, o método Naïve obtem a melhor previsão, para médio prazo são os modelos SARIMA, Holt-Winters e ETS enquanto que para longo prazo o modelo SARIMAX foi disparadamente melhor.
+Pela raiz do erro quadrático médio, temos que a curto prazo, o método Naïve obtêm a melhor previsão, para médio prazo são os modelos SARIMA, Holt-Winters e ETS enquanto que para longo prazo o modelo SARIMAX foi disparadamente melhor.
 
 ```{r}
 #| include: false
@@ -393,7 +392,7 @@ data.frame(
 |Naïve        |   0.667|   2.115|    1.864|    6.791|
 
 ## Conclusão
-No geral, o modelo SARIMAX é tem maior poder de predição que os outros modelos, porém sua limitação é de precisar do valor da humidade do ar na hora da predição.
+No geral, o modelo SARIMAX é tem maior poder de predição que os outros modelos, porém sua limitação é de precisar do valor da umidade do ar na hora da predição.
 
 ```{r}
 #| echo: false
