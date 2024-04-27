@@ -4,6 +4,7 @@ documentclass: scrreprt
 lang: pt
 bibliography: includes/bib.bibtex
 csl: includes/ufpe-abnt.csl
+urlcolor: black
 linkcolor: black
 toc: true
 title: |
@@ -15,6 +16,7 @@ subtitle: Universidade Federal da Paraíba - CCEN
 author: Paulo Ricardo Seganfredo Campana
 date: 2024-04-29
 date-format: long
+highlight-style: github
 monofont: "Ubuntu Mono"
 monofontoptions: Scale = 1
 fig-cap-location: top
@@ -45,6 +47,7 @@ data <- openintro::cpu |>
     as_tibble() |>
     drop_na(l3_cache, boost_clock) |>
     arrange(released)
+
 folds <- vfold_cv(data, v = 10, repeats = 10)
 ```
 
@@ -182,7 +185,7 @@ r_{D_i} = \text{sng}(y_i - \hat \mu_i) \sqrt{2}
 \sqrt{y_i (\hat \theta_i^0 - \hat \theta_i) + b(\hat \theta_i) - b(\hat \theta_i^0)}
 $$
 
-Os resultados abaixo foram obtidos no software estatístico e linguagem de programação R [@R] fazendo uso dos pacotes `tidymodels` [@tidymodels] para validação cruzada e estimação das métricas de performance, e `mgcv` [@mgcv] que implementa os modelos aditivos generalizados. O relatório foi feito no sistema de escrita e publicação científica Quarto [@quarto].
+Os resultados abaixo foram obtidos no software estatístico e linguagem de programação R [@R] e estão disponívels no apêndice deste documento, utilizando os pacotes `tidymodels` [@tidymodels] para validação cruzada e estimação das métricas de performance, e `mgcv` [@mgcv] que implementa os modelos aditivos generalizados. O relatório foi feito no sistema de escrita e publicação científica Quarto [@quarto].
 
 # Resultados
 \vspace{-24pt}
@@ -508,6 +511,83 @@ predict(mgcv, newdata = data.frame(
 ```
 
 É estimado pelo modelo que este processador atinga um TDP de apenas 24W, bastante abaixo da média porém mantendo uma performance muito boa para uso geral do processador, principalmente em notebooks onde um baixo consumo de energia é mais importante.
+
+# Apêndice {.appendix}
+
+```{r}
+#| eval: false
+#| echo: true
+library(tidyverse)
+library(tidymodels)
+library(kableExtra)
+
+options(digits = 3)
+set.seed(0)
+
+theme_kek <- theme_bw() +
+    theme(text = element_text(family = "Times"))
+
+data <- openintro::cpu |>
+    as_tibble() |>
+    drop_na(l3_cache, boost_clock) |>
+    arrange(released)
+
+folds <- vfold_cv(data, v = 10, repeats = 10)
+
+model <- gen_additive_mod() |>
+    set_engine("mgcv", family = Gamma(link = "log")) |>
+    set_mode("regression")
+
+recipe <- recipe(tdp ~ ., data)
+
+workflow <- workflow() |>
+    add_model(
+        model,
+        formula = tdp ~ company + process - 1 +
+        s(cores) + s(base_clock) + s(boost_clock) + s(l3_cache)
+    ) |>
+    add_recipe(recipe)
+
+fit <- workflow |>
+    fit_resamples(
+        folds,
+        metrics = metric_set(rmse, mae, rsq)
+    )
+
+collect_metrics(fit)
+
+mgcv <- workflow |>
+    fit(data) |>
+    extract_fit_engine()
+
+mgcv::plot.gam(
+    mgcv,
+    residuals = TRUE, shade = TRUE, rug = FALSE
+)
+
+# diferença multiplicativa entre processo 32nm e 7nm
+exp(0.021 * (32 - 7))
+# diferença multiplicativa entre processadores intel e amd
+exp(3.965 - 3.653)
+
+summary(mgcv)
+r <- residuals(mgcv)
+
+nortest::ad.test(r)
+nortest::lillie.test(r)
+shapiro.test(r)
+nortest::pearson.test(r)
+
+lmtest::bgtest(mgcv)
+lmtest::dwtest(mgcv)
+
+# tdp do processador sugerido
+predict(mgcv, newdata = data.frame(
+    company = "AMD", process = 3,
+    cores = 6, l3_cache = 32,
+    base_clock = 2, boost_clock = 5
+)) |> exp()
+```
 
 # Referências
 ::: {#refs}
