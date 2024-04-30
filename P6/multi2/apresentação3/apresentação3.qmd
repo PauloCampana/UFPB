@@ -1,0 +1,333 @@
+---
+format:
+    revealjs:
+        theme: moon
+lang: pt
+title: Análise de correlação canônica e Análise de descriminante
+subtitle: Análise Multivariada II
+author: Paulo Ricardo Seganfredo Campana
+date: today
+date-format: long
+callout-icon: false
+highlight-style: github
+monofontoptions: Scale = 1
+logo: includes/logo.png
+echo: true
+self-contained-math: true
+self-contained: true
+embed-resources: true
+# cache: true
+---
+
+## Resumo dos dados
+Os dados são sobre o consumo de energia elétrica, gás natural e emissões de gases do efeito estufa em prédios e construções grandes na cidade de Chicago.
+
+Temos dois principais tipos de variáveis neste banco:
+
+* Variáveis de medida bruta (consumo de energia elétrica, gás natural, emissão de gases).
+* Variáveis normalizadas pela área da construção (consumo por metro quadrado, emissões por metro quadrado).
+
+## Resumo dos dados
+São 8937 observações cada uma correspondente a uma construção com informações de 12 variáveis entre elas 9 numéricas contínuas e serão divididas em duas matrizes de dados para análise de correlação canônica.
+
+```{r}
+#| warning: false
+library(tidyverse)
+
+data <- read_csv("energy.csv")
+
+X <- data |>
+    select(area, ghg_total, electricity, natural_gas) |>
+    mutate(across(everything(), scale)) |>
+    as.matrix()
+
+Y <- data |>
+    select(ghg_intensity, eui_site, eui_source, eui_site_wn, eui_source_wn) |>
+    mutate(across(everything(), scale)) |>
+    as.matrix()
+```
+
+```{r}
+#| echo: false
+options(digits = 3)
+set.seed(0)
+
+theme_moon <- theme(
+    plot.background = element_rect("#002b36"),
+    panel.background = element_blank(),
+    panel.grid = element_line("#93a1a120"),
+    panel.grid.minor = element_blank(),
+    axis.ticks = element_line("#93a1a120"),
+    strip.background = element_rect("#104b56"),
+    text = element_text(colour = "#93a1a1"),
+    axis.text = element_text(colour = "#93a1a1"),
+    strip.text = element_text(colour = "#93a1a1"),
+    legend.background = element_blank(),
+    legend.key = element_blank(),
+)
+```
+
+## Correlação
+Vemos pela matriz de correlação a seguir que existe dois grupos distintos de variáveis com alta correlação dentro dos grupos e baixa correlação entre os grupos: as variáveis de medida bruta e aquelas normalizadas pela área.
+
+```{r}
+#| output: false
+data |>
+    relocate(ghg_intensity, .before = eui_site) |>
+    select(-property_type, -stars, -score) |>
+    cor() |>
+    corrplot::corrplot(
+        method = "ellipse",
+        col = viridis::cividis(200),
+        tl.col = "#93a1a1",
+        tl.pos = "l",
+        cl.ratio = 0.25,
+    )
+```
+
+## Correlação
+![](includes/corrplot.png){fig-align=center}
+
+## Análise de correlação canônica
+Com esses 2 grupos de variáveis, fica claro como definir uma análise de correlação canônica, o objetivo é criar para cada grupo uma ou duas novas variáveis como combinação linear das originais de modo que expliquem a maior parte da variação total dos grupos.
+
+```{r}
+#| output: false
+cca <- yacca::cca(X, Y)
+summary(cca)
+```
+
+Assim temos as novas variáveis $U_1, \cdots, U_4$ e $V_1, \cdots, V_4$, que tentam representar as variáveis da matriz $X$ e $Y$ de forma que cada par $U_k$ e $V_k$ tenha variância 1, correlação máxima e não correlacionadas com o par anterior.
+
+## Correlação entre os Pares
+As correlações entre os pares de variáveis canônicas não foram tão grandes pois como vimos não há grande correlação entre os dois grupos de variáveis.
+
+A correlação ao quadrado pode ser interpretada como a fração da variância entre os grupos proporcionada por cada par canônico.
+
+: Correlação entre os pares de variáveis canônicas
+
+|Pares                   |VC$_1$|VC$_2$|VC$_3$|VC$_4$|
+|:-----------------------|-----:|-----:|-----:|-----:|
+|$\text{Cor}(U_k, V_k)$  | 0.597| 0.531| 0.204| 0.077|
+|$\text{Cor}(U_k, V_k)^2$| 0.357| 0.282| 0.042| 0.006|
+
+## Teste de Bartlett
+Este teste tem a hipótese nula de que a matriz de covariância cruzada entre os dois grupos é 0, caso isso aconteça, não faz muito sentido o uso da análise de correlação canônica.
+
+: Teste Chi-quadrado de Bartlett
+
+|Pares |Correlação$^2$|Estatística| gl|$p$-valor|
+|:-----|-------------:|----------:|--:|--------:|
+|VC$_1$|         0.357|       7325| 20|$< 0.001$|
+|VC$_2$|         0.282|       3387| 12|$< 0.001$|
+|VC$_3$|         0.042|        433|  6|$< 0.001$|
+|VC$_4$|         0.006|       52.6|  2|$< 0.001$|
+
+## Coeficientes das variáveis canônicas {.smaller}
+: Coeficientes lineares para $U$
+
+|Variável    | U$_1$| U$_2$| U$_3$| U$_4$|
+|:-----------|-----:|-----:|-----:|-----:|
+|Área        | 0.222|-1.601|-0.175|-1.179|
+|Emissões    | 3.526|-2.181| 5.332|-0.871|
+|Eletricidade|-4.076| 3.276|-3.952| 1.098|
+|Gás natural | 0.114| 1.230|-1.494| 0.007|
+
+: Coeficientes lineares para $V$
+
+|Variável       |  V$_1$|  V$_2$|  V$_3$|  V$_4$|
+|--------------:|------:|------:|------:|------:|
+|Emissões/$m^2$ |  2.066| -0.586|  8.950|  1.065|
+|Total$_1$/$m^2$| -6.965| -2.167| -8.917|-39.497|
+|Total$_2$/$m^2$|  9.202|  7.429|  3.318| 33.648|
+|Total$_3$/$m^2$|  9.181|  2.478|  8.663| 39.092|
+|Total$_4$/$m^2$|-13.298| -6.128|-11.867|-34.043|
+
+## Das variáveis canônicas e originais
+: Correlação ao quadrado entre $X$ e $U$
+
+|Variável    |U$_1$|U$_2$|U$_3$|U$_4$| |Soma|
+|:-----------|----:|----:|----:|----:|-|---:|
+|Área        |0.057|0.003|0.001|0.940| |   1|
+|Emissões    |0.034|0.241|0.149|0.576| |   1|
+|Eletricidade|0.164|0.197|0.109|0.530| |   1|
+|Gás natural |0.196|0.328|0.028|0.448| |   1|
+|            |     |     |     |     | |    |
+|Média       |0.113|0.192|0.072|0.623| |   1|
+
+## Das variáveis canônicas e originais
+: Correlação ao quadrado entre $Y$ e $V$
+
+|Variável       |V$_1$|V$_2$|V$_3$|V$_4$| | Soma|
+|--------------:|----:|----:|----:|----:|-|----:|
+|Emissões/$m^2$ |0.012|0.941|0.030|0.001| |0.984|
+|Total$_1$/$m^2$|0.103|0.868|0.002|0.000| |0.973|
+|Total$_2$/$m^2$|0.015|0.967|0.004|0.001| |0.987|
+|Total$_3$/$m^2$|0.109|0.848|0.003|0.003| |0.963|
+|Total$_4$/$m^2$|0.013|0.959|0.003|0.004| |0.979|
+|               |     |     |     |     | |     |
+|Média          |0.005|0.917|0.009|0.002| |0.977|
+
+## Das variáveis canônicas entre os grupos
+: Fração de variância cruzada total explicada pelas variáveis canônicas
+
+|            |VC$_1$|VC$_2$|VC$_3$|VC$_4$| | Soma|
+|:----------:|-----:|-----:|-----:|-----:|-|----:|
+|$X$ dado $Y$| 0.040| 0.054| 0.003| 0.003| |0.101|
+|$Y$ dado $X$| 0.018| 0.258| 0.001| 0.000| |0.276|
+
+## Gráficos
+Estes trazem as mesmas informações vistas nas tabelas anteriores: as correlações e correlações ao quadrado entre os pares canônicos, entre os grupos de variáveis e entre as variáveis e os pares.
+
+```{r}
+#| output-location: slide
+#| out-width: 100%
+#| fig-height: 8
+par(
+    bg = "#002b36", fg = "#93a1a1",
+    col = "#93a1a1", col.axis = "#93a1a1",
+    col.main = "#93a1a1", col.lab = "#93a1a1",
+    pch = 19
+)
+yacca::plot.cca(cca)
+```
+
+## Análise de correlação canônica
+Em suma, não há muita correlação entre os dois grupos de variáveis assim a correlação entre os pares canônicos rapidamente decaem.
+
+Os pares podem ser calculados como combinação linear das variáveis originais utilizando os coeficientes dados na tabela.
+
+A maior parte da variância de cada grupo é explicado por uma variável canônica: $U_4$ e $V_2$ para $X$ e $Y$ respectivamente.
+
+## Análise de discriminante
+Utilizando a mesma estrutura dos dados da apresentação anterior, focando em 3 tipos de propriedade: hoteis, escolas e supermercados sendo eles 274, 1483, 168 observações respectivamente totalizando 1925.
+
+* 🟨 Amarelo: hoteis
+* 🟩 Verde: escolas
+* 🟥 Vermelho: supermercados
+
+```{r}
+data <- read_csv("energy.csv") |>
+    relocate(ghg_intensity, .before = eui_site) |>
+    filter(property_type %in% c(
+        "Hotel", "K-12 School", "Supermarket/Grocery Store"
+    )) |>
+    mutate(property_type = factor(property_type,
+        labels = c("Hotel", "Escola", "Supermercado"),
+    ))
+```
+
+## Caso linear
+Esta análise busca estabelecer por regras simples, maneiras de diferenciar observações em grupos, desta vez trabalhando na forma de modelo estatístico e utilizando a informação real dos grupos.
+
+As regras de decisão para este caso serão feitas através de desigualdades lineares entre duas variáveis.
+
+```{r}
+library(MASS)
+set.seed(0)
+
+idx <- sample(nrow(data), 500)
+train <- data[-idx, ]
+test <- data[idx, ]
+
+lda <- lda(property_type ~ . - stars - score, train)
+```
+
+## Acurácia {.smaller}
+Vemos que os supermercados ficaram bem classificados pois eles tem maior consumo de energia por metro quadrado, as escolas também foram classificadas na grande maioria corretamente porém foi difícil distiguir os hoteis, sendo metade deles mal classificados.
+
+Por outro lado, as medidas de acurácia da classificação foram boas.
+
+```{r}
+#| output: false
+predict <- predict(lda, test)$class
+cm <- caret::confusionMatrix(test$property_type, predict)
+cm$table
+cm$byClass[,1:2]
+```
+
+|Classe      |Hotel|Escola|Supermercado|Sensitividade|Especificidade|
+|:-----------|----:|-----:|-----------:|------------:|-------------:|
+|Hotel       |   34|    38|           1|        0.756|         0.914|
+|Escola      |    7|   382|           0|        0.910|         0.912|
+|Supermercado|    4|     0|          34|        0.971|         0.991|
+
+## Acurácia
+
+```{r}
+#| echo: false
+#| fig-align: center
+#| fig-width: 8
+#| fig-height: 6
+ggord::ggord(
+    lda, train$property_type,
+    cols = c("#ffcc32", "#7cb342", "#f44336"),
+    hull = TRUE, ellipse = FALSE, alpha_el = 0.25,
+    arrow = NULL, txt = NULL,
+    size = 1.5,
+    xlims = c(-5.5, 15.5), ylims = c(-5.5, 15.5),
+    coord_fix = FALSE
+) + scale_shape_manual(values = c(24, 21, 22)) +
+    theme_moon
+```
+
+## Partição dos grupos
+O conjunto de variáveis que obteve melhor partição foram as relacionadas a emissões de gases do efeito estufa e consumo total de energia normalizado, assim podemos ver as retas que partem o espaço destas variáveis em 3 classes e onde as observações caem em cada classe.
+
+```{r}
+#| output-location: slide
+#| out-width: 100%
+#| fig-height: 6
+par(
+    bg = "#002b36", fg = "#93a1a1",
+    col = "#93a1a1", col.axis = "#93a1a1",
+    col.main = "#93a1a1", col.lab = "#93a1a1"
+)
+klaR::partimat(
+    property_type ~ ghg_total + eui_source_wn,
+    data = data, method = "lda",
+    image.colors = c("#ffcc3240", "#7cb34240", "#f4433640")
+)
+```
+
+## Caso quadrático {.smaller}
+Quando utilizamos desigualdades quadráticas para diferenciar os grupos, temos que a classificação de escolas e supermercados ficou um pouco pior porém a de hoteis melhorou bastante, agora a maioria deles estão classificados corretamente.
+
+As medidas de acurácia estão menores que a análise de discriminante linear porém isso é devido a quantidade de observações em cada grupo ser desbalanceada.
+
+```{r}
+#| output: false
+qda <- qda(property_type ~ . - stars - score, train)
+
+predict <- predict(qda, test)$class
+cm <- caret::confusionMatrix(test$property_type, predict)
+cm$table
+cm$byClass[,1:2]
+```
+
+|Classe      |Hotel|Escola|Supermercado|Sensitividade|Especificidade|
+|:-----------|----:|-----:|-----------:|------------:|-------------:|
+|Hotel       |   44|    25|           4|        0.698|         0.934|
+|Escola      |   13|   370|           6|        0.937|         0.819|
+|Supermercado|    6|     0|          32|        0.762|         0.987|
+
+## Partição dos grupos
+As mudanças entre as regiões lineares e quádricas acontecem na diminuição das regiões de escolas e supermercados, podendo que os hoteis sejam classificados melhores
+
+```{r}
+#| output-location: slide
+#| out-width: 100%
+#| fig-height: 6
+par(
+    bg = "#002b36", fg = "#93a1a1",
+    col = "#93a1a1", col.axis = "#93a1a1",
+    col.main = "#93a1a1", col.lab = "#93a1a1"
+)
+klaR::partimat(
+    property_type ~ ghg_total + eui_source_wn,
+    data = data, method = "qda",
+    image.colors = c("#ffcc3240", "#7cb34240", "#f4433640")
+)
+```
+
+##
