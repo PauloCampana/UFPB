@@ -2,6 +2,21 @@
 format: gfm
 ---
 
+# Rekekssion
+The linear regression package for the lazy:
+
+* create a linear model with `rekekssion.fit()`
+* get all the info you need with the `.summary()` method
+* plot model suppositions and diagnostics with `.plot()`:
+    - **normality**: residual's qq and density plots
+    - **linearity**: observed vs estimated values
+    - **homoscedasticity**: estimated values vs residuals
+    - **autocorrelation**: index vs residuals
+    - **leverage**: estimated values vs hat values
+    - **influence**: estimated values vs cook's distance
+* extract specific info with `.coefficients()`, `.estimated()` `.residuals()` if you're into that
+* evaluate new data with `.predict()`
+
 ```{python}
 import rekekssion
 
@@ -12,13 +27,13 @@ model = rekekssion.fit(
     intercept = True,
 )
 
-model.summary()
+model.summary(alpha = 0.05)
 ```
 
 ```{python}
 model.coefficients()
-model.fitted()
-model.residuals(kind = "response")
+model.estimated()
+model.residuals(kind = "studentized")
 
 import pandas
 new_data = pandas.DataFrame({
@@ -32,5 +47,5 @@ model.predict(new_data)
 ```
 
 ```{python}
-model.plot(kind = "studentized")
+model.plot()
 ```
