@@ -16,6 +16,11 @@ The linear regression package for the lazy:
   `.residuals()` if you’re into that
 - evaluate new data with `.predict()`
 
+Comes with 3 datasets inside `rekekssion.data` to play around:
+`biomass`, `concrete` and `cpu`. You can set significance level $\alpha$
+of the summary and the kind of residuals (`"response"`,
+`"standardized"`, `"studentized"`).
+
 ``` python
 import rekekssion
 
@@ -26,7 +31,7 @@ model = rekekssion.fit(
     intercept = True,
 )
 
-model.summary(alpha = 0.05)
+model.summary()
 ```
 
     formula:
@@ -51,7 +56,7 @@ model.summary(alpha = 0.05)
 ``` python
 model.coefficients()
 model.estimated()
-model.residuals(kind = "studentized")
+model.residuals()
 
 import pandas
 new_data = pandas.DataFrame({
