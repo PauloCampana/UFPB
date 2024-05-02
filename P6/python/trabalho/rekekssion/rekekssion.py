@@ -1,18 +1,18 @@
+import typing
 import pandas
 import numpy
 import scipy
-import typing
+import seaborn
 
-# Y = XB + E
-# R = Y - XB
-# P = XB
 class Rekekssion:
     def __init__(
         self,
+        intercept,
         y, x,
         n, p,
-        Y, X, C, B, R, P,
+        Y, X, C, H, B, R, P,
     ):
+        self.intercept = intercept,
         self.y = y # y name
         self.x = x # x names
         self.n = n # nº rows
@@ -20,19 +20,23 @@ class Rekekssion:
         self.Y = Y # response
         self.X = X # variables
         self.C = C # cross product XTX
+        self.H = H # hat matrix
         self.B = B # coefficients
-        self.R = R # residual
-        self.P = P # prediction
+        self.R = R # residuals
+        self.P = P # predictions
 
     def __repr__(self):
-        eq = f"{self.y} = {self.B[0]:.3} {self.x[0]} "
+        eq = f"{self.y} = {self.B[0]:.3}"
+        # intercept is somehow a tuple
+        if not self.intercept[0]:
+            eq += f" {self.x[0]}"
         for i in range(len(self.B)):
             if i == 0:
                 continue
             if self.B[i] >= 0:
-                eq += f"+ {abs(self.B[i]):.3} {self.x[i]} "
+                eq += f" + {abs(self.B[i]):.3} {self.x[i]}"
             else:
-                eq += f"- {abs(self.B[i]):.3} {self.x[i]} "
+                eq += f" - {abs(self.B[i]):.3} {self.x[i]}"
         return eq
 
     def _sse(self):
@@ -98,14 +102,17 @@ class Rekekssion:
     def _fpval(self):
         return scipy.stats.f.sf(self._fstat(), self.p, self.n - self.p - 1)
 
-    def summary(self, alpha = 0.05):
+    def summary(self, alpha: float = 0.05):
         print("formula:")
         print(f"\t{self.__repr__()}")
         print("coefficients:")
+        biggest_length = 0
+        for name in self.x:
+            biggest_length = max(biggest_length, len(name))
         print(
-            f"\t{'':<10}",
-            f"{f'IC {50 * alpha}%':>10}",
+            f"\t{'':<{biggest_length}}",
             f"{'estimate':>10}",
+            f"{f'IC {50 * alpha}%':>10}",
             f"{f'IC {100 - 50 * alpha}%':>10}",
             f"{'statistic':>10}",
             f"{'p-value':>10}",
@@ -115,9 +122,9 @@ class Rekekssion:
         tstat = self._tstat()
         tpval = self._tpval()
         for i in range(len(self.B)):
-            line = f"\t{self.x[i]:<10}"
-            line += f"{ic[0][i]:>10.3f}"
+            line = f"\t{self.x[i]:<{biggest_length}}"
             line += f"{self.B[i]:>10.3f}"
+            line += f"{ic[0][i]:>10.3f}"
             line += f"{ic[1][i]:>10.3f}"
             line += f"{tstat[i]:>10.3f}"
             line += f"{tpval[i]:>10.3g}"
@@ -132,12 +139,90 @@ class Rekekssion:
         print(f"\tBayesian criteria      {self._bic():>10.3f}")
         pass
 
-    def plot(self):
-        pass
+    def coefficients(self):
+        return self.B
 
+    def fitted(self):
+        return self.P
 
+    def residuals(self, kind: str = "response"):
+        match kind:
+            case "response":
+                return self.R
+            case "standardized":
+                return self.R / self._rmse()
+            case "studentized":
+                var = self._mse() * (1 - numpy.diag(self.H))
+                return self.R / numpy.sqrt(var)
+        raise ValueError(
+            "residual kind must be one of: response, standardized, studentized"
+        )
 
+    def predict(self, new_data: pandas.DataFrame):
+        X = new_data.to_numpy()
+        # # intercept is somehow a tuple
+        if self.intercept[0]:
+            X = numpy.insert(X, 0, 1, axis = 1)
+        return X @ self.B
 
+    def plot_qq(self, kind: str, **kwargs):
+        r = self.residuals(kind)
+        r = sorted(r)
+        x = scipy.stats.norm.ppf(
+            numpy.linspace(0, 1, self.n),
+            loc = numpy.mean(r),
+            scale = numpy.sqrt(numpy.var(r))
+        )
+        return seaborn.relplot(x = x, y = r, linewidth = 0.1, **kwargs) \
+            .set_axis_labels("Theoretical quantiles", "Residual quantiles") \
+            .ax.axline(xy1 = (0, 0), slope = 1, color = "#00000040")
+
+    def plot_normality(self, kind: str, **kwargs):
+        r = self.residuals(kind)
+        return seaborn.displot(x = r, kind = "kde", **kwargs) \
+            .set_axis_labels("Residuals")
+
+    def plot_linearity(self, **kwargs):
+        return seaborn.relplot(x = self.Y, y = self.P, **kwargs) \
+            .set_axis_labels("Observed values", "Estimated values") \
+            .ax.axline(xy1 = (0, 0), slope = 1, color = "#00000040")
+
+    def plot_homoscedasticity(self, kind: str, **kwargs):
+        r = self.residuals(kind)
+        return seaborn.relplot(x = self.P, y = r, **kwargs) \
+            .set_axis_labels("Estimated values", "Residuals") \
+            .ax.axline(xy1 = (0, 0), slope = 0, color = "#00000040")
+
+    def plot_autocorrelation(self, kind: str, **kwargs):
+        r = self.residuals(kind)
+        return seaborn.relplot(x = range(self.n), y = r, **kwargs) \
+            .set_axis_labels("Index", "Residuals") \
+            .ax.axline(xy1 = (0, 0), slope = 0, color = "#00000040")
+
+    def plot_detect_hat(self, **kwargs):
+        h = numpy.diag(self.H)
+        limit = 2 * self.p / self.n
+        return seaborn.relplot(x = self.P, y = h, **kwargs) \
+            .set_axis_labels("Estimated values", "Hat values") \
+            .ax.axline(xy1 = (0, limit), slope = 0, color = "#00000040")
+
+    def plot_detect_cook(self, **kwargs):
+        h = numpy.diag(self.H)
+        r = self.residuals(kind = "studentized")
+        cook = r * r * h / (1 - h) / self.p
+        limit = scipy.stats.f.ppf(0.5, self.p, self.n - self.p)
+        return seaborn.relplot(x = self.P, y = cook, **kwargs) \
+            .set_axis_labels("Estimated values", "Cook's distance") \
+            .ax.axline(xy1 = (0, limit), slope = 0, color = "#00000040")
+
+    def plot(self, kind: str, **kwargs):
+        self.plot_qq(kind, **kwargs)
+        self.plot_normality(kind, **kwargs)
+        self.plot_linearity(**kwargs)
+        self.plot_homoscedasticity(kind, **kwargs)
+        self.plot_autocorrelation(kind, **kwargs)
+        self.plot_detect_hat(**kwargs)
+        self.plot_detect_cook(**kwargs)
 
 def fit(
     data: pandas.DataFrame,
@@ -149,31 +234,14 @@ def fit(
     X = data[x].to_numpy()
     if intercept:
         X = numpy.insert(X, 0, 1, axis = 1)
-        x.insert(0, "")
+        x.insert(0, "(intercept)")
 
     C = numpy.linalg.inv(X.T @ X)
+    H = X @ C @ X.T
     B = C @ X.T @ Y
     P = X @ B
     R = Y - P
 
     n = X.shape[0]
     p = X.shape[1]
-    return Rekekssion(y, x, n, p, Y, X, C, B, R, P)
-
-
-
-
-
-
-
-
-
-
-# IC para os betas
-# residuos:
-#   padronizado, studentizado
-#   detectar: outlier, influência, alavanca,
-# predict com dados novos
-# gráficos:
-#   qqplot, densidade, y vs yhat, r vs yhat, r vs xs, r vs indice
-# dados inclusos
+    return Rekekssion(intercept, y, x, n, p, Y, X, C, H, B, R, P)

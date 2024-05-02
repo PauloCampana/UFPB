@@ -1,2 +1,2 @@
-from .rekekssion import *
-from .data import *
+from .rekekssion import fit
+from .data import data
