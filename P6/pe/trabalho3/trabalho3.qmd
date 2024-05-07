@@ -1,7 +1,7 @@
 ---
 format: pdf
 lang: pt
-title: Trabalho 3
+title: Terceiro trabalho
 subtitle: Planejamento de Experimentos
 author: Paulo Ricardo Seganfredo Campana
 date: today
